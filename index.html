@@ -11,6 +11,10 @@
     --bg:#09090a; --bg-2:#0d0d0e;
     --surface:#121213; --surface-2:#191919; --surface-3:#232322;
     --line:rgba(255,255,255,.085); --line-2:rgba(255,255,255,.15);
+    --glass:rgba(255,255,255,.045); --glass-2:rgba(255,255,255,.085);
+    --glass-line:rgba(255,255,255,.13); --glass-hi:rgba(255,255,255,.20);
+    --veil:rgba(9,9,10,.80); --card-veil:rgba(20,20,21,.58);
+    --blur:blur(22px) saturate(125%);
     --text:#f3f2ef; --text-dim:#9d9c97; --text-mute:#6b6a66;
     --accent:#efece4; --accent-ink:#0b0b0c;
     --pos:#8fbb96; --neg:#cf918a; --warn:#c9a86a;
@@ -24,6 +28,9 @@
       --bg:#f4f3f0; --bg-2:#eceae5;
       --surface:#ffffff; --surface-2:#f7f6f3; --surface-3:#eceae5;
       --line:rgba(18,18,16,.10); --line-2:rgba(18,18,16,.2);
+      --glass:rgba(255,255,255,.5); --glass-2:rgba(255,255,255,.7);
+      --glass-line:rgba(18,18,16,.12); --glass-hi:rgba(255,255,255,.9);
+      --veil:rgba(244,243,240,.82); --card-veil:rgba(255,255,255,.66);
       --text:#121210; --text-dim:#575652; --text-mute:#7d7c77;
       --accent:#16150f; --accent-ink:#ffffff;
       --pos:#3a7a49; --neg:#a63a30; --warn:#8a6a1e;
@@ -31,12 +38,16 @@
   }
   *{box-sizing:border-box}
   html{margin:0;padding:0;background:var(--bg)}
-  body{margin:0;padding:0;background:var(--bg);color:var(--text);
+  body{margin:0;padding:0;background:transparent;color:var(--text);
     font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
     font-size:16px;line-height:1.55;letter-spacing:-.012em;
     -webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;
     min-height:100dvh}
-  .bgfx,.wmark{display:none}
+  .bgfx{display:none}
+  .wmark{position:fixed;left:50%;top:47%;transform:translate(-50%,-50%);
+    width:min(128vw,740px);z-index:-1;pointer-events:none;opacity:.075}
+  .wmark svg{width:100%;height:auto;display:block}
+  @media (prefers-color-scheme:light){ .wmark{opacity:.06} }
 
   .wrap{max-width:620px;margin:0 auto;padding:0 22px}
   main.wrap{padding-bottom:52px}
@@ -57,9 +68,12 @@
     font-weight:600;color:var(--text-mute)}
 
   /* ---------- Kopf ---------- */
-  header.app{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
+  header.app{position:sticky;top:0;z-index:30;background:var(--veil);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    border-bottom:1px solid var(--line)}
   .bar{display:flex;align-items:center;gap:12px;padding:18px 0 15px}
-  .blogo{display:none}
+  .blogo{width:26px;height:26px;flex:0 0 auto;display:block;color:var(--text)}
+  .blogo svg{width:100%;height:100%;display:block}
   .brand{font-weight:600;font-size:1.06rem;letter-spacing:.24em;text-transform:uppercase;
     margin-right:auto;color:var(--text)}
   .tag{font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;font-weight:600;
@@ -81,19 +95,30 @@
   .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
   .chip{white-space:nowrap;border-radius:99px;padding:8px 15px;cursor:pointer;min-height:38px;
-    font-size:.82rem;font-weight:500;color:var(--text-dim);background:transparent;
-    border:1px solid var(--line-2);transition:color .2s,background .2s,border-color .2s}
+    font-size:.82rem;font-weight:500;color:var(--text-dim);
+    background:var(--glass);border:1px solid var(--glass-line);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    box-shadow:inset 0 1px 0 var(--glass-hi);
+    transition:color .2s,background .2s,border-color .2s}
   .chip[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
 
   /* ---------- Schaltflächen ---------- */
-  .btn{position:relative;border-radius:99px;padding:12px 20px;cursor:pointer;min-height:46px;
-    font-weight:500;font-size:.92rem;color:var(--text);background:transparent;
-    border:1px solid var(--line-2);transition:background .2s,border-color .2s,opacity .2s}
-  .btn:hover{background:var(--surface-2)}
+  .btn{position:relative;overflow:hidden;border-radius:99px;padding:12px 20px;cursor:pointer;
+    min-height:46px;font-weight:500;font-size:.92rem;color:var(--text);
+    background:var(--glass);border:1px solid var(--glass-line);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    box-shadow:inset 0 1px 0 var(--glass-hi);
+    transition:background .2s,border-color .2s,opacity .2s}
+  .btn::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,0) 52%)}
+  .btn:hover{background:var(--glass-2)}
   .btn:active{opacity:.65}
-  .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+  .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);
+    font-weight:600;box-shadow:none}
+  .btn.primary::after{display:none}
   .btn.sm{padding:8px 15px;min-height:38px;font-size:.8rem}
-  .btn.ghost{border-color:transparent;color:var(--text-dim)}
+  .btn.ghost{border-color:transparent;background:transparent;box-shadow:none;color:var(--text-dim)}
+  .btn.ghost::after{display:none}
   .btn-row{display:flex;gap:9px;margin:18px 0 8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
   .btn-row::-webkit-scrollbar{display:none}
   .btn-row .btn{flex:0 0 auto;white-space:nowrap}
@@ -116,7 +141,9 @@
   /* ---------- Karte ---------- */
   .deck{position:relative;height:var(--card-h);margin:22px 0 20px}
   .card{position:absolute;inset:0;border-radius:var(--r-xl);overflow:hidden;
-    background:var(--surface);border:1px solid var(--line);
+    background:var(--card-veil);border:1px solid var(--glass-line);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    box-shadow:inset 0 1px 0 var(--glass-hi);
     display:flex;flex-direction:column;touch-action:pan-y;user-select:none}
   .card.behind{transform:scale(.96) translateY(12px);opacity:.3;z-index:1}
   .card.front{z-index:2;animation:cardIn .45s var(--ease)}
@@ -151,6 +178,7 @@
   .hint{font-size:.76rem;color:var(--text-mute);margin:14px 0 0;text-align:center}
 
   .stamp{position:absolute;top:26px;z-index:5;font-size:.82rem;font-weight:600;
+    -webkit-backdrop-filter:blur(6px);
     text-transform:uppercase;letter-spacing:.2em;padding:9px 16px;border-radius:99px;opacity:0;
     border:1px solid currentColor;pointer-events:none;transition:opacity .12s;
     background:rgba(8,8,10,.5);backdrop-filter:blur(6px)}
@@ -178,18 +206,21 @@
   @keyframes rise{to{opacity:1;transform:none}}
   .lrow{display:flex;gap:16px;align-items:flex-start}
   .lthumb{width:96px;height:96px;flex:0 0 auto;position:relative;overflow:hidden;
-    border-radius:var(--r-md);background:var(--surface-2)}
+    border-radius:var(--r-md);background:var(--glass);
+    box-shadow:inset 0 0 0 1px var(--glass-line)}
   .lthumb img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92)}
   .lmain{padding:0;flex:1;min-width:0}
   .lmain h3{margin-bottom:5px;font-size:1.08rem;font-weight:600;letter-spacing:-.028em}
   .lact{display:flex;gap:9px;padding:14px 0 0;flex-wrap:wrap}
   .list .why{margin:14px 0 0;padding-top:12px}
 
-  .empty{border:1px solid var(--line);border-radius:var(--r-lg);padding:44px 24px;
-    text-align:center;color:var(--text-dim);background:var(--surface)}
+  .empty{border:1px solid var(--glass-line);border-radius:var(--r-lg);padding:44px 24px;
+    text-align:center;color:var(--text-dim);background:var(--glass);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur)}
 
   /* ---------- Navigation ---------- */
-  nav.tabs{position:sticky;bottom:0;z-index:30;background:var(--bg);
+  nav.tabs{position:sticky;bottom:0;z-index:30;background:var(--veil);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
     border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
   nav.tabs .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0 12px}
   nav.tabs button{background:none;border:0;border-top:2px solid transparent;margin-top:-1px;
@@ -221,6 +252,7 @@
     font-size:.78rem;color:var(--text-mute)}
 
   .toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(8px);
+    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
     z-index:60;max-width:min(92vw,520px);text-align:center;
     color:var(--accent-ink);background:var(--accent);
     padding:12px 20px;border-radius:99px;font-size:.84rem;font-weight:600;
@@ -232,12 +264,16 @@
 </style>
 </head>
 <body>
-<div class="bgfx" aria-hidden="true"><i></i><i></i><i></i></div>
+
 <div class="wmark" aria-hidden="true">
-  <svg viewBox="0 0 120 120"><g stroke="#fff" stroke-width="13" stroke-linecap="round" fill="none">
-    <path d="M30 22 V100"/><path d="M30 28 H58 a19 19 0 0 1 0 38 H30"/>
-    <path d="M58 66 L100 106"/><path d="M62 106 L104 60"/>
-    <path d="M96 50 L108 56 L104 68" stroke-width="10" stroke-linejoin="round"/></g></svg>
+  <svg viewBox="0 0 400 400">
+    <circle cx="200" cy="200" r="176" fill="currentColor" fill-opacity=".07"/>
+    <circle cx="200" cy="200" r="176" fill="none" stroke="currentColor" stroke-opacity=".5" stroke-width="1.5"/>
+    <circle cx="200" cy="200" r="118" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="1"/>
+    <text x="200" y="200" fill="currentColor" text-anchor="middle" dominant-baseline="central"
+      font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
+      font-size="228" font-weight="500" letter-spacing="-8">R</text>
+  </svg>
 </div>
 <a class="skip" href="#main">Zum Hauptinhalt springen</a>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -249,13 +285,12 @@
 <header class="app">
   <div class="wrap">
     <div class="bar">
-      <span class="blogo" aria-hidden="true"><svg viewBox="0 0 120 120">
-      <defs><linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#8b5cff"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
-      <g stroke="url(#bg1)" stroke-width="15" stroke-linecap="round" fill="none">
-      <path d="M30 22 V100"/><path d="M30 28 H58 a19 19 0 0 1 0 38 H30"/>
-      <path d="M58 66 L100 106"/><path d="M62 106 L104 60"/>
-      <path d="M96 50 L108 56 L104 68" stroke-width="12" stroke-linejoin="round"/></g></svg></span>
+      <span class="blogo" aria-hidden="true"><svg viewBox="0 0 400 400">
+      <circle cx="200" cy="200" r="180" fill="currentColor" fill-opacity=".13"/>
+      <circle cx="200" cy="200" r="180" fill="none" stroke="currentColor" stroke-opacity=".55" stroke-width="14"/>
+      <text x="200" y="204" fill="currentColor" text-anchor="middle" dominant-baseline="central"
+        font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
+        font-size="238" font-weight="500" letter-spacing="-8">R</text></svg></span>
     <div class="brand">Radiux</div>
       <span class="tag">Prototyp · Magdeburg</span>
     </div>
