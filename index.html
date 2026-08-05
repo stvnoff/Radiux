@@ -8,357 +8,227 @@
 <title>Radiux – Magdeburg entdecken</title>
 <style>
   :root{
-    --bg:#07080d; --bg-2:#0c0e16;
-    --glass:rgba(255,255,255,.065);
-    --glass-2:rgba(255,255,255,.10);
-    --glass-3:rgba(255,255,255,.15);
-    --glass-line:rgba(255,255,255,.16);
-    --glass-hi:rgba(255,255,255,.34);
-    --surface:rgba(20,23,34,.62);
-    --surface-2:rgba(255,255,255,.07);
-    --surface-3:rgba(255,255,255,.13);
-    --line:rgba(255,255,255,.14);
-    --line-soft:rgba(255,255,255,.08);
-    --text:#f6f8fe; --text-dim:#b3bccf; --text-mute:#8a94aa;
-    --brand-1:#8b5cff; --brand-2:#22d3ee;
-    --pos:#4ade80; --neg:#ff7a8a; --warn:#ffcc4d;
-    --r-md:18px; --r-lg:24px; --r-xl:30px;
-    --shadow:0 24px 60px -20px rgba(0,0,0,.85);
-    --sheen:inset 0 1px 0 var(--glass-hi), inset 0 -1px 0 rgba(255,255,255,.05);
-    --card-h:clamp(380px,52vh,468px);
-    --ease:cubic-bezier(.22,1,.36,1);
-    --blur:blur(18px) saturate(170%);
+    --bg:#09090a; --bg-2:#0d0d0e;
+    --surface:#121213; --surface-2:#191919; --surface-3:#232322;
+    --line:rgba(255,255,255,.085); --line-2:rgba(255,255,255,.15);
+    --text:#f3f2ef; --text-dim:#9d9c97; --text-mute:#6b6a66;
+    --accent:#efece4; --accent-ink:#0b0b0c;
+    --pos:#8fbb96; --neg:#cf918a; --warn:#c9a86a;
+    --r-sm:10px; --r-md:14px; --r-lg:18px; --r-xl:22px;
+    --card-h:clamp(360px,48vh,436px);
+    --ease:cubic-bezier(.2,.8,.2,1);
+    --micro:.68rem;
   }
   @media (prefers-color-scheme:light){
     :root{
-      --bg:#eef1f9; --bg-2:#e3e8f5;
-      --glass:rgba(255,255,255,.58);
-      --glass-2:rgba(255,255,255,.72);
-      --glass-3:rgba(255,255,255,.85);
-      --glass-line:rgba(255,255,255,.9);
-      --glass-hi:rgba(255,255,255,.95);
-      --surface:rgba(255,255,255,.74);
-      --surface-2:rgba(255,255,255,.62);
-      --surface-3:rgba(255,255,255,.9);
-      --line:rgba(16,19,34,.13);
-      --line-soft:rgba(16,19,34,.08);
-      --text:#0d1020; --text-dim:#48526a; --text-mute:#69738b;
-      --brand-1:#6d3ff0; --brand-2:#0e8fa8;
-      --pos:#0f9d63; --neg:#d92543; --warn:#a06a00;
-      --shadow:0 22px 50px -22px rgba(16,19,34,.35);
-      --sheen:inset 0 1px 0 rgba(255,255,255,.95);
+      --bg:#f4f3f0; --bg-2:#eceae5;
+      --surface:#ffffff; --surface-2:#f7f6f3; --surface-3:#eceae5;
+      --line:rgba(18,18,16,.10); --line-2:rgba(18,18,16,.2);
+      --text:#121210; --text-dim:#575652; --text-mute:#7d7c77;
+      --accent:#16150f; --accent-ink:#ffffff;
+      --pos:#3a7a49; --neg:#a63a30; --warn:#8a6a1e;
     }
   }
   *{box-sizing:border-box}
   html{margin:0;padding:0;background:var(--bg)}
-  body{margin:0;padding:0}
-  body{
-    background:transparent; color:var(--text);
+  body{margin:0;padding:0;background:var(--bg);color:var(--text);
     font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
-    font-size:16.5px; line-height:1.55; letter-spacing:-.011em;
-    -webkit-text-size-adjust:100%; -webkit-font-smoothing:antialiased;
-    min-height:100dvh; overflow-x:hidden;
-  }
-  /* Fließender Farbverlauf im Hintergrund */
-  .bgfx{position:fixed;inset:-25%;z-index:-1;pointer-events:none;filter:blur(60px);opacity:.85}
-  .bgfx i{position:absolute;display:block;border-radius:50%}
-  .bgfx i:nth-child(1){width:58vw;height:58vw;left:-8%;top:2%;
-    background:radial-gradient(circle,var(--brand-1),transparent 68%);opacity:.55;
-    animation:drift1 26s var(--ease) infinite alternate}
-  .bgfx i:nth-child(2){width:52vw;height:52vw;right:-10%;top:-4%;
-    background:radial-gradient(circle,var(--brand-2),transparent 68%);opacity:.42;
-    animation:drift2 32s var(--ease) infinite alternate}
-  .wmark{position:fixed;right:-14vw;top:16vh;width:78vw;max-width:520px;z-index:-1;
-    opacity:.055;pointer-events:none}
-  .wmark svg{width:100%;height:auto;display:block}
-  .bgfx i:nth-child(3){width:46vw;height:46vw;left:22%;bottom:-6%;
-    background:radial-gradient(circle,#ff5fa2,transparent 70%);opacity:.28;
-    animation:drift3 38s var(--ease) infinite alternate}
-  @keyframes drift1{to{transform:translate3d(14vw,10vh,0) scale(1.18)}}
-  @keyframes drift2{to{transform:translate3d(-12vw,14vh,0) scale(1.12)}}
-  @keyframes drift3{to{transform:translate3d(10vw,-12vh,0) scale(1.22)}}
+    font-size:16px;line-height:1.55;letter-spacing:-.012em;
+    -webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;
+    min-height:100dvh}
+  .bgfx,.wmark{display:none}
 
-  .wrap{max-width:600px;margin:0 auto;padding:0 20px}
-  main.wrap{padding-bottom:44px}
-  h1,h2,h3{line-height:1.18;margin:0 0 .5em;letter-spacing:-.03em}
-  h1{font-size:1.72rem;font-weight:800}
-  h2{font-size:1.22rem;font-weight:750}
-  h3{font-size:1.02rem;font-weight:750}
-  p{margin:0 0 .9em}
-  a{color:var(--brand-2)}
+  .wrap{max-width:620px;margin:0 auto;padding:0 22px}
+  main.wrap{padding-bottom:52px}
+  h1,h2,h3{line-height:1.1;margin:0 0 .5em;letter-spacing:-.035em;font-weight:600}
+  h1{font-size:clamp(2.1rem,9vw,2.7rem)}
+  h2{font-size:1.3rem}
+  h3{font-size:1.02rem}
+  p{margin:0 0 .95em}
+  a{color:var(--text);text-underline-offset:3px}
   button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
-  :focus-visible{outline:2.5px solid var(--brand-2);outline-offset:3px;border-radius:14px}
-  .skip{position:absolute;left:-9999px;top:0;background:var(--brand-1);color:#fff;
-    padding:12px 18px;z-index:99;border-radius:0 0 14px 0;font-weight:750}
+  :focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:4px}
+  .skip{position:absolute;left:-9999px;top:0;background:var(--accent);color:var(--accent-ink);
+    padding:12px 18px;z-index:99;font-weight:600}
   .skip:focus{left:0;top:0}
   .sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
     clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .micro{font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
+    font-weight:600;color:var(--text-mute)}
 
-  /* ---------- Glas-Grundrezept ---------- */
-  .glass{
-    background:linear-gradient(157deg,var(--glass-2),var(--glass));
-    border:1px solid var(--glass-line);
-    backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
-    box-shadow:var(--sheen), var(--shadow);
-  }
+  /* ---------- Kopf ---------- */
+  header.app{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;gap:12px;padding:18px 0 15px}
+  .blogo{display:none}
+  .brand{font-weight:600;font-size:1.06rem;letter-spacing:.24em;text-transform:uppercase;
+    margin-right:auto;color:var(--text)}
+  .tag{font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;font-weight:600;
+    color:var(--text-mute);white-space:nowrap}
 
-  /* ---------- Kopfbereich ---------- */
-  header.app{position:sticky;top:0;z-index:30;
-    background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 82%,transparent),
-      color-mix(in srgb,var(--bg) 58%,transparent));
-    backdrop-filter:blur(22px) saturate(180%);
-    -webkit-backdrop-filter:blur(22px) saturate(180%);
-    border-bottom:1px solid var(--line-soft)}
-  .bar{display:flex;align-items:center;gap:10px;padding:14px 0 11px}
-  .blogo{width:27px;height:27px;flex:0 0 auto;display:block}
-  .blogo svg{width:100%;height:100%;display:block}
-  .brand{font-weight:850;font-size:1.36rem;letter-spacing:-.05em;margin-right:auto;
-    background:linear-gradient(100deg,var(--brand-1),var(--brand-2));
-    -webkit-background-clip:text;background-clip:text;color:transparent}
-  .tag{font-size:.67rem;font-weight:750;letter-spacing:.015em;color:var(--brand-2);
-    padding:6px 12px;border-radius:99px;white-space:nowrap;
-    background:linear-gradient(157deg,var(--glass-2),var(--glass));
-    border:1px solid var(--glass-line);box-shadow:var(--sheen)}
+  .controls{padding:2px 22px 18px;border-bottom:1px solid var(--line)}
+  .rng{display:flex;align-items:center;gap:16px;width:100%;margin:8px 0 16px}
+  .rng label{flex:0 0 auto;font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
+    font-weight:600;color:var(--text-mute)}
+  input[type=range]{flex:1;min-width:90px;height:30px;appearance:none;background:transparent;cursor:pointer}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line-2)}
+  input[type=range]::-moz-range-track{height:2px;background:var(--line-2)}
+  input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;margin-top:-7px;
+    border-radius:50%;background:var(--text);border:0}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--text);border:0}
+  .radval{font-variant-numeric:tabular-nums;font-weight:600;font-size:.95rem;
+    min-width:62px;text-align:right;flex:0 0 auto;color:var(--text)}
 
-  .controls{padding:4px 18px 15px;border-bottom:1px solid var(--line-soft)}
-  .rng{display:flex;align-items:center;gap:13px;width:100%;margin:6px 0 13px}
-  .rng label{flex:0 0 auto;font-size:.85rem;font-weight:700;color:var(--text-dim)}
-  input[type=range]{flex:1;min-width:100px;height:36px;appearance:none;background:transparent;cursor:pointer}
-  input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:99px;
-    background:linear-gradient(90deg,var(--brand-1),var(--brand-2));
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.45)}
-  input[type=range]::-moz-range-track{height:8px;border-radius:99px;
-    background:linear-gradient(90deg,var(--brand-1),var(--brand-2))}
-  input[type=range]::-webkit-slider-thumb{appearance:none;width:24px;height:24px;margin-top:-8px;
-    border-radius:50%;background:linear-gradient(160deg,#fff,#dfe4f5);
-    border:1px solid rgba(255,255,255,.9);
-    box-shadow:0 4px 14px rgba(0,0,0,.55), inset 0 1px 0 #fff}
-  input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;
-    border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 14px rgba(0,0,0,.55)}
-  .radval{font-variant-numeric:tabular-nums;font-weight:800;font-size:1rem;
-    min-width:66px;text-align:right;flex:0 0 auto;
-    background:linear-gradient(100deg,var(--brand-1),var(--brand-2));
-    -webkit-background-clip:text;background-clip:text;color:transparent}
-
-  .chips{display:flex;gap:9px;overflow-x:auto;padding:3px 0 6px;
-    scrollbar-width:none;-ms-overflow-style:none}
+  .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
-  .chip{position:relative;white-space:nowrap;border-radius:99px;padding:10px 16px;
-    cursor:pointer;min-height:42px;font-size:.85rem;font-weight:750;color:var(--text-dim);
-    background:linear-gradient(157deg,var(--glass-2),var(--glass));
-    border:1px solid var(--glass-line);
-    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
-    box-shadow:var(--sheen);
-    transition:transform .2s var(--ease),color .2s,box-shadow .2s,background .2s}
-  .chip:active{transform:scale(.93)}
-  .chip[aria-pressed=true]{color:#fff;border-color:transparent;
-    background:linear-gradient(140deg,var(--brand-1),var(--brand-2));
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.45),
-      0 8px 22px -8px color-mix(in srgb,var(--brand-1) 80%,transparent)}
+  .chip{white-space:nowrap;border-radius:99px;padding:8px 15px;cursor:pointer;min-height:38px;
+    font-size:.82rem;font-weight:500;color:var(--text-dim);background:transparent;
+    border:1px solid var(--line-2);transition:color .2s,background .2s,border-color .2s}
+  .chip[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
 
-  /* ---------- Glasknöpfe ---------- */
-  .btn{position:relative;overflow:hidden;border-radius:99px;padding:13px 19px;
-    cursor:pointer;min-height:48px;font-weight:750;color:var(--text);
-    background:linear-gradient(157deg,var(--glass-2),var(--glass));
-    border:1px solid var(--glass-line);
-    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
-    box-shadow:var(--sheen), 0 10px 28px -16px rgba(0,0,0,.9);
-    transition:transform .18s var(--ease),box-shadow .22s,background .22s,filter .22s}
-  .btn::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-    background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 46%)}
-  .btn:hover{filter:brightness(1.12)}
-  .btn:active{transform:scale(.96)}
-  .btn.primary{color:#fff;border-color:transparent;
-    background:linear-gradient(140deg,var(--brand-1),var(--brand-2));
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.45),
-      0 12px 30px -12px color-mix(in srgb,var(--brand-1) 85%,transparent)}
-  .btn.sm{padding:9px 15px;min-height:42px;font-size:.83rem}
-  .btn.ghost{background:linear-gradient(157deg,var(--glass),transparent)}
-  .btn-row{display:flex;gap:9px;margin:14px 0 6px;overflow-x:auto;
-    scrollbar-width:none;padding-bottom:3px}
+  /* ---------- Schaltflächen ---------- */
+  .btn{position:relative;border-radius:99px;padding:12px 20px;cursor:pointer;min-height:46px;
+    font-weight:500;font-size:.92rem;color:var(--text);background:transparent;
+    border:1px solid var(--line-2);transition:background .2s,border-color .2s,opacity .2s}
+  .btn:hover{background:var(--surface-2)}
+  .btn:active{opacity:.65}
+  .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+  .btn.sm{padding:8px 15px;min-height:38px;font-size:.8rem}
+  .btn.ghost{border-color:transparent;color:var(--text-dim)}
+  .btn-row{display:flex;gap:9px;margin:18px 0 8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
   .btn-row::-webkit-scrollbar{display:none}
   .btn-row .btn{flex:0 0 auto;white-space:nowrap}
 
-  /* ---------- Startauswahl ---------- */
-  .hero{padding:40px 0 8px}
-  .hero h1{font-size:clamp(2.05rem,9vw,2.6rem);margin-bottom:.28em;line-height:1.04}
-  .hero .lead{color:var(--text-dim);font-size:1.06rem;margin-bottom:30px;max-width:34ch}
-  .modes{display:grid;gap:14px}
-  .mode{position:relative;overflow:hidden;border-radius:var(--r-lg);padding:0;
-    cursor:pointer;text-align:left;
-    background:linear-gradient(157deg,var(--glass-2),var(--glass));
-    border:1px solid var(--glass-line);
-    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
-    box-shadow:var(--sheen), var(--shadow);
-    transition:transform .22s var(--ease),filter .22s}
-  .mode::after{content:"";position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 40%)}
-  .mode:active{transform:scale(.98)}
-  .mode:hover{filter:brightness(1.1)}
-  .mode .mi{display:flex;align-items:center;gap:16px;padding:20px 21px;position:relative;z-index:2}
-  .mode .orb{width:50px;height:50px;border-radius:17px;flex:0 0 auto;position:relative;
-    box-shadow:0 10px 26px -8px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.55)}
-  .mode .mt{font-weight:800;font-size:1.08rem;display:block}
-  .mode .ms{font-size:.85rem;color:var(--text-dim);display:block;margin-top:1px}
-  .mode .arw{margin-left:auto;color:var(--text-mute);font-size:1.25rem}
+  /* ---------- Start ---------- */
+  .hero{padding:58px 0 10px}
+  .hero h1{margin-bottom:.24em}
+  .hero .lead{color:var(--text-dim);font-size:1.02rem;margin-bottom:42px;max-width:32ch}
+  .modes{display:grid;gap:0;border-top:1px solid var(--line)}
+  .mode{position:relative;border:0;border-bottom:1px solid var(--line);background:transparent;
+    padding:0;cursor:pointer;text-align:left;width:100%;transition:background .2s}
+  .mode:hover{background:var(--surface-2)}
+  .mode:active{opacity:.6}
+  .mode .mi{display:flex;align-items:center;gap:18px;padding:22px 4px}
+  .mode .orb{width:8px;height:8px;border-radius:50%;flex:0 0 auto;background:var(--text-mute)}
+  .mode .mt{font-weight:600;font-size:1.16rem;display:block;letter-spacing:-.03em}
+  .mode .ms{font-size:.88rem;color:var(--text-dim);display:block;margin-top:3px}
+  .mode .arw{margin-left:auto;color:var(--text-mute);font-size:1.05rem}
 
-  /* ---------- Entdeckungskarten ---------- */
-  .deck{position:relative;height:var(--card-h);margin:20px 0 18px}
+  /* ---------- Karte ---------- */
+  .deck{position:relative;height:var(--card-h);margin:22px 0 20px}
   .card{position:absolute;inset:0;border-radius:var(--r-xl);overflow:hidden;
-    background:var(--surface);
-    border:1px solid var(--glass-line);
-    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
-    box-shadow:var(--sheen), var(--shadow);
+    background:var(--surface);border:1px solid var(--line);
     display:flex;flex-direction:column;touch-action:pan-y;user-select:none}
-  .card.behind{transform:scale(.94) translateY(16px);opacity:.45;z-index:1;box-shadow:none}
-  .card.front{z-index:2;animation:cardIn .4s var(--ease)}
-  @keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
-  .cover{position:relative;height:53%;min-height:180px;flex:0 0 auto;overflow:hidden}
-  .cover img{width:100%;height:100%;object-fit:cover;display:block}
+  .card.behind{transform:scale(.96) translateY(12px);opacity:.3;z-index:1}
+  .card.front{z-index:2;animation:cardIn .45s var(--ease)}
+  @keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .cover{position:relative;height:58%;min-height:190px;flex:0 0 auto;overflow:hidden;background:var(--surface-2)}
+  .cover img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92) contrast(1.04)}
   .cover .scrim{position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(4,6,12,.52) 0%,rgba(4,6,12,.06) 26%,
-      rgba(4,6,12,.55) 62%,rgba(4,6,12,.94) 100%)}
-  .ctitle{position:absolute;left:22px;right:22px;bottom:15px;z-index:2}
-  .ctitle h2{font-size:clamp(1.45rem,5.8vw,1.85rem);line-height:1.08;margin:0 0 5px;
-    color:#fff;letter-spacing:-.035em;text-shadow:0 2px 24px rgba(0,0,0,.55)}
-  .ctitle .desc{margin:0;color:rgba(255,255,255,.84);font-size:.9rem;
-    text-shadow:0 1px 14px rgba(0,0,0,.6);
+    background:linear-gradient(180deg,rgba(5,5,6,.55) 0%,rgba(5,5,6,.05) 30%,
+      rgba(5,5,6,.62) 66%,rgba(5,5,6,.96) 100%)}
+  .cover .catbadge,.cover .fict{position:absolute;top:18px;z-index:2;
+    font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;font-weight:600}
+  .cover .catbadge{left:20px;color:#fff}
+  .cover .fict{right:20px;color:rgba(255,255,255,.5)}
+  .ctitle{position:absolute;left:20px;right:20px;bottom:18px;z-index:2}
+  .ctitle h2{font-size:clamp(1.6rem,6.6vw,2.1rem);line-height:1.04;margin:0 0 6px;color:#fff;
+    letter-spacing:-.04em;font-weight:600}
+  .ctitle .desc{margin:0;color:rgba(255,255,255,.72);font-size:.88rem;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .cover .catbadge,.cover .fict{position:absolute;top:14px;z-index:2;color:#fff;
-    border-radius:99px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-    background:rgba(10,12,20,.42);border:1px solid rgba(255,255,255,.24);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
-  .cover .catbadge{left:15px;font-size:.65rem;font-weight:800;letter-spacing:.1em;
-    text-transform:uppercase;padding:7px 12px}
-  .cover .fict{right:15px;font-size:.6rem;font-weight:700;padding:6px 10px;color:rgba(255,255,255,.88)}
-  .cbody{padding:16px 22px 20px;display:flex;flex-direction:column;flex:1;min-height:0;overflow:auto}
-  .cbody h2{font-size:1.52rem;margin-bottom:6px}
-  .desc{color:var(--text-dim);font-size:.92rem;margin-bottom:11px}
-  .meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:13px}
-  .pill{font-size:.77rem;font-weight:700;border-radius:99px;padding:7px 13px;color:var(--text-dim);
-    background:var(--glass-2);border:1px solid transparent;box-shadow:var(--sheen)}
-  .pill.open{color:var(--pos);border-color:color-mix(in srgb,var(--pos) 42%,transparent);
-    background:color-mix(in srgb,var(--pos) 13%,transparent)}
-  .pill.closed{color:var(--neg);border-color:color-mix(in srgb,var(--neg) 42%,transparent);
-    background:color-mix(in srgb,var(--neg) 13%,transparent)}
-  .pill.dist{color:var(--text);background:var(--glass-3)}
-  .why{margin-top:auto;border-radius:var(--r-md);padding:14px 16px;
-    background:linear-gradient(157deg,color-mix(in srgb,var(--brand-1) 20%,transparent),
-      color-mix(in srgb,var(--brand-2) 8%,transparent));
-    border:1px solid color-mix(in srgb,var(--brand-1) 30%,transparent);
-    box-shadow:var(--sheen)}
-  .why h3{font-size:.67rem;text-transform:uppercase;letter-spacing:.11em;
-    color:var(--brand-2);margin-bottom:8px;font-weight:800}
-  .why ul{margin:0;padding-left:17px;font-size:.87rem;color:var(--text-dim)}
-  .why li{margin-bottom:4px}
-  .why li::marker{color:var(--brand-2)}
-  .hint{font-size:.74rem;color:var(--text-mute);margin:11px 0 0;text-align:center}
+  .cbody{padding:18px 20px 20px;display:flex;flex-direction:column;flex:1;min-height:0;overflow:auto}
+  .desc{color:var(--text-dim);font-size:.9rem}
+  .meta{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;align-items:center}
+  .pill{font-size:.8rem;font-weight:500;color:var(--text-dim);background:none;border:0;padding:0}
+  .pill.dist{color:var(--text);font-weight:600}
+  .pill.open{color:var(--pos)}
+  .pill.closed{color:var(--neg)}
+  .why{margin-top:auto;padding:14px 0 0;border-top:1px solid var(--line)}
+  .why h3{font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
+    color:var(--text-mute);margin-bottom:8px;font-weight:600}
+  .why ul{margin:0;padding-left:0;list-style:none;font-size:.86rem;color:var(--text-dim)}
+  .why li{margin-bottom:5px;padding-left:14px;position:relative}
+  .why li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:1px;background:var(--text-mute)}
+  .hint{font-size:.76rem;color:var(--text-mute);margin:14px 0 0;text-align:center}
 
-  .stamp{position:absolute;top:28px;z-index:5;font-size:1.45rem;font-weight:900;
-    letter-spacing:.08em;padding:10px 20px;border-radius:16px;opacity:0;
-    border:3px solid currentColor;pointer-events:none;transition:opacity .12s;
-    backdrop-filter:blur(6px);background:rgba(8,10,16,.28)}
-  .stamp.yes{left:20px;color:var(--pos);transform:rotate(-13deg)}
-  .stamp.no{right:20px;color:var(--neg);transform:rotate(13deg)}
+  .stamp{position:absolute;top:26px;z-index:5;font-size:.82rem;font-weight:600;
+    text-transform:uppercase;letter-spacing:.2em;padding:9px 16px;border-radius:99px;opacity:0;
+    border:1px solid currentColor;pointer-events:none;transition:opacity .12s;
+    background:rgba(8,8,10,.5);backdrop-filter:blur(6px)}
+  .stamp.yes{left:20px;color:#fff}
+  .stamp.no{right:20px;color:#fff}
 
-  .actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin-bottom:12px}
-  .actions .btn{text-align:center;padding:15px 6px;font-size:.88rem}
-  .act-no{border-color:color-mix(in srgb,var(--neg) 45%,transparent);color:var(--neg);
-    background:linear-gradient(157deg,color-mix(in srgb,var(--neg) 22%,transparent),
-      color-mix(in srgb,var(--neg) 8%,transparent))}
-  .act-yes{border-color:color-mix(in srgb,var(--pos) 45%,transparent);color:var(--pos);
-    background:linear-gradient(157deg,color-mix(in srgb,var(--pos) 22%,transparent),
-      color-mix(in srgb,var(--pos) 8%,transparent))}
-  .counter{font-size:.78rem;color:var(--text-mute);text-align:center;margin:0 0 4px}
+  .actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+  .actions .btn{text-align:center;padding:14px 4px;font-size:.86rem}
+  .act-no,.act-yes{border-color:var(--line-2);color:var(--text)}
+  .counter{font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
+    color:var(--text-mute);text-align:center;margin:0 0 4px;font-weight:600}
 
-  /* ---------- Listen ---------- */
-  .sechead{display:flex;align-items:baseline;gap:10px;margin:42px 0 16px}
-  .sechead h2{margin:0;font-size:1.22rem;letter-spacing:-.03em}
-  .sechead .cnt{font-size:.78rem;color:var(--text-mute);margin-left:auto}
-  .list{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:16px}
-  .list > li{border-radius:var(--r-lg);overflow:hidden;
-    background:var(--surface);border:1px solid transparent;
-    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
-    box-shadow:var(--sheen), 0 22px 48px -28px rgba(0,0,0,.95);
-    opacity:0;transform:translateY(14px);animation:rise .5s var(--ease) forwards}
-  .list > li:nth-child(1){animation-delay:.02s} .list > li:nth-child(2){animation-delay:.07s}
-  .list > li:nth-child(3){animation-delay:.12s} .list > li:nth-child(4){animation-delay:.17s}
-  .list > li:nth-child(5){animation-delay:.22s} .list > li:nth-child(n+6){animation-delay:.26s}
+  /* ---------- Liste ---------- */
+  .sechead{display:flex;align-items:baseline;gap:10px;margin:52px 0 4px;
+    padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .sechead h2{margin:0;font-size:1.02rem;font-weight:600;letter-spacing:-.02em}
+  .sechead .cnt{font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
+    color:var(--text-mute);margin-left:auto;font-weight:600}
+  .list{list-style:none;margin:0;padding:0;display:block}
+  .list > li{border-bottom:1px solid var(--line);padding:20px 0;background:none;border-radius:0;
+    opacity:0;transform:translateY(10px);animation:rise .5s var(--ease) forwards}
+  .list > li:nth-child(1){animation-delay:.02s} .list > li:nth-child(2){animation-delay:.06s}
+  .list > li:nth-child(3){animation-delay:.10s} .list > li:nth-child(4){animation-delay:.14s}
+  .list > li:nth-child(n+5){animation-delay:.18s}
   @keyframes rise{to{opacity:1;transform:none}}
-  .lrow{display:flex;gap:0}
-  .lthumb{width:118px;flex:0 0 auto;position:relative;min-height:136px}
-  .lthumb img{width:100%;height:100%;object-fit:cover;display:block}
-  .lmain{padding:16px 18px;flex:1;min-width:0}
-  .lmain h3{margin-bottom:6px;font-size:1.12rem;letter-spacing:-.028em}
-  .lact{display:flex;gap:8px;padding:0 16px 14px;flex-wrap:wrap}
-  .list .why{margin:0 16px 14px}
+  .lrow{display:flex;gap:16px;align-items:flex-start}
+  .lthumb{width:96px;height:96px;flex:0 0 auto;position:relative;overflow:hidden;
+    border-radius:var(--r-md);background:var(--surface-2)}
+  .lthumb img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92)}
+  .lmain{padding:0;flex:1;min-width:0}
+  .lmain h3{margin-bottom:5px;font-size:1.08rem;font-weight:600;letter-spacing:-.028em}
+  .lact{display:flex;gap:9px;padding:14px 0 0;flex-wrap:wrap}
+  .list .why{margin:14px 0 0;padding-top:12px}
 
-  .empty{border-radius:var(--r-lg);padding:36px 22px;text-align:center;color:var(--text-dim);
-    background:linear-gradient(157deg,var(--glass-2),var(--glass));
-    border:1px dashed var(--glass-line);box-shadow:var(--sheen)}
+  .empty{border:1px solid var(--line);border-radius:var(--r-lg);padding:44px 24px;
+    text-align:center;color:var(--text-dim);background:var(--surface)}
 
   /* ---------- Navigation ---------- */
-  nav.tabs{position:sticky;bottom:0;z-index:30;
-    background:linear-gradient(0deg,color-mix(in srgb,var(--bg) 88%,transparent),
-      color-mix(in srgb,var(--bg) 60%,transparent));
-    backdrop-filter:blur(22px) saturate(180%);
-    -webkit-backdrop-filter:blur(22px) saturate(180%);
-    border-top:1px solid var(--line-soft);padding-bottom:env(safe-area-inset-bottom)}
-  nav.tabs .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:8px 10px}
-  nav.tabs button{background:none;border:1px solid transparent;padding:9px 4px 8px;
-    min-height:54px;cursor:pointer;font-size:.7rem;font-weight:750;color:var(--text-mute);
-    border-radius:17px;display:flex;flex-direction:column;align-items:center;gap:5px;
-    transition:color .2s,background .2s,border-color .2s}
-  nav.tabs button svg{width:22px;height:22px;stroke-width:1.9}
-  nav.tabs button[aria-current=page]{color:var(--text);
-    background:linear-gradient(157deg,var(--glass-2),var(--glass));
-    border-color:var(--glass-line);box-shadow:var(--sheen)}
-  nav.tabs button[aria-current=page] svg{stroke:url(#navgrad)}
+  nav.tabs{position:sticky;bottom:0;z-index:30;background:var(--bg);
+    border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+  nav.tabs .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0 12px}
+  nav.tabs button{background:none;border:0;border-top:2px solid transparent;margin-top:-1px;
+    padding:16px 4px 15px;min-height:54px;cursor:pointer;
+    font-size:var(--micro);text-transform:uppercase;letter-spacing:.13em;font-weight:600;
+    color:var(--text-mute);display:flex;flex-direction:column;align-items:center;gap:0;
+    transition:color .2s,border-color .2s}
+  nav.tabs button svg{display:none}
+  nav.tabs button[aria-current=page]{color:var(--text);border-top-color:var(--text)}
 
   /* ---------- Rechtstexte ---------- */
-  .legal{font-size:.93rem}
-  .legal h1{margin-top:.4em}
-  .legal h2{margin-top:1.7em}
-  .legal h3{margin-top:1.2em;color:var(--text-dim);font-size:.95rem}
-  .legal table{width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0;
-    font-size:.83rem;margin:0 0 1.2em;border:1px solid var(--glass-line);
-    border-radius:var(--r-md);overflow:hidden;background:var(--glass)}
-  .legal th,.legal td{padding:11px 12px;text-align:left;vertical-align:top;hyphens:auto;
-    border-bottom:1px solid var(--line-soft)}
-  .legal th{background:var(--glass-2);font-weight:800}
-  .legal tr:last-child td{border-bottom:0}
-  .legal ul{padding-left:19px}
-  .legal li{margin-bottom:5px}
-  .note,.todo{border-radius:var(--r-md);padding:15px 17px;margin:0 0 1.2em;font-size:.88rem;
-    border:1px solid;box-shadow:var(--sheen);backdrop-filter:var(--blur)}
-  .note{background:linear-gradient(157deg,color-mix(in srgb,var(--brand-1) 20%,transparent),
-      color-mix(in srgb,var(--brand-1) 7%,transparent));
-    border-color:color-mix(in srgb,var(--brand-1) 34%,transparent)}
-  .todo{background:linear-gradient(157deg,color-mix(in srgb,var(--warn) 20%,transparent),
-      color-mix(in srgb,var(--warn) 7%,transparent));
-    border-color:color-mix(in srgb,var(--warn) 38%,transparent)}
-  .wbar{height:10px;border-radius:99px;background:var(--glass-3);overflow:hidden;min-width:56px;
-    box-shadow:inset 0 1px 3px rgba(0,0,0,.4)}
-  .wbar i{display:block;height:100%;border-radius:99px;
-    background:linear-gradient(90deg,var(--brand-1),var(--brand-2));
-    box-shadow:0 0 14px color-mix(in srgb,var(--brand-2) 60%,transparent)}
-  footer.attrib{border-top:1px solid var(--line-soft);margin-top:26px;padding:17px 0 28px;
-    font-size:.76rem;color:var(--text-mute)}
+  .legal{font-size:.94rem}
+  .legal h1{margin-top:.5em;font-size:1.9rem}
+  .legal h2{margin-top:2em;font-size:1.16rem;padding-top:1em;border-top:1px solid var(--line)}
+  .legal h3{margin-top:1.4em;color:var(--text);font-size:.98rem}
+  .legal table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:.83rem;margin:0 0 1.4em}
+  .legal th,.legal td{padding:12px 10px 12px 0;text-align:left;vertical-align:top;hyphens:auto;
+    border-bottom:1px solid var(--line)}
+  .legal th{font-size:var(--micro);text-transform:uppercase;letter-spacing:.14em;
+    color:var(--text-mute);font-weight:600}
+  .legal ul{padding-left:18px}
+  .legal li{margin-bottom:6px}
+  .note,.todo{border-left:2px solid var(--line-2);padding:4px 0 4px 18px;margin:0 0 1.4em;
+    font-size:.9rem;color:var(--text-dim);background:none;border-radius:0}
+  .todo{border-left-color:var(--warn)}
+  .wbar{height:2px;background:var(--line-2);overflow:hidden;min-width:56px}
+  .wbar i{display:block;height:100%;background:var(--text)}
+  footer.attrib{border-top:1px solid var(--line);margin-top:34px;padding:22px 0 34px;
+    font-size:.78rem;color:var(--text-mute)}
 
-  .toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(10px);
-    z-index:60;max-width:min(92vw,520px);text-align:center;color:var(--text);
-    padding:12px 20px;border-radius:99px;font-size:.85rem;font-weight:700;
-    background:linear-gradient(157deg,var(--glass-3),var(--glass-2));
-    border:1px solid var(--glass-line);
-    backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
-    box-shadow:var(--sheen), var(--shadow);
+  .toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(8px);
+    z-index:60;max-width:min(92vw,520px);text-align:center;
+    color:var(--accent-ink);background:var(--accent);
+    padding:12px 20px;border-radius:99px;font-size:.84rem;font-weight:600;
     opacity:0;pointer-events:none;
-    transition:opacity .24s var(--ease),transform .24s var(--ease)}
+    transition:opacity .22s var(--ease),transform .22s var(--ease)}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
   .hidden{display:none !important}
-  @media (prefers-reduced-motion:reduce){
-    *{animation:none !important;transition:none !important}
-  }
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 </style>
 </head>
 <body>
@@ -512,254 +382,23 @@ function prng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0;
   let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t;
   return ((t^t>>>14)>>>0)/4294967296; }; }
 
-/* ---------- Bildmotive: pro Kategorie eine eigene Szene, im Gerät gezeichnet ---------- */
-const NIGHT = { bar:1, theater:1, schnell:0 };
-const NATURE = { park:1, erleben:1, sehenswuerdigkeit:1 };
+/* ---------- Neutrale Fläche, falls kein Foto vorliegt ---------- */
+function hashOf(x){ let h=2166136261; for(let i=0;i<x.length;i++){ h^=x.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
 
-function cover(name, cat, w, h){
-  const p = PAL[cat] || PAL.alltag;
-  const rnd = prng(hashOf(name + "|" + cat));
-  const R = (a,b)=> a + rnd()*(b-a);
-  const N = n => (Math.round(n*10)/10);
-  const u = "s" + (hashOf(name+cat) % 99999);
-  const night = !!NIGHT[cat];
-  const gy = h*0.80;
-  const warm = "#ffd9a0";
-  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">`;
-
-  /* Verläufe und Weichzeichner */
-  s += `<defs>
-    <linearGradient id="${u}sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="${p[0]}"/><stop offset="1" stop-color="${p[1]}"/></linearGradient>
-    <radialGradient id="${u}glow"><stop offset="0" stop-color="#fff" stop-opacity=".9"/>
-      <stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-    <radialGradient id="${u}warm"><stop offset="0" stop-color="${warm}" stop-opacity=".85"/>
-      <stop offset="1" stop-color="${warm}" stop-opacity="0"/></radialGradient>
-    <linearGradient id="${u}gnd" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="${p[4]}"/><stop offset="1" stop-color="${p[3]}"/></linearGradient>
-    <filter id="${u}b" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="${N(h*0.02)}"/></filter>
-  </defs>`;
-
-  /* Himmel */
-  s += `<rect width="${w}" height="${h}" fill="url(#${u}sky)"/>`;
-
-  /* Sterne oder Wolken */
-  if(night){
-    for(let i=0;i<16;i++)
-      s += `<circle cx="${N(R(0,w))}" cy="${N(R(0,gy*0.62))}" r="${N(R(0.8,2.1))}" fill="#fff" opacity="${N(R(.35,.95))}"/>`;
-  } else {
-    for(let i=0;i<3;i++){
-      const cx=R(0,w), cy=R(h*.10,h*.40), cw=R(w*.16,w*.34);
-      s += `<g opacity="${N(R(.10,.20))}" fill="#fff">
-        <ellipse cx="${N(cx)}" cy="${N(cy)}" rx="${N(cw)}" ry="${N(cw*.24)}"/>
-        <ellipse cx="${N(cx-cw*.3)}" cy="${N(cy-cw*.12)}" rx="${N(cw*.42)}" ry="${N(cw*.26)}"/>
-        <ellipse cx="${N(cx+cw*.28)}" cy="${N(cy-cw*.08)}" rx="${N(cw*.34)}" ry="${N(cw*.22)}"/></g>`;
-    }
-  }
-
-  /* Sonne oder Mond */
-  const sx=R(w*.16,w*.84), sy=R(h*.12,h*.30), sr=h*(night?.055:.075);
-  s += `<circle cx="${N(sx)}" cy="${N(sy)}" r="${N(sr*3.4)}" fill="url(#${u}glow)" opacity=".34"/>`;
-  if(night){
-    s += `<path d="M${N(sx)} ${N(sy-sr)} a${N(sr)} ${N(sr)} 0 1 0 ${N(sr*.72)} ${N(sr*1.85)} a${N(sr*.86)} ${N(sr*.86)} 0 1 1 ${N(-sr*.72)} ${N(-sr*1.85)} Z" fill="#fff" opacity=".92"/>`;
-  } else {
-    s += `<circle cx="${N(sx)}" cy="${N(sy)}" r="${N(sr)}" fill="#fff" opacity=".9"/>`;
-  }
-
-  /* Hintergrundebenen */
-  if(NATURE[cat]){
-    for(let L=0;L<2;L++){
-      const base = gy - h*(0.16 - L*0.09), amp = h*(0.13 - L*0.045);
-      let d = `M0 ${N(gy)} L0 ${N(base)}`;
-      const st = 4 + Math.floor(rnd()*3);
-      for(let i=1;i<=st;i++){
-        const x=(w/st)*i, y=base - Math.sin(i*1.6+L*2)*amp*R(.5,1.1);
-        d += ` Q ${N(x-w/st/2)} ${N(y-amp*.7)} ${N(x)} ${N(y)}`;
-      }
-      s += d ? `<path d="${d} L${w} ${N(gy)} Z" fill="${p[2+L]}" opacity="${L?.95:.8}"/>` : "";
-    }
-  } else {
-    for(let L=0;L<2;L++){
-      const base = gy - h*(0.10 - L*0.06);
-      let x=0;
-      while(x<w){
-        const bw=R(w*.05,w*.11), bh=R(h*.10, h*(.34-L*.10)), y=base-bh;
-        s += `<rect x="${N(x)}" y="${N(y)}" width="${N(bw)}" height="${N(gy-y)}" fill="${p[2+L]}" opacity="${L?.95:.75}"/>`;
-        if(L===1 && rnd()>.4){
-          for(let wy=y+9; wy<base-12; wy+=15)
-            for(let wx=x+6; wx<x+bw-8; wx+=13)
-              if(rnd()>.55) s += `<rect x="${N(wx)}" y="${N(wy)}" width="4.5" height="6.5" fill="${warm}" opacity="${N(R(.25,.85))}"/>`;
-        }
-        x += bw + w*.005;
-      }
-    }
-  }
-
-  /* Boden */
-  s += `<rect x="0" y="${N(gy)}" width="${w}" height="${N(h-gy)}" fill="url(#${u}gnd)"/>`;
-
-  /* ---------- Kategoriemotiv ---------- */
-  const cx = w*R(.42,.58), sc = h/400;
-  const M = p[4], A = p[3], HL = "#ffffff";
-
-  if(cat==="restaurant"){
-    const tw=w*.34, th=h*.05;
-    for(let i=0;i<3;i++){
-      const lx=cx-tw*.42+i*tw*.42, ly=gy-h*.30;
-      s += `<line x1="${N(lx)}" y1="0" x2="${N(lx)}" y2="${N(ly)}" stroke="${M}" stroke-width="2" opacity=".85"/>
-        <path d="M${N(lx-14*sc)} ${N(ly+13*sc)} L${N(lx-6*sc)} ${N(ly)} L${N(lx+6*sc)} ${N(ly)} L${N(lx+14*sc)} ${N(ly+13*sc)} Z" fill="${M}"/>
-        <ellipse cx="${N(lx)}" cy="${N(ly+22*sc)} " rx="${N(26*sc)}" ry="${N(20*sc)}" fill="url(#${u}warm)" opacity=".75"/>
-        <circle cx="${N(lx)}" cy="${N(ly+15*sc)}" r="${N(4*sc)}" fill="${warm}"/>`;
-    }
-    s += `<rect x="${N(cx-tw/2)}" y="${N(gy-th)}" width="${N(tw)}" height="${N(th)}" rx="${N(th*.35)}" fill="${M}"/>
-      <ellipse cx="${N(cx-tw*.22)}" cy="${N(gy-th-3*sc)}" rx="${N(15*sc)}" ry="${N(4.5*sc)}" fill="${HL}" opacity=".55"/>
-      <ellipse cx="${N(cx+tw*.22)}" cy="${N(gy-th-3*sc)}" rx="${N(15*sc)}" ry="${N(4.5*sc)}" fill="${HL}" opacity=".55"/>`;
-  }
-
-  else if(cat==="cafe"){
-    const cw=w*.20, ch=h*.15, top=gy-ch-h*.03;
-    s += `<ellipse cx="${N(cx)}" cy="${N(gy-h*.02)}" rx="${N(cw*.82)}" ry="${N(ch*.13)}" fill="${M}"/>
-      <path d="M${N(cx-cw/2)} ${N(top)} h${N(cw)} v${N(ch*.55)} a${N(cw/2)} ${N(ch*.45)} 0 0 1 ${N(-cw)} 0 Z" fill="${HL}" opacity=".92"/>
-      <path d="M${N(cx+cw/2)} ${N(top+ch*.16)} a${N(ch*.24)} ${N(ch*.24)} 0 0 1 0 ${N(ch*.46)}" fill="none" stroke="${HL}" stroke-width="${N(6*sc)}" opacity=".92"/>
-      <ellipse cx="${N(cx)}" cy="${N(top)}" rx="${N(cw/2)}" ry="${N(ch*.10)}" fill="${A}"/>`;
-    for(let i=0;i<3;i++){
-      const stx=cx-cw*.26+i*cw*.26;
-      s += `<path d="M${N(stx)} ${N(top-h*.03)} q${N(10*sc)} ${N(-14*sc)} 0 ${N(-28*sc)} q${N(-10*sc)} ${N(-14*sc)} 0 ${N(-26*sc)}" fill="none" stroke="${HL}" stroke-width="${N(3.4*sc)}" opacity=".5" stroke-linecap="round"/>`;
-    }
-  }
-
-  else if(cat==="bar"){
-    const bw=w*.42;
-    s += `<rect x="${N(cx-bw/2)}" y="${N(gy-h*.06)}" width="${N(bw)}" height="${N(h*.06)}" rx="${N(4*sc)}" fill="${M}"/>`;
-    for(let i=0;i<4;i++){
-      const bx=cx-bw*.36+i*bw*.24, bh=h*(.11+rnd()*.05);
-      s += `<rect x="${N(bx-5*sc)}" y="${N(gy-h*.06-bh)}" width="${N(10*sc)}" height="${N(bh*.72)}" rx="${N(3*sc)}" fill="${A}" opacity=".95"/>
-        <rect x="${N(bx-2.4*sc)}" y="${N(gy-h*.06-bh-8*sc)}" width="${N(4.8*sc)}" height="${N(10*sc)}" fill="${A}"/>`;
-    }
-    const nx=cx, ny=gy-h*.34, nw=w*.30, nh=h*.13;
-    s += `<g filter="url(#${u}b)" opacity=".85"><rect x="${N(nx-nw/2)}" y="${N(ny-nh/2)}" width="${N(nw)}" height="${N(nh)}" rx="${N(nh*.4)}" fill="none" stroke="${warm}" stroke-width="${N(9*sc)}"/></g>
-      <rect x="${N(nx-nw/2)}" y="${N(ny-nh/2)}" width="${N(nw)}" height="${N(nh)}" rx="${N(nh*.4)}" fill="none" stroke="#fff" stroke-width="${N(3*sc)}" opacity=".95"/>
-      <circle cx="${N(nx)}" cy="${N(ny)}" r="${N(nh*.22)}" fill="#fff" opacity=".9"/>`;
-  }
-
-  else if(cat==="schnell"){
-    const bw=w*.44, bh=h*.26;
-    s += `<rect x="${N(cx-bw/2)}" y="${N(gy-bh)}" width="${N(bw)}" height="${N(bh)}" fill="${M}"/>
-      <rect x="${N(cx-bw*.36)}" y="${N(gy-bh*.62)}" width="${N(bw*.72)}" height="${N(bh*.34)}" fill="${warm}" opacity=".8"/>`;
-    const aw=bw*1.06, ah=h*.055, ay=gy-bh;
-    s += `<path d="M${N(cx-aw/2)} ${N(ay)} h${N(aw)} l${N(-aw*.06)} ${N(ah)} h${N(-aw*.88)} Z" fill="${A}"/>`;
-    for(let i=0;i<7;i++){
-      if(i%2) continue;
-      const x0=cx-aw/2+i*(aw/7);
-      s += `<path d="M${N(x0)} ${N(ay)} h${N(aw/7)} l${N(-aw*.06/7*7/7-aw/7*0)} ${N(ah)} h${N(-aw/7)} Z" fill="#fff" opacity=".55"/>`;
-    }
-  }
-
-  else if(cat==="sehenswuerdigkeit"){
-    const bw=w*.30, bh=h*.34, x0=cx-bw/2, y0=gy-bh;
-    s += `<rect x="${N(x0)}" y="${N(y0)}" width="${N(bw)}" height="${N(bh)}" fill="${M}"/>`;
-    for(const side of [-1,1]){
-      const tx=cx+side*bw*.62, tw2=bw*.30, th2=bh*1.30;
-      s += `<rect x="${N(tx-tw2/2)}" y="${N(gy-th2)}" width="${N(tw2)}" height="${N(th2)}" fill="${M}"/>
-        <path d="M${N(tx-tw2/2-3*sc)} ${N(gy-th2)} L${N(tx)} ${N(gy-th2-h*.16)} L${N(tx+tw2/2+3*sc)} ${N(gy-th2)} Z" fill="${A}"/>
-        <rect x="${N(tx-tw2*.16)}" y="${N(gy-th2*.72)}" width="${N(tw2*.32)}" height="${N(th2*.22)}" rx="${N(tw2*.16)}" fill="${warm}" opacity=".75"/>`;
-    }
-    s += `<circle cx="${N(cx)}" cy="${N(y0+bh*.34)}" r="${N(bw*.15)}" fill="${warm}" opacity=".85"/>
-      <circle cx="${N(cx)}" cy="${N(y0+bh*.34)}" r="${N(bw*.15)}" fill="none" stroke="${A}" stroke-width="${N(3*sc)}"/>
-      <path d="M${N(cx-bw*.11)} ${N(gy)} v${N(-bh*.34)} a${N(bw*.11)} ${N(bw*.11)} 0 0 1 ${N(bw*.22)} 0 V${N(gy)} Z" fill="${A}"/>`;
-  }
-
-  else if(cat==="museum"){
-    const bw=w*.46, y0=gy-h*.05;
-    s += `<rect x="${N(cx-bw/2-8*sc)}" y="${N(y0)}" width="${N(bw+16*sc)}" height="${N(h*.05)}" fill="${A}"/>`;
-    const n=5, gap=bw/(n-1);
-    for(let i=0;i<n;i++){
-      const px2=cx-bw/2+i*gap;
-      s += `<rect x="${N(px2-6*sc)}" y="${N(y0-h*.20)}" width="${N(12*sc)}" height="${N(h*.20)}" fill="${M}"/>
-        <rect x="${N(px2-8.5*sc)}" y="${N(y0-h*.205)}" width="${N(17*sc)}" height="${N(5*sc)}" fill="${A}"/>`;
-    }
-    s += `<rect x="${N(cx-bw/2-10*sc)}" y="${N(y0-h*.235)}" width="${N(bw+20*sc)}" height="${N(h*.032)}" fill="${A}"/>
-      <path d="M${N(cx-bw/2-14*sc)} ${N(y0-h*.235)} L${N(cx)} ${N(y0-h*.335)} L${N(cx+bw/2+14*sc)} ${N(y0-h*.235)} Z" fill="${M}"/>
-      <circle cx="${N(cx)}" cy="${N(y0-h*.268)}" r="${N(7*sc)}" fill="${warm}" opacity=".8"/>`;
-  }
-
-  else if(cat==="theater"){
-    const aw=w*.52, ah=h*.42, x0=cx-aw/2, y0=gy-ah;
-    s += `<path d="M${N(x0)} ${N(gy)} V${N(y0+ah*.28)} Q${N(cx)} ${N(y0-ah*.14)} ${N(x0+aw)} ${N(y0+ah*.28)} V${N(gy)} Z" fill="${M}" opacity=".9"/>`;
-    s += `<path d="M${N(cx)} ${N(y0-h*.02)} L${N(cx-aw*.44)} ${N(gy)} L${N(cx+aw*.44)} ${N(gy)} Z" fill="${warm}" opacity=".22"/>`;
-    for(const side of [-1,1]){
-      const bx=cx+side*aw*.42;
-      s += `<path d="M${N(bx)} ${N(y0+ah*.12)} q${N(side*-aw*.16)} ${N(ah*.30)} ${N(side*-aw*.05)} ${N(ah*.88)} L${N(bx)} ${N(gy)} Z" fill="${A}"/>
-        <path d="M${N(bx)} ${N(y0+ah*.12)} q${N(side*-aw*.09)} ${N(ah*.32)} ${N(side*-aw*.02)} ${N(ah*.88)}" fill="none" stroke="${HL}" stroke-width="${N(2.4*sc)}" opacity=".28"/>`;
-    }
-    s += `<circle cx="${N(cx)}" cy="${N(y0-h*.03)}" r="${N(9*sc)}" fill="${warm}"/>
-      <circle cx="${N(cx)}" cy="${N(y0-h*.03)}" r="${N(26*sc)}" fill="url(#${u}warm)" opacity=".7"/>`;
-  }
-
-  else if(cat==="park"){
-    s += `<path d="M${N(w*.30)} ${N(h)} Q${N(cx)} ${N(gy+h*.06)} ${N(w*.62)} ${N(gy)} L${N(w*.74)} ${N(gy)} Q${N(cx+w*.06)} ${N(gy+h*.08)} ${N(w*.52)} ${N(h)} Z" fill="${A}" opacity=".55"/>`;
-    const trees=5;
-    for(let i=0;i<trees;i++){
-      const tx=w*(.10+i*.19)+R(-w*.03,w*.03), ty=gy+R(-h*.02,h*.02), ts=sc*R(.8,1.25);
-      s += `<rect x="${N(tx-3.5*ts)}" y="${N(ty-34*ts)}" width="${N(7*ts)}" height="${N(34*ts)}" rx="${N(2*ts)}" fill="${M}"/>
-        <circle cx="${N(tx)}" cy="${N(ty-46*ts)}" r="${N(20*ts)}" fill="${A}"/>
-        <circle cx="${N(tx-14*ts)}" cy="${N(ty-36*ts)}" r="${N(14*ts)}" fill="${A}" opacity=".9"/>
-        <circle cx="${N(tx+14*ts)}" cy="${N(ty-37*ts)}" r="${N(13*ts)}" fill="${A}" opacity=".9"/>
-        <circle cx="${N(tx-5*ts)}" cy="${N(ty-52*ts)}" r="${N(11*ts)}" fill="${HL}" opacity=".12"/>`;
-    }
-    for(let i=0;i<4;i++)
-      s += `<ellipse cx="${N(R(0,w))}" cy="${N(gy+R(0,h*.14))}" rx="${N(R(12,26)*sc)}" ry="${N(R(6,11)*sc)}" fill="${M}" opacity=".6"/>`;
-  }
-
-  else if(cat==="erleben"){
-    const cy2=gy-h*.30, rad=h*.24;
-    s += `<line x1="${N(cx-rad*.55)}" y1="${N(gy)}" x2="${N(cx)}" y2="${N(cy2)}" stroke="${M}" stroke-width="${N(5*sc)}"/>
-      <line x1="${N(cx+rad*.55)}" y1="${N(gy)}" x2="${N(cx)}" y2="${N(cy2)}" stroke="${M}" stroke-width="${N(5*sc)}"/>
-      <circle cx="${N(cx)}" cy="${N(cy2)}" r="${N(rad)}" fill="none" stroke="${M}" stroke-width="${N(4*sc)}"/>
-      <circle cx="${N(cx)}" cy="${N(cy2)}" r="${N(rad*.62)}" fill="none" stroke="${M}" stroke-width="${N(2*sc)}" opacity=".7"/>`;
-    for(let i=0;i<8;i++){
-      const a=i*Math.PI/4, ex=cx+Math.cos(a)*rad, ey=cy2+Math.sin(a)*rad;
-      s += `<line x1="${N(cx)}" y1="${N(cy2)}" x2="${N(ex)}" y2="${N(ey)}" stroke="${M}" stroke-width="${N(2*sc)}" opacity=".8"/>
-        <circle cx="${N(ex)}" cy="${N(ey)}" r="${N(6.5*sc)}" fill="${warm}" opacity=".9"/>`;
-    }
-    s += `<circle cx="${N(cx)}" cy="${N(cy2)}" r="${N(8*sc)}" fill="${A}"/>`;
-  }
-
-  else if(cat==="einkaufen"){
-    const uw=w*.20;
-    for(let i=0;i<3;i++){
-      const x0=cx-uw*1.55+i*uw*1.08, bh=h*(.20+rnd()*.05), y0=gy-bh;
-      s += `<rect x="${N(x0)}" y="${N(y0)}" width="${N(uw)}" height="${N(bh)}" fill="${M}"/>
-        <rect x="${N(x0+uw*.12)}" y="${N(y0+bh*.42)}" width="${N(uw*.44)}" height="${N(bh*.40)}" fill="${warm}" opacity=".75"/>
-        <rect x="${N(x0+uw*.66)}" y="${N(y0+bh*.36)}" width="${N(uw*.22)}" height="${N(bh*.64)}" rx="${N(uw*.05)}" fill="${A}"/>`;
-      const ay=y0+bh*.30, aw=uw*1.04;
-      s += `<path d="M${N(x0-uw*.02)} ${N(ay)} h${N(aw)} l${N(-aw*.08)} ${N(h*.035)} h${N(-aw*.84)} Z" fill="${A}"/>`;
-      for(let k=0;k<4;k+=2)
-        s += `<path d="M${N(x0-uw*.02+k*(aw/4))} ${N(ay)} h${N(aw/4)} l${N(-aw*.02)} ${N(h*.035)} h${N(-aw/4)} Z" fill="#fff" opacity=".45"/>`;
-    }
-  }
-
-  else { /* alltag */
-    s += `<path d="M${N(w*.34)} ${N(h)} L${N(w*.46)} ${N(gy)} L${N(w*.56)} ${N(gy)} L${N(w*.70)} ${N(h)} Z" fill="${M}" opacity=".85"/>`;
-    for(let i=0;i<4;i++){
-      const t=i/4, yy=gy+(h-gy)*t, xx=w*.51+(w*.01)*t;
-      s += `<rect x="${N(xx-2.2*sc-3*t*sc)}" y="${N(yy)}" width="${N(4.5*sc+6*t*sc)}" height="${N(9*sc+8*t*sc)}" fill="#fff" opacity=".55"/>`;
-    }
-    for(const side of [-1,1]){
-      const lx=cx+side*w*.28, lh=h*.30;
-      s += `<rect x="${N(lx-2.5*sc)}" y="${N(gy-lh)}" width="${N(5*sc)}" height="${N(lh)}" fill="${M}"/>
-        <path d="M${N(lx)} ${N(gy-lh)} q0 ${N(-14*sc)} ${N(side*-20*sc)} ${N(-14*sc)}" fill="none" stroke="${M}" stroke-width="${N(5*sc)}"/>
-        <circle cx="${N(lx+side*-20*sc)}" cy="${N(gy-lh-14*sc)}" r="${N(6*sc)}" fill="${warm}"/>
-        <circle cx="${N(lx+side*-20*sc)}" cy="${N(gy-lh-14*sc)}" r="${N(24*sc)}" fill="url(#${u}warm)" opacity=".65"/>`;
-    }
-  }
-
-  /* Randabdunklung */
-  s += `<rect width="${w}" height="${h}" fill="none"/></svg>`;
+function plate(name, cat, w, h){
+  const label = esc(String(CATMAP[cat] || "Ort").toUpperCase());
+  const id = "p" + (hashOf(name + cat) % 9999);
+  const fs = Math.round(h * 0.115);
+  const s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">`
+    + `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">`
+    + `<stop offset="0" stop-color="#1d1d1e"/><stop offset="1" stop-color="#0d0d0e"/></linearGradient></defs>`
+    + `<rect width="${w}" height="${h}" fill="url(#${id})"/>`
+    + `<text x="${w/2}" y="${h/2}" fill="#ffffff" fill-opacity="0.11"`
+    + ` font-family="system-ui,-apple-system,sans-serif" font-size="${fs}" font-weight="600"`
+    + ` letter-spacing="${Math.round(fs*0.16)}" text-anchor="middle" dominant-baseline="central">${label}</text>`
+    + `</svg>`;
   return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s.replace(/\s+/g," "));
 }
-
 
 /* ---------- Fotos: liegen neben der index.html im Repository ----------
    Lizenz: Pexels License, freie kommerzielle Nutzung.
@@ -789,7 +428,7 @@ function photoFor(name, cat){
 function imgSrc(f){ return encodeURIComponent(f); }
 function imgFallback(img){
   img.onerror = null;
-  img.src = cover(img.dataset.n, img.dataset.c, +img.dataset.w||600, +img.dataset.h||400);
+  img.src = plate(img.dataset.n, img.dataset.c, +img.dataset.w||600, +img.dataset.h||400);
   const badge = img.parentElement && img.parentElement.querySelector(".fict");
   if(badge) badge.textContent = "Illustration";
 }
@@ -798,7 +437,7 @@ function media(p, w, h, cls){
   const alt = ph
     ? (ph.exact ? `Foto von ${p.n}` : `Symbolbild für die Kategorie ${CATMAP[p.c]||"Ort"} – zeigt nicht den Ort selbst`)
     : `Stilisierte Illustration in den Farben der Kategorie ${CATMAP[p.c]||"Ort"} – kein Foto des Ortes`;
-  const src = ph ? imgSrc(ph.src) : cover(p.n, p.c, w, h);
+  const src = ph ? imgSrc(ph.src) : plate(p.n, p.c, w, h);
   return `<img src="${src}" alt="${esc(alt)}" loading="lazy"
     data-n="${esc(p.n)}" data-c="${esc(p.c)}" data-w="${w}" data-h="${h}"
     onerror="imgFallback(this)"${cls?` class="${cls}"`:""}>`;
@@ -1025,7 +664,7 @@ function viewStart(){
     <div class="modes">${Object.entries(MODES).map(([k,m])=>`
       <button class="mode" data-mode="${k}">
         <span class="mi">
-          <span class="orb" style="background:linear-gradient(135deg,${m.g[0]},${m.g[1]})"></span>
+          <span class="orb"></span>
           <span><span class="mt">${esc(m.l)}</span><span class="ms">${esc(m.s)}</span></span>
           <span class="arw" aria-hidden="true">→</span>
         </span>
@@ -1035,7 +674,7 @@ function viewStart(){
     <strong>Prototyp.</strong> Diese Fassung dient dem Test des Bedienkonzepts.
     Sie verarbeitet keine Daten auf einem Server und enthält keine Werbung,
     keine Zahlungsfunktion und keine Nutzerkonten.
-    Alle Bildmotive sind im Gerät erzeugte Illustrationen, keine Fotos der Orte.
+    Die Bilder sind Symbolbilder aus einer freien Bilddatenbank und zeigen nicht den jeweiligen Ort.
   </div>`;
   main().querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>{
     S.mode=b.dataset.mode; S.activeCats=[...MODES[S.mode].cats];
@@ -1192,11 +831,13 @@ function viewHow(){
     <li><strong>Künstliche Intelligenz.</strong> Die Empfehlungen entstehen aus der oben beschriebenen Rechenregel. Es ist kein KI-Modell beteiligt und es werden keine Texte generiert.</li>
   </ul>
   <h2>Bildmotive</h2>
-  <p>Radiux zeigt keine Fotos der Orte. Jedes Motiv ist eine im Gerät erzeugte Illustration,
-  deren Farben und Formen sich aus Kategorie und Name des Ortes ergeben. Das ist Absicht:
-  Fotos aus kommerziellen Schnittstellen dürfen meist nicht gespeichert werden und werfen
-  Lizenz- und Urheberfragen auf. Die Illustrationen sind daher als solche gekennzeichnet
-  und stellen den Ort nicht dar.</p>
+  <p>Die Bilder stammen aus einer freien Bilddatenbank und stehen unter einer Lizenz,
+  die die kostenlose kommerzielle Nutzung erlaubt. Sie zeigen <strong>nicht</strong> den
+  jeweiligen Ort, sondern stehen stellvertretend für die Kategorie. Deshalb trägt jedes
+  Bild die Kennzeichnung „Symbolbild“.</p>
+  <p>Liegt für einen Ort ein Bild des Ortes selbst vor, steht dort „Foto“. Fehlt ein Bild,
+  erscheint eine neutrale Fläche mit dem Kategorienamen — es wird nie ein Bild gezeigt,
+  das einen falschen Eindruck vom Ort erwecken könnte.</p>
   <h2>Dein Profil</h2>
   <p>Aktuell gespeicherte Vorlieben: ${Object.keys(S.profile).length
     ? Object.entries(S.profile).map(([k,v])=>`${esc(CATMAP[k]||k)} (${v>0?"+":""}${v})`).join(", ")
@@ -1261,8 +902,8 @@ function viewLegal(){
           <td>Nach den Bestimmungen der OpenStreetMap Foundation</td></tr>
       <tr><td>Bildmotive</td>
           <td>Darstellung der Entdeckungskarten</td>
-          <td>Keine Verarbeitung personenbezogener Daten. Die Motive werden im Gerät
-              berechnet; es werden keine Bilder von außen geladen.</td>
+          <td>Keine Verarbeitung personenbezogener Daten. Die Bilder liegen auf demselben
+              Server wie die Anwendung; es werden keine Inhalte von Dritten nachgeladen.</td>
           <td>—</td></tr>
     </tbody>
   </table>
@@ -1293,7 +934,7 @@ function viewLegal(){
     <li>Bedienung vollständig per Tastatur, mit sichtbarem Fokus (WCAG 2.4.7).</li>
     <li>Der Umkreis lässt sich mit den Pfeiltasten verstellen, ohne Ziehen.</li>
     <li>Text steht nie auf Bildmotiven, sondern immer auf einfarbigem Grund (WCAG 1.4.3).</li>
-    <li>Alle Bildmotive haben Textalternativen und sind als Illustration gekennzeichnet (WCAG 1.1.1).</li>
+    <li>Alle Bilder haben Textalternativen und sind als Symbolbild gekennzeichnet (WCAG 1.1.1).</li>
     <li>Schrift bis 200 Prozent skalierbar, ohne dass Inhalte verloren gehen (WCAG 1.4.4).</li>
     <li>Änderungen werden über eine Live-Region an Screenreader gemeldet.</li>
     <li>Keine reine Farbcodierung: Der Öffnungsstatus steht immer auch als Text.</li>
@@ -1314,8 +955,9 @@ function viewLegal(){
   <p>Die Ortsdaten stammen von OpenStreetMap und stehen unter der Open Database License (ODbL).
      Die Angaben werden von Freiwilligen gepflegt; Vollständigkeit und Aktualität sind nicht
      gewährleistet. Öffnungszeiten und Beschreibungen können veraltet sein.</p>
-  <p>Die Bildmotive sind eigene, im Gerät erzeugte Illustrationen. Es werden keine fremden
-     Fotos verwendet und keine Bilddaten von Dritten geladen.</p>
+  <p>Die Fotos stammen aus einer freien Bilddatenbank und werden unter deren Lizenz
+     verwendet, die die kostenlose kommerzielle Nutzung ohne Namensnennung erlaubt.
+     Sie sind als Symbolbilder gekennzeichnet, weil sie nicht den jeweiligen Ort zeigen.</p>
   <p>Diese Anwendung erhebt keine Nutzungsentgelte und verfolgt in dieser Fassung keine
      kommerziellen Zwecke.</p>
 
@@ -1331,7 +973,7 @@ function viewLegal(){
   </div>
   <footer class="attrib">
     Ortsdaten © OpenStreetMap-Mitwirkende, Open Database License.
-    Bildmotive im Gerät erzeugt. Radiux-Prototyp, Stand August 2026.
+    Symbolbilder aus freier Bilddatenbank. Radiux-Prototyp, Stand August 2026.
     Keine Rechtsberatung – die Rechtstexte sind Entwürfe und vor einer Veröffentlichung
     anwaltlich zu prüfen.
   </footer>`;
