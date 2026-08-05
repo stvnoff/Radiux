@@ -1,0 +1,52 @@
+[
+  {
+    "t": "SC Magdeburg – GWD Minden",
+    "v": "GETEC Arena",
+    "lat": 52.1283,
+    "lon": 11.6645,
+    "start": "2026-08-11T19:00",
+    "u": "https://www.regioactive.de/location/magdeburg/getec-arena-5rjXLcjkkG",
+    "src": "regioactive.de",
+    "k": "sport"
+  },
+  {
+    "t": "The Cage MMA 9",
+    "v": "GETEC Arena",
+    "lat": 52.1283,
+    "lon": 11.6645,
+    "start": "2026-08-22T18:00",
+    "u": "https://www.regioactive.de/location/magdeburg/getec-arena-5rjXLcjkkG",
+    "src": "regioactive.de",
+    "k": "sport"
+  },
+  {
+    "t": "AnnenMayKantereit – Live 2026",
+    "v": "GETEC Arena",
+    "lat": 52.1283,
+    "lon": 11.6645,
+    "start": "2026-09-05T20:00",
+    "u": "https://www.magdeburg.de/index.php?FID=557.621.1",
+    "src": "magdeburg.de",
+    "k": "konzert"
+  },
+  {
+    "t": "Olaf der Flipper – 80 Jahre Geburtstagstour",
+    "v": "GETEC Arena",
+    "lat": 52.1283,
+    "lon": 11.6645,
+    "start": "2026-09-11T19:30",
+    "u": "https://www.magdeburg.de/index.php?FID=557.621.1",
+    "src": "magdeburg.de",
+    "k": "konzert"
+  },
+  {
+    "t": "Simone Sommerland 2026",
+    "v": "GETEC Arena",
+    "lat": 52.1283,
+    "lon": 11.6645,
+    "start": "2026-09-12T16:00",
+    "u": "https://www.magdeburg.de/index.php?FID=557.621.1",
+    "src": "magdeburg.de",
+    "k": "familie"
+  }
+]

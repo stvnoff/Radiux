@@ -169,6 +169,9 @@
   .pill.dist{color:var(--text);font-weight:600}
   .pill.open{color:var(--pos)}
   .pill.closed{color:var(--neg)}
+  .pill.soon{color:var(--text);font-weight:600}
+  .edate{font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
+    font-weight:600;color:#fff;opacity:.92;margin-bottom:9px}
   .why{margin-top:auto;padding:14px 0 0;border-top:1px solid var(--line)}
   .why h3{font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
     color:var(--text-mute);margin-bottom:8px;font-weight:600}
@@ -211,7 +214,8 @@
   .lthumb img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92)}
   .lmain{padding:0;flex:1;min-width:0}
   .lmain h3{margin-bottom:5px;font-size:1.08rem;font-weight:600;letter-spacing:-.028em}
-  .lact{display:flex;gap:9px;padding:14px 0 0;flex-wrap:wrap}
+  .lact{display:flex;gap:9px;padding:14px 0 0;flex-wrap:wrap;align-items:center}
+  .lact a.btn{text-decoration:none;display:inline-flex;align-items:center}
   .list .why{margin:14px 0 0;padding-top:12px}
 
   .empty{border:1px solid var(--glass-line);border-radius:var(--r-lg);padding:44px 24px;
@@ -375,7 +379,8 @@ const CATS = [
   { k:"park",             l:"Park & Natur",      m:["park","garden"] },
   { k:"erleben",          l:"Freizeit & Sport",  m:["fitness_centre","sports_centre","swimming_pool","zoo","theme_park"] },
   { k:"einkaufen",        l:"Einkaufen",         m:["supermarket","mall","books"] },
-  { k:"alltag",           l:"Alltag",            m:["fuel","library"] }
+  { k:"alltag",           l:"Alltag",            m:["fuel","library"] },
+  { k:"event",            l:"Veranstaltung",     m:[] }
 ];
 const CATMAP = Object.fromEntries(CATS.map(c => [c.k, c.l]));
 
@@ -405,8 +410,9 @@ const BLOCKED_AMENITY = ["doctors","pharmacy","hospital","clinic","dentist","vet
   "nursing_home","social_facility","childcare","place_of_worship","funeral_hall","crematorium"];
 
 const MODES = {
+  event:     { l:"Was ist los?",    s:"Veranstaltungen in den nächsten Wochen", cats:["event"] },
   essen:     { l:"Etwas essen",     s:"Restaurants, Cafés und Bars in der Nähe", cats:["restaurant","cafe","bar","schnell"], g:["#ff9a3d","#ff4d6d"] },
-  erleben:   { l:"Etwas erleben",   s:"Kultur, Sehenswürdigkeiten und Parks",    cats:["sehenswuerdigkeit","museum","theater","park","erleben"], g:["#5eead4","#3b82f6"] },
+  erleben:   { l:"Etwas erleben",   s:"Kultur, Sehenswürdigkeiten und Parks",    cats:["event","sehenswuerdigkeit","museum","theater","park","erleben"], g:["#5eead4","#3b82f6"] },
   stoebern:  { l:"Einfach stöbern", s:"Alles, was in deinem Umkreis liegt",      cats:CATS.map(c=>c.k), g:["#c084fc","#ec4899"] },
   ueberrasch:{ l:"Überrasch mich",  s:"Zufällige Auswahl aus den besten Treffern",cats:CATS.map(c=>c.k), g:["#fbbf24","#7c5cff"] }
 };
@@ -416,6 +422,101 @@ function hashOf(s){ let h=2166136261; for(let i=0;i<s.length;i++){ h^=s.charCode
 function prng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0;
   let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t;
   return ((t^t>>>14)>>>0)/4294967296; }; }
+
+
+/* ---------------- Veranstaltungen ----------------
+   Werden aus events.json neben der index.html geladen.
+   Fällt der Abruf aus, gilt der eingebaute Grundbestand. */
+const EVENTS_FALLBACK = [
+  {
+    "t": "SC Magdeburg – GWD Minden",
+    "v": "GETEC Arena",
+    "lat": 52.1283,
+    "lon": 11.6645,
+    "start": "2026-08-11T19:00",
+    "u": "https://www.regioactive.de/location/magdeburg/getec-arena-5rjXLcjkkG",
+    "src": "regioactive.de",
+    "k": "sport"
+  },
+  {
+    "t": "The Cage MMA 9",
+    "v": "GETEC Arena",
+    "lat": 52.1283,
+    "lon": 11.6645,
+    "start": "2026-08-22T18:00",
+    "u": "https://www.regioactive.de/location/magdeburg/getec-arena-5rjXLcjkkG",
+    "src": "regioactive.de",
+    "k": "sport"
+  },
+  {
+    "t": "AnnenMayKantereit – Live 2026",
+    "v": "GETEC Arena",
+    "lat": 52.1283,
+    "lon": 11.6645,
+    "start": "2026-09-05T20:00",
+    "u": "https://www.magdeburg.de/index.php?FID=557.621.1",
+    "src": "magdeburg.de",
+    "k": "konzert"
+  },
+  {
+    "t": "Olaf der Flipper – 80 Jahre Geburtstagstour",
+    "v": "GETEC Arena",
+    "lat": 52.1283,
+    "lon": 11.6645,
+    "start": "2026-09-11T19:30",
+    "u": "https://www.magdeburg.de/index.php?FID=557.621.1",
+    "src": "magdeburg.de",
+    "k": "konzert"
+  },
+  {
+    "t": "Simone Sommerland 2026",
+    "v": "GETEC Arena",
+    "lat": 52.1283,
+    "lon": 11.6645,
+    "start": "2026-09-12T16:00",
+    "u": "https://www.magdeburg.de/index.php?FID=557.621.1",
+    "src": "magdeburg.de",
+    "k": "familie"
+  }
+];
+let EVENTS = EVENTS_FALLBACK;
+
+async function loadEvents(){
+  try{
+    const r = await fetch("events.json", { cache:"no-store" });
+    if(r.ok){ const j = await r.json(); if(Array.isArray(j)) EVENTS = j; }
+  }catch(e){ /* Grundbestand bleibt */ }
+  render();
+}
+
+const DAYS = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+const MONTHS = ["Januar","Februar","März","April","Mai","Juni","Juli",
+                "August","September","Oktober","November","Dezember"];
+
+function evDate(iso){ const d = new Date(iso); return isNaN(d) ? null : d; }
+function evLabel(iso){
+  const d = evDate(iso); if(!d) return "Termin unbekannt";
+  const now = new Date();
+  const t = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const e = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const days = Math.round((e - t) / 86400000);
+  const uhr = d.getHours().toString().padStart(2,"0") + ":" + d.getMinutes().toString().padStart(2,"0");
+  if(days === 0) return "Heute, " + uhr + " Uhr";
+  if(days === 1) return "Morgen, " + uhr + " Uhr";
+  if(days > 1 && days < 7) return DAYS[d.getDay()] + ", " + uhr + " Uhr";
+  return DAYS[d.getDay()] + ", " + d.getDate() + ". " + MONTHS[d.getMonth()] + ", " + uhr + " Uhr";
+}
+function evDaysUntil(iso){
+  const d = evDate(iso); if(!d) return 999;
+  return Math.max(0, (d.getTime() - Date.now()) / 86400000);
+}
+function eventsAsPlaces(){
+  const now = Date.now();
+  return EVENTS
+    .filter(e => { const d = evDate(e.start); return d && d.getTime() > now - 3*3600*1000; })
+    .map(e => ({ n:e.t, c:"event", lat:+e.lat, lon:+e.lon, oh:"",
+                 t:e.v || "", start:e.start, url:e.u || "", src:e.src || "", adr:"" }));
+}
 
 /* ---------- Neutrale Fläche, falls kein Foto vorliegt ---------- */
 function hashOf(x){ let h=2166136261; for(let i=0;i<x.length;i++){ h^=x.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
@@ -449,7 +550,8 @@ const PHOTOS = {
   park:             ["Park.jpg","Park2.jpg","Park3.jpg"],
   erleben:          ["Elbeufer.jpg","Park3.jpg"],
   einkaufen:        ["Einkaufen.jpg","Einkaufen 2.jpg","einkaufen 3.jpg"],
-  alltag:           ["Alltag.jpg","Straßenbahn.jpg","Brücke.jpg"]
+  alltag:           ["Alltag.jpg","Straßenbahn.jpg","Brücke.jpg"],
+  event:            ["Bühne und Kino.jpg","Bühne und Kino 2.jpg"]
 };
 /* Orte, für die ein echtes Bild des Ortes vorliegt */
 const EXACT = [{ re:/\bdom\b/i, cat:"sehenswuerdigkeit", file:"Dom.jpg" }];
@@ -550,6 +652,14 @@ const W = { dist:0.40, interest:0.30, open:0.20, info:0.10 };
 
 function score(p){
   const sd = Math.max(0, 1 - p._d / Math.max(S.radius,1));
+  if(p.start){
+    const days = evDaysUntil(p.start);
+    const st = Math.max(0, 1 - days/28);
+    const prof0 = S.profile.event || 0;
+    const maxP0 = Math.max(1, ...Object.values(S.profile).map(Math.abs));
+    const si0 = Math.max(0, Math.min(1, (prof0/maxP0 + 1)/2));
+    return 0.45*st + 0.30*sd + 0.15*si0 + 0.10*(p.t?1:0);
+  }
   const prof = S.profile[p.c] || 0;
   const maxProf = Math.max(1, ...Object.values(S.profile).map(Math.abs));
   const si = Math.max(0, Math.min(1, (prof/maxProf + 1)/2));
@@ -559,6 +669,14 @@ function score(p){
 }
 
 function reasons(p){
+  if(p.start){
+    const days = Math.round(evDaysUntil(p.start));
+    const o = [evLabel(p.start)];
+    o.push(days <= 0 ? "Findet heute statt" : days === 1 ? "Findet morgen statt" : `In ${days} Tagen`);
+    o.push(`${p.t ? p.t + " · " : ""}${fmtDist(p._d)} entfernt`);
+    if(p.src) o.push(`Angabe laut ${p.src} – bitte beim Veranstalter prüfen`);
+    return o;
+  }
   const out=[`${fmtDist(p._d)} entfernt – etwa ${walkTxt(p._d)} zu Fuß`];
   if(p._o.s==="open") out.push("Hat aktuell geöffnet");
   else if(p._o.s==="closed") out.push("Hat gerade geschlossen – deshalb weiter unten");
@@ -583,8 +701,9 @@ function allowed(tags){
   return true;
 }
 function prepare(){
-  const raw=S.places.map(p=>({...p}));
-  raw.forEach(p=>{ p._d=dist(S.origin,p); p._o=openState(p.oh); });
+  const raw=S.places.concat(eventsAsPlaces()).map(p=>({...p}));
+  raw.forEach(p=>{ p._d=dist(S.origin,p);
+    p._o = p.start ? { s:"soon", t:evLabel(p.start) } : openState(p.oh); });
   const cats = S.activeCats.length ? S.activeCats : CATS.map(c=>c.k);
   let list = raw.filter(p => p._d<=S.radius && cats.includes(p.c) && !S.hidden.includes(p.n));
   list.forEach(p=>{ p._s=score(p); });
@@ -685,7 +804,7 @@ function pills(p){
   const o=p._o;
   return `<div class="meta">
     <span class="pill dist">${fmtDist(p._d)} · ${walkMin(p._d)} Min</span>
-    <span class="pill ${o.s==="open"?"open":o.s==="closed"?"closed":""}">${esc(o.t)}</span>
+    <span class="pill ${o.s==="open"?"open":o.s==="closed"?"closed":o.s==="soon"?"soon":""}">${esc(o.t)}</span>
     ${p.adr?`<span class="pill">${esc(p.adr)}</span>`:""}
   </div>`;
 }
@@ -743,6 +862,7 @@ function viewDiscover(){
           <span class="catbadge">${esc(CATMAP[p.c]||"Ort")}</span>
           <span class="fict">${esc(badgeFor(p))}</span>
           <div class="ctitle">
+            ${p.start?`<div class="edate">${esc(evLabel(p.start))}</div>`:""}
             <h2 id="cardname">${esc(p.n)}</h2>
             ${p.t?`<p class="desc">${esc(p.t)}</p>`:""}
           </div>
@@ -805,6 +925,7 @@ function listView(list,title,total){
         <button class="btn sm" data-act="save" data-n="${esc(p.n)}">${isSaved(p.n)?"Gemerkt ✓":"Merken"}</button>
         <button class="btn sm" data-act="hide" data-n="${esc(p.n)}">Ausblenden</button>
         <button class="btn sm ghost" data-act="jump" data-i="${i}">Als Karte zeigen</button>
+        ${p.url?`<a class="btn sm ghost" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Zum Veranstalter</a>`:""}
       </div>
     </li>`).join("")}</ul>`;
 }
@@ -859,6 +980,14 @@ function viewHow(){
           <div class="wbar"><i style="width:${w}%"></i></div></td>
       <td>${esc(d)}</td></tr>`).join("")}</tbody>
   </table>
+  <h2>Veranstaltungen</h2>
+  <p>Veranstaltungen werden nach einer eigenen Regel sortiert, weil bei ihnen die Zeit
+  wichtiger ist als die Entfernung: Termin 45 %, Entfernung 30 %, deine bisherigen
+  Entscheidungen 15 %, Vollständigkeit der Angaben 10 %. Vergangene Termine verschwinden
+  automatisch drei Stunden nach Beginn.</p>
+  <p>Bei jeder Veranstaltung steht, aus welcher Quelle die Angabe stammt. Termine ändern
+  sich kurzfristig — verbindlich ist immer der Veranstalter, nicht diese Anwendung.</p>
+
   <h2>Was das Ranking nicht beeinflusst</h2>
   <ul>
     <li><strong>Bezahlung.</strong> Dieser Prototyp enthält keine bezahlten Platzierungen, keine Werbung und keine Provisionen. Sollte sich das ändern, würde jede bezahlte Platzierung am einzelnen Ergebnis gekennzeichnet.</li>
@@ -1091,6 +1220,7 @@ function init(){
     S.radius=+e.target.value; $("#radval").textContent=fmtRad(S.radius); store.set("radius",S.radius); });
   $("#rad").addEventListener("change",()=>{ S.idx=0; render(); });
   render();
+  loadEvents();
 }
 document.addEventListener("DOMContentLoaded",init);
 </script>
