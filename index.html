@@ -541,20 +541,23 @@ function plate(name, cat, w, h){
    Es sind Symbolbilder, nicht die abgebildeten Orte – Ausnahme: Dom.jpg. */
 const PHOTOS = {
   restaurant:       ["Essen gehen.jpg","Gemüse mit Sauce.jpg"],
-  schnell:          ["Essen gehen.jpg","Gemüse mit Sauce.jpg"],
+  schnell:          ["schnell und günstig.jpg","schnell und günstig 2.jpg"],
   cafe:             ["Cafe.jpg","Cafe und Kuchen.jpg","Cappuccino Getränk.jpg"],
   bar:              ["Bar und Kneipe.jpg","Bar und Kneipe 2.jpg"],
-  sehenswuerdigkeit:["Kirche.jpg","Brücke.jpg","Brücke 2.jpg"],
+  sehenswuerdigkeit:["Dom.jpg","Kirche.jpg","Brücke.jpg","Brücke 2.jpg"],
   museum:           ["Museum.jpg","Museum 2.jpg"],
   theater:          ["Bühne und Kino.jpg","Bühne und Kino 2.jpg"],
-  park:             ["Park.jpg","Park2.jpg","Park3.jpg"],
-  erleben:          ["Elbeufer.jpg","Park3.jpg"],
+  park:             ["Park.jpg","Park2.jpg","Park3.jpg","parks.jpg"],
+  erleben:          ["Arena.jpg","Arena2.jpg","Elbeufer.jpg"],
   einkaufen:        ["Einkaufen.jpg","Einkaufen 2.jpg","einkaufen 3.jpg"],
-  alltag:           ["Alltag.jpg","Straßenbahn.jpg","Brücke.jpg"],
-  event:            ["Bühne und Kino.jpg","Bühne und Kino 2.jpg"]
+  alltag:           ["Alltag.jpg","Straßenbahn.jpg"],
+  event:            ["Events.jpg","Events2.jpg","events3.jpg"]
 };
 /* Orte, für die ein echtes Bild des Ortes vorliegt */
-const EXACT = [{ re:/\bdom\b/i, cat:"sehenswuerdigkeit", file:"Dom.jpg" }];
+const EXACT = [
+  { re:/\bdom\b/i,             cat:"sehenswuerdigkeit", file:"Magdeburger Dom.jpg" },
+  { re:/allee[\s-]?center/i,    cat:"einkaufen",         file:"Für allee center.jpg" }
+];
 
 function photoFor(name, cat){
   for(const e of EXACT) if(e.cat===cat && e.re.test(name)) return { src:e.file, exact:true };
