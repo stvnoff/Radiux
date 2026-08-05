@@ -1,12 +1,54 @@
 [
   {
+    "t": "CIRCUS KRONE – Farbenspiel, Gold Edition",
+    "v": "Messeplatz Max Wille",
+    "lat": 52.1274,
+    "lon": 11.6392,
+    "approx": true,
+    "start": "2026-08-08T19:30",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+    "src": "eventfinder.de",
+    "k": "familie"
+  },
+  {
+    "t": "Florian Künstler – Alles nur geliehen",
+    "v": "MDCC Parkbühne im Elbauenpark",
+    "lat": 52.1349,
+    "lon": 11.669,
+    "start": "2026-08-07T19:30",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+    "src": "eventfinder.de",
+    "k": "konzert"
+  },
+  {
+    "t": "MEGA MALLE 2026",
+    "v": "Elbauenpark Magdeburg",
+    "lat": 52.1349,
+    "lon": 11.669,
+    "start": "2026-08-08T10:30",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+    "src": "eventfinder.de",
+    "k": "party"
+  },
+  {
+    "t": "1. FC Magdeburg – Eintracht Braunschweig",
+    "v": "Avnet Arena",
+    "lat": 52.1274,
+    "lon": 11.6392,
+    "approx": true,
+    "start": "2026-08-08T13:00",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+    "src": "eventfinder.de",
+    "k": "sport"
+  },
+  {
     "t": "SC Magdeburg – GWD Minden",
     "v": "GETEC Arena",
     "lat": 52.1283,
     "lon": 11.6645,
     "start": "2026-08-11T19:00",
-    "u": "https://www.regioactive.de/location/magdeburg/getec-arena-5rjXLcjkkG",
-    "src": "regioactive.de",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+    "src": "eventfinder.de",
     "k": "sport"
   },
   {
@@ -20,13 +62,55 @@
     "k": "sport"
   },
   {
-    "t": "AnnenMayKantereit – Live 2026",
+    "t": "7. Magdeburger Friedensfestival",
+    "v": "Salbker See, ehemaliger Badestrand",
+    "lat": 52.1274,
+    "lon": 11.6392,
+    "approx": true,
+    "start": "2026-09-03T16:00",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+    "src": "eventfinder.de",
+    "k": "festival"
+  },
+  {
+    "t": "Wincent Weiss – Sommertour 2026",
+    "v": "MDCC Parkbühne im Elbauenpark",
+    "lat": 52.1349,
+    "lon": 11.669,
+    "start": "2026-09-04T19:00",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+    "src": "eventfinder.de",
+    "k": "konzert"
+  },
+  {
+    "t": "AnnenMayKantereit – Live 2026 + Magda",
     "v": "GETEC Arena",
     "lat": 52.1283,
     "lon": 11.6645,
     "start": "2026-09-05T20:00",
-    "u": "https://www.magdeburg.de/index.php?FID=557.621.1",
-    "src": "magdeburg.de",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+    "src": "eventfinder.de",
+    "k": "konzert"
+  },
+  {
+    "t": "NENA – Live 2026, Open Air",
+    "v": "MDCC Parkbühne im Elbauenpark",
+    "lat": 52.1349,
+    "lon": 11.669,
+    "start": "2026-09-05T20:00",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+    "src": "eventfinder.de",
+    "k": "konzert"
+  },
+  {
+    "t": "Scala & Kolacny Brothers – Scala 30",
+    "v": "Johanniskirche Magdeburg",
+    "lat": 52.1274,
+    "lon": 11.6392,
+    "approx": true,
+    "start": "2026-09-06T20:00",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+    "src": "eventfinder.de",
     "k": "konzert"
   },
   {

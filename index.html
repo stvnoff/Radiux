@@ -46,9 +46,9 @@
     min-height:100dvh}
   .bgfx{display:none}
   .wmark{position:fixed;left:50%;top:47%;transform:translate(-50%,-50%);
-    width:min(120vw,700px);z-index:-1;pointer-events:none;opacity:.45}
+    width:min(112vw,660px);z-index:-1;pointer-events:none;opacity:.72}
   .wmark svg{width:100%;height:auto;display:block}
-  @media (prefers-color-scheme:light){ .wmark{opacity:.28} }
+  @media (prefers-color-scheme:light){ .wmark{opacity:.4} }
 
   .wrap{max-width:620px;margin:0 auto;padding:0 22px}
   main.wrap{padding-bottom:52px}
@@ -73,7 +73,7 @@
     backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
     border-bottom:1px solid var(--line)}
   .bar{display:flex;align-items:center;gap:12px;padding:18px 0 15px}
-  .blogo{width:23px;height:30px;flex:0 0 auto;display:block;color:var(--text)}
+  .blogo{width:24px;height:30px;flex:0 0 auto;display:block;color:var(--text)}
   .blogo svg{width:100%;height:100%;display:block}
   .brand{font-weight:600;font-size:1.06rem;letter-spacing:.24em;text-transform:uppercase;
     margin-right:auto;color:var(--text)}
@@ -140,9 +140,14 @@
 
   /* ---------- Start ---------- */
   .hero{padding:58px 0 10px}
+  .hello{color:var(--text-dim);font-size:.95rem;line-height:1.6;max-width:44ch;
+    margin:0 auto 34px;padding-top:20px;border-top:1px solid var(--line)}
+  .inlink{background:none;border:0;padding:0;font:inherit;cursor:pointer;color:var(--text);
+    text-decoration:underline;text-underline-offset:3px}
   .hero h1{margin-bottom:.24em}
   .hero .lead{color:var(--text-dim);font-size:1.02rem;margin-bottom:42px;max-width:32ch}
-  .hero{text-align:left}
+  .hero{text-align:center}
+  .hero .lead{margin-left:auto;margin-right:auto}
   .modes{display:grid;gap:0;border-top:1px solid var(--line)}
   .mode{position:relative;border:0;border-bottom:1px solid var(--line);background:transparent;
     padding:0;cursor:pointer;text-align:left;width:100%;transition:background .2s}
@@ -340,6 +345,10 @@
   .morelist button:hover{background:var(--surface-2)}
   .morelist .mt{display:block;font-weight:600;font-size:1.06rem;letter-spacing:-.025em}
   .morelist .ms{display:block;font-size:.86rem;color:var(--text-dim);margin-top:3px}
+  .phase{border-left:2px solid var(--glass-line);padding:2px 0 2px 18px;margin:0 0 22px}
+  .phase .pnum{font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
+    font-weight:600;color:var(--text-mute);margin-bottom:7px}
+  .phase p{margin:0}
   .sheet .why{margin-top:20px}
   body.locked{overflow:hidden}
   .hidden{display:none !important}
@@ -349,27 +358,29 @@
 <body>
 
 <div class="wmark" aria-hidden="true">
-  <svg viewBox="0 0 400 400">
+  <svg viewBox="0 0 400 460">
     <defs>
       <linearGradient id="rshine" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%"   stop-color="#5aa8ff" stop-opacity="0"/>
-        <stop offset="45%"  stop-color="#8fd0ff" stop-opacity=".35"/>
-        <stop offset="49.2%" stop-color="#ffffff" stop-opacity="1"/>
-        <stop offset="50.8%" stop-color="#ffffff" stop-opacity="1"/>
-        <stop offset="55%"  stop-color="#8fd0ff" stop-opacity=".35"/>
-        <stop offset="100%" stop-color="#5aa8ff" stop-opacity="0"/>
+        <stop offset="0%"    stop-color="#5aa8ff" stop-opacity="0"/>
+        <stop offset="47.5%" stop-color="#9ed8ff" stop-opacity=".45"/>
+        <stop offset="49.6%" stop-color="#ffffff" stop-opacity="1"/>
+        <stop offset="50.4%" stop-color="#ffffff" stop-opacity="1"/>
+        <stop offset="52.5%" stop-color="#9ed8ff" stop-opacity=".45"/>
+        <stop offset="100%"  stop-color="#5aa8ff" stop-opacity="0"/>
         <animateTransform id="rshineAnim" attributeName="gradientTransform" type="translate"
           values="0 -1.15; 0 1.15" dur="5.5s" repeatCount="indefinite"/>
       </linearGradient>
+      <filter id="rwglow" x="-25%" y="-25%" width="150%" height="150%">
+        <feGaussianBlur stdDeviation="2.6" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
     </defs>
-    <g font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
-       font-size="300" font-weight="500" letter-spacing="-10"
-       text-anchor="middle" dominant-baseline="central">
-      <text x="200" y="204" fill="currentColor" fill-opacity=".05">R</text>
-      <text x="200" y="204" fill="none" stroke="#5aa8ff" stroke-opacity=".30"
-            stroke-width="1" stroke-linejoin="round">R</text>
-      <text x="200" y="204" fill="none" stroke="url(#rshine)"
-            stroke-width="2.2" stroke-linejoin="round">R</text>
+    <g transform="translate(30 22) scale(1.62)">
+      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="currentColor" fill-opacity=".045"/>
+      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="#5aa8ff"
+            stroke-opacity=".18" stroke-width=".55" stroke-linejoin="round"/>
+      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="url(#rshine)"
+            stroke-width="1.05" stroke-linejoin="round" filter="url(#rwglow)"/>
     </g>
   </svg>
 </div>
@@ -383,32 +394,28 @@
 <header class="app">
   <div class="wrap">
     <div class="bar">
-      <span class="blogo" aria-hidden="true"><svg viewBox="0 0 260 340">
+      <span class="blogo" aria-hidden="true"><svg viewBox="0 0 210 260"
+        preserveAspectRatio="xMidYMid meet">
       <defs>
         <linearGradient id="rxshim" x1="-1" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#1e5cff" stop-opacity="0"/>
-          <stop offset=".40" stop-color="#4f9cff" stop-opacity=".85"/>
-          <stop offset=".5" stop-color="#e6f4ff" stop-opacity="1"/>
-          <stop offset=".60" stop-color="#4f9cff" stop-opacity=".85"/>
-          <stop offset="1" stop-color="#1e5cff" stop-opacity="0"/>
+          <stop offset="0"   stop-color="#1e5cff" stop-opacity="0"/>
+          <stop offset=".46" stop-color="#7cc0ff" stop-opacity=".5"/>
+          <stop offset=".5"  stop-color="#ffffff" stop-opacity="1"/>
+          <stop offset=".54" stop-color="#7cc0ff" stop-opacity=".5"/>
+          <stop offset="1"   stop-color="#1e5cff" stop-opacity="0"/>
           <animate attributeName="x1" values="-1.1;1;-1.1" dur="5.6s" repeatCount="indefinite"/>
           <animate attributeName="x2" values="-0.1;2;-0.1" dur="5.6s" repeatCount="indefinite"/>
         </linearGradient>
-        <filter id="rxglow" x="-45%" y="-45%" width="190%" height="190%">
-          <feGaussianBlur stdDeviation="6" result="b"/>
+        <filter id="rxglow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="3.4" result="b"/>
           <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
       </defs>
-      <text x="130" y="176" text-anchor="middle" dominant-baseline="central" paint-order="stroke"
-        font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
-        font-size="300" font-weight="500" letter-spacing="-10"
-        fill="currentColor" stroke="#3f7dff" stroke-opacity=".30" stroke-width="13"
-        stroke-linejoin="round">R</text>
-      <text x="130" y="176" text-anchor="middle" dominant-baseline="central" paint-order="stroke"
-        font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
-        font-size="300" font-weight="500" letter-spacing="-10"
-        fill="currentColor" stroke="url(#rxshim)" stroke-width="12"
-        stroke-linejoin="round" filter="url(#rxglow)">R</text>
+      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="currentColor"/>
+      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="#3f7dff"
+            stroke-opacity=".35" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="url(#rxshim)"
+            stroke-width="5" stroke-linejoin="round" filter="url(#rxglow)"/>
     </svg></span>
     <div class="brand">Radiux</div>
       <button type="button" class="modebtn" id="hMode" hidden></button>
@@ -560,13 +567,55 @@ function prng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0;
    Fällt der Abruf aus, gilt der eingebaute Grundbestand. */
 const EVENTS_FALLBACK = [
   {
+    "t": "CIRCUS KRONE – Farbenspiel, Gold Edition",
+    "v": "Messeplatz Max Wille",
+    "lat": 52.1274,
+    "lon": 11.6392,
+    "approx": true,
+    "start": "2026-08-08T19:30",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+    "src": "eventfinder.de",
+    "k": "familie"
+  },
+  {
+    "t": "Florian Künstler – Alles nur geliehen",
+    "v": "MDCC Parkbühne im Elbauenpark",
+    "lat": 52.1349,
+    "lon": 11.669,
+    "start": "2026-08-07T19:30",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+    "src": "eventfinder.de",
+    "k": "konzert"
+  },
+  {
+    "t": "MEGA MALLE 2026",
+    "v": "Elbauenpark Magdeburg",
+    "lat": 52.1349,
+    "lon": 11.669,
+    "start": "2026-08-08T10:30",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+    "src": "eventfinder.de",
+    "k": "party"
+  },
+  {
+    "t": "1. FC Magdeburg – Eintracht Braunschweig",
+    "v": "Avnet Arena",
+    "lat": 52.1274,
+    "lon": 11.6392,
+    "approx": true,
+    "start": "2026-08-08T13:00",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+    "src": "eventfinder.de",
+    "k": "sport"
+  },
+  {
     "t": "SC Magdeburg – GWD Minden",
     "v": "GETEC Arena",
     "lat": 52.1283,
     "lon": 11.6645,
     "start": "2026-08-11T19:00",
-    "u": "https://www.regioactive.de/location/magdeburg/getec-arena-5rjXLcjkkG",
-    "src": "regioactive.de",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+    "src": "eventfinder.de",
     "k": "sport"
   },
   {
@@ -580,13 +629,55 @@ const EVENTS_FALLBACK = [
     "k": "sport"
   },
   {
-    "t": "AnnenMayKantereit – Live 2026",
+    "t": "7. Magdeburger Friedensfestival",
+    "v": "Salbker See, ehemaliger Badestrand",
+    "lat": 52.1274,
+    "lon": 11.6392,
+    "approx": true,
+    "start": "2026-09-03T16:00",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+    "src": "eventfinder.de",
+    "k": "festival"
+  },
+  {
+    "t": "Wincent Weiss – Sommertour 2026",
+    "v": "MDCC Parkbühne im Elbauenpark",
+    "lat": 52.1349,
+    "lon": 11.669,
+    "start": "2026-09-04T19:00",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+    "src": "eventfinder.de",
+    "k": "konzert"
+  },
+  {
+    "t": "AnnenMayKantereit – Live 2026 + Magda",
     "v": "GETEC Arena",
     "lat": 52.1283,
     "lon": 11.6645,
     "start": "2026-09-05T20:00",
-    "u": "https://www.magdeburg.de/index.php?FID=557.621.1",
-    "src": "magdeburg.de",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+    "src": "eventfinder.de",
+    "k": "konzert"
+  },
+  {
+    "t": "NENA – Live 2026, Open Air",
+    "v": "MDCC Parkbühne im Elbauenpark",
+    "lat": 52.1349,
+    "lon": 11.669,
+    "start": "2026-09-05T20:00",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+    "src": "eventfinder.de",
+    "k": "konzert"
+  },
+  {
+    "t": "Scala & Kolacny Brothers – Scala 30",
+    "v": "Johanniskirche Magdeburg",
+    "lat": 52.1274,
+    "lon": 11.6392,
+    "approx": true,
+    "start": "2026-09-06T20:00",
+    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+    "src": "eventfinder.de",
     "k": "konzert"
   },
   {
@@ -645,8 +736,17 @@ function eventsAsPlaces(){
   const now = Date.now();
   return EVENTS
     .filter(e => { const d = evDate(e.start); return d && d.getTime() > now - 3*3600*1000; })
-    .map(e => ({ n:e.t, c:"event", lat:+e.lat, lon:+e.lon, oh:"",
-                 t:e.v || "", start:e.start, url:e.u || "", src:e.src || "", adr:"" }));
+    .map(e => {
+      let lat=+e.lat, lon=+e.lon, approx=!!e.approx;
+      /* Ist der Veranstaltungsort unter gleichem Namen aus OpenStreetMap geladen,
+         wird dessen genaue Lage übernommen. */
+      if(approx && e.v){
+        const hit = S.places.find(x => norm(x.n) && norm(e.v).includes(norm(x.n)) && norm(x.n).length>4);
+        if(hit){ lat=hit.lat; lon=hit.lon; approx=false; }
+      }
+      return { n:e.t, c:"event", lat, lon, oh:"", approx,
+               t:e.v || "", start:e.start, url:e.u || "", src:e.src || "", adr:"" };
+    });
 }
 
 /* ---------- Neutrale Fläche, falls kein Foto vorliegt ---------- */
@@ -671,17 +771,20 @@ function plate(name, cat, w, h){
    Lizenz: Pexels License, freie kommerzielle Nutzung.
    Es sind Symbolbilder, nicht die abgebildeten Orte – Ausnahme: Dom.jpg. */
 const PHOTOS = {
-  restaurant:       ["Essen gehen.jpg","Gemüse mit Sauce.jpg"],
-  schnell:          ["schnell und günstig.jpg","schnell und günstig 2.jpg"],
-  cafe:             ["Cafe.jpg","Cafe und Kuchen.jpg","Cappuccino Getränk.jpg"],
+  restaurant:       ["Essen gehen.jpg","Gemüse mit Sauce.jpg","restaurants.jpg",
+                     "Restaurants 2.jpg","restaurants3.jpg"],
+  schnell:          ["schnell und günstig.jpg","schnell und günstig 2.jpg","FastFood.jpg"],
+  cafe:             ["Cafe.jpg","Cafe und Kuchen.jpg","Cappuccino Getränk.jpg",
+                     "Cafe und Bäckerei.jpg","cafe und bäckerei 2.jpg"],
   bar:              ["Bar und Kneipe.jpg","Bar und Kneipe 2.jpg"],
-  sehenswuerdigkeit:["Dom.jpg","Kirche.jpg","Brücke.jpg","Brücke 2.jpg"],
+  sehenswuerdigkeit:["Dom.jpg","Kirche.jpg","Brücke.jpg","Brücke 2.jpg",
+                     "gothische kathedrale magdeburg.jpg"],
   museum:           ["Museum.jpg","Museum 2.jpg"],
   theater:          ["Bühne und Kino.jpg","Bühne und Kino 2.jpg"],
   park:             ["Park.jpg","Park2.jpg","Park3.jpg","parks.jpg"],
   erleben:          ["Arena.jpg","Arena2.jpg","Elbeufer.jpg"],
   einkaufen:        ["Einkaufen.jpg","Einkaufen 2.jpg","einkaufen 3.jpg"],
-  alltag:           ["Alltag.jpg","Straßenbahn.jpg"],
+  alltag:           ["Alltag.jpg","Straßenbahn.jpg","magdeburger straße.jpg"],
   event:            ["Events.jpg","Events2.jpg","events3.jpg"]
 };
 /* Orte, für die ein echtes Bild des Ortes vorliegt */
@@ -894,9 +997,14 @@ const OVERPASS = [
 async function loadLive(){
   if(S.loading) return;
   S.loading=true; say("Orte werden geladen …"); render();
-  const r=Math.max(S.radius,2000)/111000;
-  const bb=[S.origin.lat-r, S.origin.lon-r*1.6, S.origin.lat+r, S.origin.lon+r*1.6]
+  /* Radiux kennt bisher nur Magdeburg. Wer von außerhalb lädt, bekäme sonst ein
+     leeres Ergebnis – deshalb wird in dem Fall um die Stadtmitte herum geladen. */
+  const far = dist(S.origin, MD) > 25000;
+  const c = far ? MD : S.origin;
+  const r=Math.max(S.radius,4000)/111000;
+  const bb=[c.lat-r, c.lon-r*1.6, c.lat+r, c.lon+r*1.6]
     .map(n=>n.toFixed(4)).join(",");
+  if(far) say("Du bist weit von Magdeburg entfernt – Radiux lädt die Orte der Stadtmitte.");
   const q=`[out:json][timeout:60];(
     nwr(${bb})["amenity"~"^(restaurant|cafe|bar|pub|fast_food|ice_cream|biergarten|theatre|cinema|arts_centre|library|nightclub|fuel)$"]["name"];
     nwr(${bb})["tourism"~"^(attraction|museum|artwork|viewpoint|gallery|zoo|theme_park)$"]["name"];
@@ -1060,6 +1168,11 @@ function viewStart(){
   <div class="hero">
     <h1>Was hast du vor?</h1>
     <p class="lead">Radiux zeigt dir passende Orte in deiner Umgebung. Du kannst jederzeit wechseln.</p>
+    <p class="hello">Hallo. Radiux ist gerade am Anfang – gebaut von einer Person aus Magdeburg,
+    ohne Geldgeber und ohne Werbung. Die Idee: Du sagst, worauf du Lust hast, und bekommst
+    Vorschläge in deiner Nähe, statt dich durch zehn Portale zu klicken.
+    Zurzeit kennt Radiux nur Magdeburg, und einiges fehlt noch.
+    <button type="button" class="inlink" id="bAbout">Was geplant ist</button></p>
     <div class="modes">${Object.entries(MODES).map(([k,m])=>`
       <button class="mode" data-mode="${k}">
         <span class="mi">
@@ -1073,6 +1186,9 @@ function viewStart(){
     keine Zahlungsfunktion und keine Nutzerkonten.
     Die Bilder sind Symbolbilder aus einer freien Bilddatenbank und zeigen nicht den jeweiligen Ort.
   </div>`;
+  $("#bAbout")?.addEventListener("click",()=>{
+    S.view="about"; window.scrollTo({top:0}); render(); main().focus();
+  });
   main().querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>{
     S.mode=b.dataset.mode; S.activeCats=[...MODES[S.mode].cats];
     S.idx=0; store.set("mode",S.mode); render();
@@ -1560,6 +1676,25 @@ function gcalLink(p){
 function icsName(p){
   return (String(p.n).replace(/[^\wäöüÄÖÜß -]+/g,"").trim() || "Termin") + ".ics";
 }
+/* Dateiname der mitgelieferten Termindatei im Ordner „kalender“ */
+function icsSlug(p){
+  return norm(p.n).replace(/ /g,"-").slice(0,60) + "-" +
+         String(p.start).slice(0,10).replace(/-/g,"");
+}
+/* iOS öffnet nur Termindateien, die über eine Adresse ausgeliefert werden.
+   Deshalb liegt zu jeder Veranstaltung eine fertige .ics-Datei im Ordner „kalender“.
+   Gibt es sie nicht (etwa beim Testen von der Festplatte), wird die Datei
+   ersatzweise im Gerät erzeugt. */
+async function openCalendar(p){
+  const url = "kalender/" + icsSlug(p) + ".ics";
+  if(location.protocol === "http:" || location.protocol === "https:"){
+    try{
+      const r = await fetch(url, {cache:"no-store"});
+      if(r.ok){ location.href = url; return; }
+    }catch(e){}
+  }
+  icsDownload(p);
+}
 
 
 /* ---------------- Blatt nach unten wegziehen ----------------
@@ -1601,6 +1736,67 @@ function dragClose(el, close){
   panel.addEventListener("pointercancel",stop);
 }
 
+
+/* ---------------- Über Radiux ---------------- */
+function viewAbout(){
+  main().innerHTML = `
+  <h1 style="margin-top:34px">Über Radiux</h1>
+  <p class="lead" style="max-width:46ch">Kurz und ehrlich: was Radiux will, wo es steht
+  und was als Nächstes kommt.</p>
+
+  <h2>Warum es Radiux gibt</h2>
+  <p>Wer in Magdeburg wissen will, was heute Abend geht, sucht auf fünf Seiten gleichzeitig.
+  Radiux dreht das um: Du sagst, worauf du Lust hast – essen, erleben, einfach stöbern –
+  und bekommst Vorschläge aus deinem Umkreis, sortiert nach Nähe und Zeit.</p>
+
+  <h2>Wer dahintersteckt</h2>
+  <p>Eine Person aus Magdeburg, kein Unternehmen, kein Geldgeber. Radiux läuft
+  vollständig in deinem Browser und kostet im Betrieb nichts. Deshalb gibt es hier
+  keine Werbung, keine Nutzerkonten und nichts, was dich verfolgt.</p>
+
+  <h2>Wo Radiux gerade steht</h2>
+  <div class="phase">
+    <div class="pnum">Phase 1 · jetzt</div>
+    <p>Prototyp für Magdeburg. Orte kommen von OpenStreetMap, Veranstaltungen sind von Hand
+    geprüft und noch unvollständig. Das Bedienkonzept wird getestet, die Rechtstexte sind
+    Entwürfe. Deshalb steht überall „Prototyp“ – das ist keine Floskel, sondern eine Warnung:
+    Verlass dich noch nicht blind auf die Angaben.</p>
+  </div>
+  <div class="phase">
+    <div class="pnum">Phase 2 · als Nächstes</div>
+    <p>Magdeburg vollständig. Veranstaltungen aus einer laufenden Quelle statt von Hand,
+    Öffnungszeiten verlässlich, Impressum und Datenschutzerklärung mit echten Angaben,
+    anwaltlich geprüft. <strong>Erst dann verschwindet der Prototyp-Hinweis.</strong>
+    Bis dahin bleibt er stehen, auch wenn die App längst gut aussieht.</p>
+  </div>
+  <div class="phase">
+    <div class="pnum">Phase 3 · später</div>
+    <p>Weitere Städte, eigene Merklisten für Gruppen, Erinnerungen an gemerkte Termine.
+    Was Radiux ausmacht – suchen, entdecken, merken, Wege finden – bleibt für alle kostenlos.
+    Bezahlt würde nur Komfort, nie eine Kernfunktion.</p>
+  </div>
+
+  <h2>Was heute noch fehlt</h2>
+  <ul class="bul">
+    <li>Nur Magdeburg. Außerhalb siehst du nichts.</li>
+    <li>Veranstaltungen sind eine Handauswahl, nicht der volle Kalender der Stadt.</li>
+    <li>Öffnungszeiten stammen aus OpenStreetMap und können veraltet sein.</li>
+    <li>Die Bilder sind Symbolbilder und zeigen nicht den jeweiligen Ort.</li>
+    <li>Ein eigenes Logo entsteht noch.</li>
+  </ul>
+
+  <h2>Mitmachen</h2>
+  <p>Fehlt ein Ort, hilft der schnellste Weg allen: Trage ihn in
+  <a href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+  ein. Radiux liest von dort – was dort steht, taucht hier auf, und zwar auch in jeder
+  anderen App, die OpenStreetMap nutzt.</p>
+
+  <footer class="attrib">
+    Ortsdaten © OpenStreetMap-Mitwirkende, Open Database License.
+    Symbolbilder aus freier Bilddatenbank.
+  </footer>`;
+}
+
 /* ---------------- Weitere Seiten ---------------- */
 function openMore(){
   document.querySelectorAll(".sheet").forEach(n=>n.remove());
@@ -1609,6 +1805,7 @@ function openMore(){
   el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true");
   el.setAttribute("aria-label","Weitere Seiten");
   const items = [
+    ["about","Über Radiux","Ziel, aktueller Stand und was als Nächstes kommt"],
     ["how","Wie Radiux empfiehlt","Welche Kriterien die Reihenfolge bestimmen"],
     ["legal","Rechtliches","Impressum, Datenschutz, Barrierefreiheit"]
   ];
@@ -1651,6 +1848,9 @@ function viewSheet(){
   const rows = [];
   rows.push(["Entfernung", `${fmtDist(p._d)} · etwa ${walkTxt(p._d)} zu Fuß`]);
   if(p.start) rows.push(["Termin", evLabel(p.start)]);
+  if(p.approx) rows.push(["Hinweis",
+    "Die genaue Lage dieses Veranstaltungsortes liegt Radiux noch nicht vor. "
+    + "Entfernung und Karte beziehen sich auf die Stadtmitte."]);
   else rows.push(["Status", p._o.t]);
   if(p.oh) rows.push(["Öffnungszeiten", p.oh]);
   if(p.adr) rows.push(["Adresse", p.adr]);
@@ -1692,7 +1892,7 @@ function viewSheet(){
   document.body.appendChild(el);
   document.body.classList.add("locked");
   el.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",closeDetail));
-  el.querySelector("[data-ics]")?.addEventListener("click",()=>icsDownload(p));
+  el.querySelector("[data-ics]")?.addEventListener("click",()=>openCalendar(p));
   el.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>{
     const q = prepare().find(x=>x.n===b.dataset.n) || S.saved.find(x=>x.n===b.dataset.n);
     if(q) save(q);
@@ -1792,13 +1992,15 @@ function render(){
     if(on) hm.textContent = MODES[S.mode].l + "  ⌄";
   }
   document.querySelectorAll("nav.tabs button").forEach(b=>{
-    const cur = b.dataset.view==="more" ? (S.view==="how"||S.view==="legal") : b.dataset.view===S.view;
+    const cur = b.dataset.view==="more"
+      ? (S.view==="how"||S.view==="legal"||S.view==="about") : b.dataset.view===S.view;
     if(cur) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current");
   });
   if(S.view==="discover" && !S.mode) viewStart();
   else if(S.view==="discover") viewDiscover();
   else if(S.view==="saved") viewSaved();
   else if(S.view==="how") viewHow();
+  else if(S.view==="about") viewAbout();
   else viewLegal();
   renderControls();
   if(S.detail) viewSheet(); else document.body.classList.remove("locked");
