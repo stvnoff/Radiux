@@ -13,7 +13,7 @@
     --line:rgba(255,255,255,.085); --line-2:rgba(255,255,255,.15);
     --glass:rgba(255,255,255,.045); --glass-2:rgba(255,255,255,.085);
     --glass-line:rgba(255,255,255,.13); --glass-hi:rgba(255,255,255,.20);
-    --veil:rgba(9,9,10,.80); --card-veil:rgba(31,31,34,.74);
+    --veil:rgba(9,9,10,.80); --card-veil:rgba(31,31,34,.74); --card-solid:#1b1b1d;
     --blur:blur(22px) saturate(125%);
     --text:#f3f2ef; --text-dim:#9d9c97; --text-mute:#6b6a66;
     --accent:#efece4; --accent-ink:#0b0b0c;
@@ -31,7 +31,7 @@
       --glass:rgba(255,255,255,.5); --glass-2:rgba(255,255,255,.7);
       --glass-line:rgba(18,18,16,.12); --glass-hi:rgba(255,255,255,.9);
       --card-veil:rgba(255,255,255,.92);
-      --veil:rgba(244,243,240,.82); --card-veil:rgba(255,255,255,.9); --card-veil:rgba(255,255,255,.66);
+      --veil:rgba(244,243,240,.82); --card-veil:rgba(255,255,255,.66); --card-solid:#ffffff;
       --text:#121210; --text-dim:#575652; --text-mute:#7d7c77;
       --accent:#16150f; --accent-ink:#ffffff;
       --pos:#3a7a49; --neg:#a63a30; --warn:#8a6a1e;
@@ -48,10 +48,12 @@
   .wmark{position:fixed;left:50%;top:47%;transform:translate(-50%,-50%);
     width:min(112vw,660px);z-index:-1;pointer-events:none;opacity:.72}
   .wmark svg{width:100%;height:auto;display:block}
+  body.nowmark .wmark{display:none}
   @media (prefers-color-scheme:light){ .wmark{opacity:.4} }
 
   .wrap{max-width:620px;margin:0 auto;padding:0 22px}
-  main.wrap{padding-bottom:52px}
+  main.wrap{padding-bottom:52px;scroll-margin-top:0}
+  main:focus{outline:none}
   h1,h2,h3{line-height:1.1;margin:0 0 .5em;letter-spacing:-.035em;font-weight:600}
   h1{font-size:clamp(2.1rem,9vw,2.7rem)}
   h2{font-size:1.3rem}
@@ -80,7 +82,6 @@
   .modebtn{font-size:var(--micro);text-transform:uppercase;letter-spacing:.14em;font-weight:600;
     color:var(--text-dim);white-space:nowrap;background:var(--glass);cursor:pointer;
     border:1px solid var(--glass-line);border-radius:99px;padding:9px 15px;min-height:38px;
-    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
     transition:color .2s,background .2s}
   .modebtn:hover{color:var(--text);background:var(--glass-2)}
 
@@ -98,8 +99,7 @@
     min-width:62px;text-align:right;flex:0 0 auto;color:var(--text)}
 
   .srch{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:0 14px;
-    border:1px solid var(--glass-line);border-radius:99px;background:var(--glass);
-    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur)}
+    border:1px solid var(--glass-line);border-radius:99px;background:var(--glass);}
   .srch svg{width:17px;height:17px;flex:0 0 auto;color:var(--text-mute)}
   .srch input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--text);
     font:inherit;font-size:.92rem;padding:12px 0;min-height:44px}
@@ -112,7 +112,6 @@
   .chip{white-space:nowrap;border-radius:99px;padding:8px 15px;cursor:pointer;min-height:38px;
     font-size:.82rem;font-weight:500;color:var(--text-dim);
     background:var(--glass);border:1px solid var(--glass-line);
-    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
     box-shadow:inset 0 1px 0 var(--glass-hi);
     transition:color .2s,background .2s,border-color .2s}
   .chip[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
@@ -121,7 +120,6 @@
   .btn{position:relative;overflow:hidden;border-radius:99px;padding:12px 20px;cursor:pointer;
     min-height:46px;font-weight:500;font-size:.92rem;color:var(--text);
     background:var(--glass);border:1px solid var(--glass-line);
-    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
     box-shadow:inset 0 1px 0 var(--glass-hi);
     transition:background .2s,border-color .2s,opacity .2s}
   .btn::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
@@ -140,13 +138,20 @@
 
   /* ---------- Start ---------- */
   .hero{padding:58px 0 10px}
-  .hello{color:var(--text-dim);font-size:.95rem;line-height:1.6;max-width:44ch;
-    margin:0 auto 34px;padding-top:20px;border-top:1px solid var(--line)}
+  .welcome{padding:70px 0 10px;max-width:40ch;margin:0 auto;text-align:left;
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,
+      "Hoefler Text","Times New Roman",serif;
+    font-size:1.12rem;line-height:1.68;letter-spacing:0;color:var(--text-dim)}
+  .welcome p{margin:0 0 18px}
+  .welcome .wgreet{font-size:1.9rem;line-height:1.2;color:var(--text);margin-bottom:20px;
+    letter-spacing:-.01em}
+  .wact{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px;
+    font-family:var(--font);font-size:1rem}
   .inlink{background:none;border:0;padding:0;font:inherit;cursor:pointer;color:var(--text);
     text-decoration:underline;text-underline-offset:3px}
   .hero h1{margin-bottom:.24em}
   .hero .lead{color:var(--text-dim);font-size:1.02rem;margin-bottom:42px;max-width:32ch}
-  .hero{text-align:center}
+  .hero{text-align:center;padding-top:34px}
   .hero .lead{margin-left:auto;margin-right:auto}
   .modes{display:grid;gap:0;border-top:1px solid var(--line)}
   .mode{position:relative;border:0;border-bottom:1px solid var(--line);background:transparent;
@@ -162,16 +167,16 @@
   /* ---------- Karte ---------- */
   .deck{position:relative;height:var(--card-h);margin:22px 0 20px}
   .card{position:absolute;inset:0;border-radius:var(--r-xl);overflow:hidden;
-    background:var(--card-veil);border:1px solid var(--glass-line);
-    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+    background:var(--card-solid);border:1px solid var(--glass-line);
     box-shadow:inset 0 1px 0 var(--glass-hi), 0 30px 70px -26px rgba(0,0,0,.95);
-    cursor:pointer;
+    cursor:pointer;transform:translateZ(0);
     display:flex;flex-direction:column;touch-action:pan-y;user-select:none}
+  .card.dragging{will-change:transform}
   .card.behind{transform:scale(.96) translateY(12px);opacity:.3;z-index:1}
   .card.front{z-index:2;animation:cardIn .45s var(--ease)}
   @keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   .cover{position:relative;height:52%;min-height:180px;flex:0 0 auto;overflow:hidden;background:var(--surface-2)}
-  .cover img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92) contrast(1.04)}
+  .cover img{width:100%;height:100%;object-fit:cover;display:block}
   .cover .scrim{position:absolute;inset:0;
     background:linear-gradient(180deg,rgba(5,5,6,.55) 0%,rgba(5,5,6,.05) 30%,
       rgba(5,5,6,.62) 66%,rgba(5,5,6,.96) 100%)}
@@ -216,10 +221,9 @@
     color:var(--text);font-weight:600;text-decoration:underline;text-underline-offset:3px}
 
   .stamp{position:absolute;top:26px;z-index:5;font-size:.82rem;font-weight:600;
-    -webkit-backdrop-filter:blur(6px);
     text-transform:uppercase;letter-spacing:.2em;padding:9px 16px;border-radius:99px;opacity:0;
     border:1px solid currentColor;pointer-events:none;transition:opacity .12s;
-    background:rgba(8,8,10,.5);backdrop-filter:blur(6px)}
+    background:rgba(8,8,10,.78)}
   .stamp.yes{left:20px;color:#fff}
   .stamp.no{right:20px;color:#fff}
 
@@ -236,7 +240,7 @@
   .sechead .cnt{font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
     color:var(--text-mute);margin-left:auto;font-weight:600}
   .list{list-style:none;margin:0;padding:0;display:block}
-  .list > li{border-bottom:1px solid var(--line);padding:20px 0;background:none;border-radius:0;
+  .list > li{content-visibility:auto;contain-intrinsic-size:auto 150px;border-bottom:1px solid var(--line);padding:20px 0;background:none;border-radius:0;
     opacity:0;transform:translateY(10px);animation:rise .5s var(--ease) forwards}
   .list > li:nth-child(1){animation-delay:.02s} .list > li:nth-child(2){animation-delay:.06s}
   .list > li:nth-child(3){animation-delay:.10s} .list > li:nth-child(4){animation-delay:.14s}
@@ -246,7 +250,7 @@
   .lthumb{width:96px;height:96px;flex:0 0 auto;position:relative;overflow:hidden;
     border-radius:var(--r-md);background:var(--glass);
     box-shadow:inset 0 0 0 1px var(--glass-line)}
-  .lthumb img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92)}
+  .lthumb img{width:100%;height:100%;object-fit:cover;display:block}
   .lmain{padding:0;flex:1;min-width:0}
   .lmain h3{margin-bottom:5px;font-size:1.08rem;font-weight:600;letter-spacing:-.028em}
   .lact{display:flex;gap:9px;padding:14px 0 0;flex-wrap:wrap;align-items:center}
@@ -291,7 +295,6 @@
     font-size:.78rem;color:var(--text-mute)}
 
   .toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(8px);
-    backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
     z-index:60;max-width:min(92vw,520px);text-align:center;
     color:var(--accent-ink);background:var(--accent);
     padding:12px 20px;border-radius:99px;font-size:.84rem;font-weight:600;
@@ -354,6 +357,13 @@
   .hidden{display:none !important}
   @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 </style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 210 260%27%3E%3Cpath fill-rule=%27evenodd%27 fill=%27%23f3f2ef%27 d=%27M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z%27/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-title" content="Radiux">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 </head>
 <body>
 
@@ -370,17 +380,15 @@
         <animateTransform id="rshineAnim" attributeName="gradientTransform" type="translate"
           values="0 -1.15; 0 1.15" dur="5.5s" repeatCount="indefinite"/>
       </linearGradient>
-      <filter id="rwglow" x="-25%" y="-25%" width="150%" height="150%">
-        <feGaussianBlur stdDeviation="2.6" result="b"/>
-        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
     </defs>
     <g transform="translate(30 22) scale(1.62)">
       <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="currentColor" fill-opacity=".045"/>
       <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="#5aa8ff"
             stroke-opacity=".18" stroke-width=".55" stroke-linejoin="round"/>
       <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="url(#rshine)"
-            stroke-width="1.05" stroke-linejoin="round" filter="url(#rwglow)"/>
+            stroke-width="3.4" stroke-opacity=".22" stroke-linejoin="round"/>
+      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="url(#rshine)"
+            stroke-width="1.05" stroke-linejoin="round"/>
     </g>
   </svg>
 </div>
@@ -812,7 +820,7 @@ function media(p, w, h, cls){
     ? (ph.exact ? `Foto von ${p.n}` : `Symbolbild für die Kategorie ${CATMAP[p.c]||"Ort"} – zeigt nicht den Ort selbst`)
     : `Stilisierte Illustration in den Farben der Kategorie ${CATMAP[p.c]||"Ort"} – kein Foto des Ortes`;
   const src = ph ? imgSrc(ph.src) : plate(p.n, p.c, w, h);
-  return `<img src="${src}" alt="${esc(alt)}" loading="lazy"
+  return `<img src="${src}" alt="${esc(alt)}" loading="lazy" decoding="async"
     data-n="${esc(p.n)}" data-c="${esc(p.c)}" data-w="${w}" data-h="${h}"
     onerror="imgFallback(this)"${cls?` class="${cls}"`:""}>`;
 }
@@ -830,7 +838,7 @@ const store = {
 };
 
 const S = {
-  view:"discover", vmode:store.get("vmode","karten"), detail:null, q:"",
+  view:"discover", vmode:store.get("vmode","karten"), detail:null, q:"", step:"welcome",
   radius:store.get("radius",3000), mode:null, origin:MD,
   places:[], idx:0, saved:store.get("saved",[]), hidden:store.get("hidden",[]),
   profile:store.get("profile",{}), activeCats:[], loaded:false, loading:false,
@@ -1163,31 +1171,55 @@ function pills(p){
 }
 
 /* ---------------- Startauswahl ---------------- */
-function viewStart(){
+/* Erste Seite: die Begrüßung, sonst nichts. */
+function viewWelcome(){
   main().innerHTML = `<div aria-live="polite" class="sr" id="live"></div>
-  <div class="hero">
-    <h1>Was hast du vor?</h1>
-    <p class="lead">Radiux zeigt dir passende Orte in deiner Umgebung. Du kannst jederzeit wechseln.</p>
-    <p class="hello">Hallo. Radiux ist gerade am Anfang – gebaut von einer Person aus Magdeburg,
-    ohne Geldgeber und ohne Werbung. Die Idee: Du sagst, worauf du Lust hast, und bekommst
-    Vorschläge in deiner Nähe, statt dich durch zehn Portale zu klicken.
-    Zurzeit kennt Radiux nur Magdeburg, und einiges fehlt noch.
-    <button type="button" class="inlink" id="bAbout">Was geplant ist</button></p>
-    <div class="modes">${Object.entries(MODES).map(([k,m])=>`
-      <button class="mode" data-mode="${k}">
-        <span class="mi">
-          <span><span class="mt">${esc(m.l)}</span><span class="ms">${esc(m.s)}</span></span>
-        </span>
-      </button>`).join("")}</div>
+  <div class="welcome">
+    <p class="wgreet">Hallo.</p>
+    <p>Radiux ist gerade am Anfang. Gebaut von einer Person aus Magdeburg,
+    ohne Geldgeber und ohne Werbung.</p>
+    <p>Die Idee ist einfach: Du sagst, worauf du Lust hast – essen, etwas erleben,
+    einfach stöbern – und bekommst Vorschläge aus deiner Umgebung. Ohne dich vorher
+    durch zehn Portale zu klicken.</p>
+    <p>Bisher kennt Radiux nur Magdeburg, und einiges fehlt noch. Das steht hier,
+    weil es besser ist, das vorher zu sagen, als dich später zu enttäuschen.</p>
+    <div class="wact">
+      <button type="button" class="btn" id="bAbout">Was geplant ist</button>
+      <button type="button" class="btn primary" id="bGo">Weiter geht’s</button>
+    </div>
   </div>
-  <div class="note" style="margin-top:22px">
+  <div class="note" style="margin-top:30px">
     ${PROTOTYPE?`<strong>Prototyp.</strong> Diese Fassung dient dem Test des Bedienkonzepts. `:""}
     Radiux verarbeitet keine Daten auf einem Server und enthält keine Werbung,
     keine Zahlungsfunktion und keine Nutzerkonten.
     Die Bilder sind Symbolbilder aus einer freien Bilddatenbank und zeigen nicht den jeweiligen Ort.
   </div>`;
   $("#bAbout")?.addEventListener("click",()=>{
-    S.view="about"; window.scrollTo({top:0}); render(); main().focus();
+    S.view="about"; window.scrollTo({top:0}); render(); main().focus({preventScroll:true});
+  });
+  $("#bGo")?.addEventListener("click",()=>{
+    S.step="modes"; window.scrollTo({top:0}); render(); main().focus({preventScroll:true});
+  });
+}
+
+/* Zweite Seite: die Auswahl des Vorhabens. */
+function viewStart(){
+  if(S.step === "welcome"){ viewWelcome(); return; }
+  main().innerHTML = `<div aria-live="polite" class="sr" id="live"></div>
+  <div class="hero">
+    <h1>Was hast du vor?</h1>
+    <p class="lead">Radiux zeigt dir passende Orte in deiner Umgebung. Du kannst jederzeit wechseln.</p>
+    <div class="modes">${Object.entries(MODES).map(([k,m])=>`
+      <button class="mode" data-mode="${k}">
+        <span class="mi">
+          <span><span class="mt">${esc(m.l)}</span><span class="ms">${esc(m.s)}</span></span>
+        </span>
+      </button>`).join("")}</div>
+    <p style="margin-top:26px">
+      <button type="button" class="inlink" id="bWelcome">← Zurück zur Begrüßung</button></p>
+  </div>`;
+  $("#bWelcome")?.addEventListener("click",()=>{
+    S.step="welcome"; window.scrollTo({top:0}); render(); main().focus({preventScroll:true});
   });
   main().querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>{
     S.mode=b.dataset.mode; S.activeCats=[...MODES[S.mode].cats];
@@ -1785,6 +1817,20 @@ function viewAbout(){
     <li>Ein eigenes Logo entsteht noch.</li>
   </ul>
 
+  <h2>Radiux auf den Startbildschirm legen</h2>
+  <p>Radiux lässt sich wie eine App ablegen, dann genügt ein Tippen auf das Symbol –
+  ohne die Adresse einzugeben.</p>
+  <ul class="bul">
+    <li><strong>iPhone und iPad:</strong> in Safari unten auf „Teilen“, dann
+    „Zum Home-Bildschirm“.</li>
+    <li><strong>Android:</strong> im Browsermenü auf „App installieren“
+    oder „Zum Startbildschirm hinzufügen“.</li>
+    <li><strong>Rechner:</strong> in Chrome oder Edge auf das Installationssymbol
+    rechts in der Adresszeile.</li>
+  </ul>
+  <p>Dabei wird nichts installiert, was mitliest: Es entsteht nur eine Verknüpfung.
+  Radiux läuft weiterhin im Browser und ohne Server.</p>
+
   <h2>Mitmachen</h2>
   <p>Fehlt ein Ort, hilft der schnellste Weg allen: Trage ihn in
   <a href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
@@ -1827,7 +1873,7 @@ function openMore(){
   const shut = ()=>{ el.remove(); document.body.classList.remove("locked"); };
   el.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",shut));
   el.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{
-    shut(); S.view = b.dataset.go; window.scrollTo({top:0}); render(); main().focus();
+    shut(); S.view = b.dataset.go; window.scrollTo({top:0}); render(); main().focus({preventScroll:true});
   }));
   dragClose(el, shut);
   el.querySelector(".panel").focus();
@@ -1912,7 +1958,8 @@ function swipe(el,onRight,onLeft,onTap){
   el.addEventListener("pointerdown",e=>{
     if(e.target.closest && e.target.closest(".cactions")){ x0=null; return; }
     x0=e.clientX; y0=e.clientY; dx=0; lock=null;
-    el.style.transition="none"; el.setPointerCapture?.(e.pointerId); });
+    el.style.transition="none"; el.classList.add("dragging");
+    el.setPointerCapture?.(e.pointerId); });
   el.addEventListener("pointermove",e=>{
     if(x0===null) return;
     dx=e.clientX-x0; const dy=e.clientY-y0;
@@ -1985,6 +2032,11 @@ function renderControls(){
 
 function render(){
   document.querySelectorAll(".sheet").forEach(n=>n.remove());
+  /* Das Wasserzeichen ist eine fortlaufende Zeichnung. Auf den Listen- und
+     Kartenansichten würde es unnötig Rechenzeit kosten, deshalb läuft es nur dort,
+     wo es zu sehen sein soll. */
+  document.body.classList.toggle("nowmark",
+    !(S.view==="about" || (S.view==="discover" && !S.mode)));
   const hm = $("#hMode");
   if(hm){
     const on = S.view==="discover" && S.mode && MODES[S.mode];
@@ -2014,18 +2066,20 @@ function init(){
 
   if(!S.places.length) S.places=FALLBACK_PLACES.map(p=>({...p,oh:p.oh||""}));
   S.mode=store.get("mode",null);
-  if(S.mode && MODES[S.mode]) S.activeCats=[...MODES[S.mode].cats]; else S.mode=null;
+  if(S.mode && MODES[S.mode]){ S.activeCats=[...MODES[S.mode].cats]; S.step="modes"; }
+  else S.mode=null;
   document.querySelectorAll("nav.tabs button").forEach(b=>
     b.addEventListener("click",()=>{
       if(b.dataset.view==="more"){ openMore(); return; }
       /* Nochmaliges Antippen von „Entdecken“ führt zur Startauswahl zurück –
          damit gibt es aus jedem Zustand einen Weg heraus. */
       if(b.dataset.view==="discover" && S.view==="discover" && !S.detail){
-        S.mode=null; store.set("mode",null); S.q=""; S.idx=0;
-        window.scrollTo({top:0}); render(); main().focus(); return;
+        if(S.mode){ S.mode=null; store.set("mode",null); S.q=""; S.idx=0; S.step="modes"; }
+        else S.step = "welcome";
+        window.scrollTo({top:0}); render(); main().focus({preventScroll:true}); return;
       }
       S.detail=null; document.body.classList.remove("locked");
-      S.view=b.dataset.view; window.scrollTo({top:0}); render(); main().focus();
+      S.view=b.dataset.view; window.scrollTo({top:0}); render(); main().focus({preventScroll:true});
     }));
   $("#hMode")?.addEventListener("click",()=>{ S.mode=null; S.view="discover"; render(); });
   $("#rad").addEventListener("input",e=>{
