@@ -147,6 +147,9 @@
     letter-spacing:-.01em}
   .wact{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px;
     font-family:var(--font);font-size:1rem}
+  .welcome .soon{font-family:var(--font);font-size:var(--micro);text-transform:uppercase;
+    letter-spacing:.16em;font-weight:600;color:var(--text-mute);
+    margin:26px 0 8px;padding-top:16px;border-top:1px solid var(--line)}
   .inlink{background:none;border:0;padding:0;font:inherit;cursor:pointer;color:var(--text);
     text-decoration:underline;text-underline-offset:3px}
   .hero h1{margin-bottom:.24em}
@@ -351,7 +354,8 @@
   .phase{border-left:2px solid var(--glass-line);padding:2px 0 2px 18px;margin:0 0 22px}
   .phase .pnum{font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
     font-weight:600;color:var(--text-mute);margin-bottom:7px}
-  .phase p{margin:0}
+  .phase p{margin:0 0 10px}
+  .phase p:last-child{margin-bottom:0}
   .sheet .why{margin-top:20px}
   body.locked{overflow:hidden}
   .hidden{display:none !important}
@@ -507,6 +511,15 @@ const FALLBACK_PLACES = [
    OpenStreetMap bleiben bestehen – die sind rechtlich verpflichtend.
    --------------------------------------------------------------- */
 const PROTOTYPE = true;
+
+/* ---------------------------------------------------------------
+   Kontaktadresse für Hinweise aus der Nutzerschaft.
+   Solange hier nichts steht, bietet Radiux nur den Weg über
+   OpenStreetMap an – eine Adresse zu veröffentlichen, die es nicht
+   gibt, wäre schlechter als gar keine.
+   Sobald das Impressum steht, hier dieselbe Adresse eintragen.
+   --------------------------------------------------------------- */
+const CONTACT = "";
 
 const MD = { lat: 52.1274, lon: 11.6392, label: "Magdeburg, Stadtmitte" };
 
@@ -1176,11 +1189,20 @@ function viewWelcome(){
   main().innerHTML = `<div aria-live="polite" class="sr" id="live"></div>
   <div class="welcome">
     <p class="wgreet">Hallo.</p>
-    <p>Radiux ist gerade am Anfang. Gebaut von einer Person aus Magdeburg,
-    ohne Geldgeber und ohne Werbung.</p>
-    <p>Die Idee ist einfach: Du sagst, worauf du Lust hast – essen, etwas erleben,
-    einfach stöbern – und bekommst Vorschläge aus deiner Umgebung. Ohne dich vorher
-    durch zehn Portale zu klicken.</p>
+    <p>Radiux entsteht in Magdeburg, für Magdeburg. Gebaut von einer Person –
+    für alle, die hier wohnen, hier studieren oder nur ein Wochenende bleiben.</p>
+    <p>Die Idee ist einfach: Du sagst, worauf du Lust hast – essen gehen, etwas erleben,
+    einen ruhigen Platz finden – und bekommst Vorschläge aus deiner Umgebung,
+    ohne dich vorher durch zehn Portale zu klicken.</p>
+    <p>Daraus soll mehr werden als eine Suche. Ein Ort, an dem sich die Stadt selbst
+    organisiert: Veranstaltungen, gemeinsame Unternehmungen, ruhige Treffen im kleinen Kreis.</p>
+    <p class="soon">Noch nicht gebaut, aber geplant</p>
+    <p>Ein persönlicher Assistent soll mit der Zeit lernen, was dir gefällt, und dir
+    daraufhin Passendes vorschlagen. Was er über dich weiß, bestimmst du – mit jeder
+    Bewertung und jeder Merkliste, die du anlegst. Wenn diese Funktion kommt, wird sie
+    freiwillig sein und vorher erklärt.</p>
+    <p>Radiux kommt ohne Geldgeber aus. Deshalb gibt es hier keine Werbung und nichts,
+    was dich quer durchs Netz verfolgt. Was Radiux ausmacht, bleibt kostenlos.</p>
     <p>Bisher kennt Radiux nur Magdeburg, und einiges fehlt noch. Das steht hier,
     weil es besser ist, das vorher zu sagen, als dich später zu enttäuschen.</p>
     <div class="wact">
@@ -1803,9 +1825,13 @@ function viewAbout(){
   </div>
   <div class="phase">
     <div class="pnum">Phase 3 · später</div>
-    <p>Weitere Städte, eigene Merklisten für Gruppen, Erinnerungen an gemerkte Termine.
-    Was Radiux ausmacht – suchen, entdecken, merken, Wege finden – bleibt für alle kostenlos.
-    Bezahlt würde nur Komfort, nie eine Kernfunktion.</p>
+    <p>Bewertungen, gemeinsame Merklisten für Gruppen, Erinnerungen an gemerkte Termine,
+    weitere Städte. Und der persönliche Assistent, der aus deinen Bewertungen lernt.</p>
+    <p>Dazu gehört ehrlicherweise: Bewertungen und ein lernender Assistent brauchen einen
+    Server, und ein Server kostet Geld. Beides kommt deshalb erst, wenn es tragfähig ist –
+    und beides bleibt freiwillig. Was Radiux ausmacht – suchen, entdecken, merken,
+    Wege finden – bleibt für alle kostenlos. Bezahlt würde nur Komfort, nie eine
+    Kernfunktion.</p>
   </div>
 
   <h2>Was heute noch fehlt</h2>
@@ -1814,7 +1840,7 @@ function viewAbout(){
     <li>Veranstaltungen sind eine Handauswahl, nicht der volle Kalender der Stadt.</li>
     <li>Öffnungszeiten stammen aus OpenStreetMap und können veraltet sein.</li>
     <li>Die Bilder sind Symbolbilder und zeigen nicht den jeweiligen Ort.</li>
-    <li>Ein eigenes Logo entsteht noch.</li>
+    <li>Bewertungen und der persönliche Assistent sind noch nicht gebaut.</li>
   </ul>
 
   <h2>Radiux auf den Startbildschirm legen</h2>
@@ -1832,10 +1858,57 @@ function viewAbout(){
   Radiux läuft weiterhin im Browser und ohne Server.</p>
 
   <h2>Mitmachen</h2>
-  <p>Fehlt ein Ort, hilft der schnellste Weg allen: Trage ihn in
-  <a href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
-  ein. Radiux liest von dort – was dort steht, taucht hier auf, und zwar auch in jeder
-  anderen App, die OpenStreetMap nutzt.</p>
+  <p>Radiux lebt davon, dass die Angaben stimmen. Eine Person allein kann nicht wissen,
+  welches Café seit März geschlossen hat oder wann der Biergarten in Buckau wirklich
+  aufmacht. Wenn dir etwas auffällt, hilf bitte mit – jeder Hinweis zählt.</p>
+
+  <h3>Der beste Weg: OpenStreetMap</h3>
+  <p>Öffnungszeiten, neue Orte, dauerhaft geschlossene Läden – all das gehört nach
+  <a href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>.
+  Ein Konto ist in zwei Minuten angelegt, das Bearbeiten geht direkt im Browser.
+  Der Vorteil: Deine Korrektur landet nicht nur in Radiux, sondern in jeder App,
+  die OpenStreetMap nutzt – und sie bleibt dort, auch wenn es Radiux einmal nicht mehr gibt.</p>
+
+  <h3>Hinweise direkt an Radiux</h3>
+  ${CONTACT ? `<p>Wenn dir der Umweg zu weit ist, schreib mir. Nützlich sind vor allem:
+  falsche Öffnungszeiten, geschlossene Betriebe, fehlende Orte und Veranstaltungen,
+  die hier fehlen.</p>
+  <p><a class="btn sm" href="mailto:${esc(CONTACT)}?subject=${
+    encodeURIComponent("Hinweis zu Radiux")}">Hinweis schreiben</a></p>`
+  : `<p>Ein Formular direkt in der App gibt es noch nicht. Es bräuchte einen Server,
+  der die Eingaben entgegennimmt – und damit einen Auftragsverarbeitungsvertrag,
+  ein Verzeichnis der Verarbeitungstätigkeiten und ein Meldeverfahren nach dem
+  Digitale-Dienste-Gesetz der EU. Das kommt in Phase 2, sauber gemacht statt schnell.</p>`}
+
+  <h3>Fotos</h3>
+  <p>Eigene Fotos sind willkommen und würden die Symbolbilder ersetzen. Bevor du eines
+  schickst, drei Dinge, die dich sonst in Schwierigkeiten bringen können:</p>
+  <ul class="bul">
+    <li>Das Foto muss von dir sein. Ein Bild aus dem Internet oder von der Website des
+    Betriebs darfst du nicht weitergeben, auch nicht mit Quellenangabe.</li>
+    <li>Von öffentlichem Grund aus darfst du Gebäude von außen fotografieren
+    (§ 59 Urheberrechtsgesetz). Innenräume gehören dem Betrieb – dort brauchst du
+    das Einverständnis der Betreiberin oder des Betreibers.</li>
+    <li>Erkennbare Personen dürfen nicht drauf sein, außer sie sind einverstanden.
+    Das gilt auch für Kennzeichen und für Kinder.</li>
+  </ul>
+  <p>Für den Fall, dass ein Betrieb ein Foto freigibt, gibt es ein einseitiges
+  Einverständnisformular zum Ausdrucken. Frag danach, bevor du fotografierst –
+  das ist höflicher und rechtlich eindeutig.</p>
+
+  <h3>Was mit deinem Hinweis passiert</h3>
+  ${CONTACT ? "" : `<p>Das gilt, sobald oben eine Adresse steht – die Regeln stehen
+  vorher fest, nicht hinterher.</p>`}
+  <p>Schreibst du eine E-Mail, sehe ich deine Adresse und deinen Text. Beides nutze ich
+  nur, um den Hinweis zu bearbeiten und dir gegebenenfalls zu antworten
+  (Art. 6 Abs. 1 lit. f DSGVO, berechtigtes Interesse an der Pflege der Angaben).
+  Die Nachricht wird gelöscht, sobald die Sache erledigt ist, spätestens nach sechs Monaten.
+  Es entsteht kein Konto, kein Newsletter, keine Weitergabe an Dritte.</p>
+  <p>Schickst du ein Foto, räumst du damit das Recht ein, es in Radiux zu zeigen –
+  widerruflich, jederzeit, formlos. Auf Wunsch wird dein Name als Urheber genannt,
+  sonst nicht. Ohne deine ausdrückliche Zustimmung wird kein Foto veröffentlicht.</p>
+  <p class="note">Ein Hinweis ist freiwillig. Es entsteht dir kein Nachteil, wenn du
+  nichts schickst, und Radiux funktioniert für dich genauso wie für alle anderen.</p>
 
   <footer class="attrib">
     Ortsdaten © OpenStreetMap-Mitwirkende, Open Database License.
