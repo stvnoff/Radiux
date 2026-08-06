@@ -19,7 +19,7 @@
     --accent:#efece4; --accent-ink:#0b0b0c;
     --pos:#8fbb96; --neg:#cf918a; --warn:#c9a86a;
     --r-sm:10px; --r-md:14px; --r-lg:18px; --r-xl:22px;
-    --card-h:clamp(380px,52vh,472px);
+    --card-h:clamp(320px,47vh,452px);
     --ease:cubic-bezier(.2,.8,.2,1);
     --micro:.68rem;
   }
@@ -30,7 +30,6 @@
       --line:rgba(18,18,16,.10); --line-2:rgba(18,18,16,.2);
       --glass:rgba(255,255,255,.5); --glass-2:rgba(255,255,255,.7);
       --glass-line:rgba(18,18,16,.12); --glass-hi:rgba(255,255,255,.9);
-      --card-veil:rgba(255,255,255,.92);
       --veil:rgba(244,243,240,.82); --card-veil:rgba(255,255,255,.66); --card-solid:#ffffff;
       --text:#121210; --text-dim:#575652; --text-mute:#7d7c77;
       --accent:#16150f; --accent-ink:#ffffff;
@@ -44,7 +43,6 @@
     font-size:16px;line-height:1.55;letter-spacing:-.012em;
     -webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;
     min-height:100dvh}
-  .bgfx{display:none}
   .wmark{position:fixed;left:50%;top:47%;transform:translate(-50%,-50%);
     width:min(112vw,660px);z-index:-1;pointer-events:none;opacity:.72}
   .wmark svg{width:100%;height:auto;display:block}
@@ -52,7 +50,7 @@
   @media (prefers-color-scheme:light){ .wmark{opacity:.4} }
 
   .wrap{max-width:620px;margin:0 auto;padding:0 22px}
-  main.wrap{padding-bottom:52px;scroll-margin-top:0}
+  main.wrap{padding-bottom:74px;scroll-margin-top:0}
   main:focus{outline:none}
   h1,h2,h3{line-height:1.1;margin:0 0 .5em;letter-spacing:-.035em;font-weight:600}
   h1{font-size:clamp(2.1rem,9vw,2.7rem)}
@@ -74,14 +72,15 @@
   header.app{position:sticky;top:0;z-index:30;background:var(--veil);
     backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
     border-bottom:1px solid var(--line)}
-  .bar{display:flex;align-items:center;gap:12px;padding:18px 0 15px}
+  .bar{display:flex;align-items:center;gap:12px;padding:18px 0 15px;min-width:0}
   .blogo{width:24px;height:30px;flex:0 0 auto;display:block;color:var(--text)}
   .blogo svg{width:100%;height:100%;display:block}
   .brand{font-weight:600;font-size:1.06rem;letter-spacing:.24em;text-transform:uppercase;
-    margin-right:auto;color:var(--text)}
+    margin-right:auto;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis}
   .modebtn{font-size:var(--micro);text-transform:uppercase;letter-spacing:.14em;font-weight:600;
     color:var(--text-dim);white-space:nowrap;background:var(--glass);cursor:pointer;
     border:1px solid var(--glass-line);border-radius:99px;padding:9px 15px;min-height:38px;
+    max-width:52vw;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;
     transition:color .2s,background .2s}
   .modebtn:hover{color:var(--text);background:var(--glass-2)}
 
@@ -230,9 +229,6 @@
   .stamp.yes{left:20px;color:#fff}
   .stamp.no{right:20px;color:#fff}
 
-  .actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
-  .actions .btn{text-align:center;padding:14px 4px;font-size:.86rem}
-  .act-no,.act-yes{border-color:var(--line-2);color:var(--text)}
   .counter{font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
     color:var(--text-mute);text-align:center;margin:0 0 4px;font-weight:600}
 
@@ -845,10 +841,28 @@ function badgeFor(p){
 /* ---------------- Speicher (§ 25 Abs. 2 Nr. 2 TDDDG) ---------------- */
 const store = {
   ok:(()=>{ try{ localStorage.setItem("_t","1"); localStorage.removeItem("_t"); return true; }catch(e){ return false; } })(),
-  get(k,d){ if(!this.ok) return d; try{ const v=localStorage.getItem("radius."+k); return v?JSON.parse(v):d; }catch(e){ return d; } },
-  set(k,v){ if(!this.ok) return; try{ localStorage.setItem("radius."+k,JSON.stringify(v)); }catch(e){} },
-  clear(){ if(!this.ok) return; Object.keys(localStorage).filter(k=>k.startsWith("radius.")).forEach(k=>localStorage.removeItem(k)); }
+  P:"radiux.", OLD:"radius.",
+  get(k,d){ if(!this.ok) return d; try{ const v=localStorage.getItem(this.P+k); return v?JSON.parse(v):d; }catch(e){ return d; } },
+  set(k,v){ if(!this.ok) return; try{ localStorage.setItem(this.P+k,JSON.stringify(v)); }catch(e){} },
+  clear(){ if(!this.ok) return;
+    Object.keys(localStorage).filter(k=>k.startsWith(this.P)||k.startsWith(this.OLD))
+      .forEach(k=>localStorage.removeItem(k)); },
+  /* Fruehere Fassungen hiessen noch "Radius". Wer damals etwas gemerkt hat,
+     soll es nach der Umbenennung nicht verlieren - einmalig uebernehmen. */
+  migrate(){ if(!this.ok) return;
+    try{
+      Object.keys(localStorage).filter(k=>k.startsWith(this.OLD)).forEach(k=>{
+        const neu = this.P + k.slice(this.OLD.length);
+        if(localStorage.getItem(neu)===null) localStorage.setItem(neu, localStorage.getItem(k));
+        localStorage.removeItem(k);
+      });
+    }catch(e){}
+  }
 };
+
+/* Fassungen vor der Umbenennung haben unter "radius." gespeichert.
+   Die Uebernahme muss laufen, bevor der Zustand unten zum ersten Mal liest. */
+store.migrate();
 
 const S = {
   view:"discover", vmode:store.get("vmode","karten"), detail:null, q:"", step:"welcome",
@@ -1177,7 +1191,8 @@ function whyBlock(p){
 function pills(p){
   const o=p._o;
   return `<div class="meta">
-    <span class="pill dist">${fmtDist(p._d)} · ${walkMin(p._d)} Min</span>
+    <span class="pill dist">${p.approx ? "Ort im Stadtgebiet"
+      : `${fmtDist(p._d)} · ${walkMin(p._d)} Min`}</span>
     <span class="pill ${o.s==="open"?"open":o.s==="closed"?"closed":o.s==="soon"?"soon":""}">${esc(o.t)}</span>
     ${p.adr?`<span class="pill">${esc(p.adr)}</span>`:""}
   </div>`;
@@ -1760,23 +1775,25 @@ function dragClose(el, close){
   const panel = el.querySelector(".panel");
   if(!panel) return;
   let y0=null, dy=0, active=false;
-  panel.addEventListener("pointerdown",e=>{
-    if(panel.scrollTop > 2) return;
-    if(e.target.closest("a,button,input,select,textarea")) return;
-    y0=e.clientY; dy=0; active=false;
+
+  const begin = (y, target)=>{
+    if(panel.scrollTop > 2) return false;
+    if(target && target.closest && target.closest("a,button,input,select,textarea")) return false;
+    y0=y; dy=0; active=false;
     panel.style.transition="none";
-  });
-  panel.addEventListener("pointermove",e=>{
-    if(y0===null) return;
-    dy=e.clientY-y0;
-    if(dy<=0){ panel.style.transform=""; return; }
-    if(!active && dy>6){ active=true; panel.setPointerCapture?.(e.pointerId); }
-    if(!active) return;
-    e.preventDefault();
-    panel.style.transform=`translateY(${dy}px)`;
+    return true;
+  };
+  const move = (y)=>{
+    if(y0===null) return false;
+    dy = y - y0;
+    if(dy<=0){ panel.style.transform=""; return false; }
+    if(!active && dy>6) active=true;
+    if(!active) return false;
+    panel.style.transform="translateY("+dy+"px)";
     panel.style.opacity=String(Math.max(.35, 1 - dy/620));
-  },{passive:false});
-  const stop=()=>{
+    return true;
+  };
+  const stop = ()=>{
     if(y0===null) return;
     const d=dy; y0=null;
     panel.style.transition="transform .3s cubic-bezier(.2,.8,.2,1), opacity .3s";
@@ -1786,8 +1803,36 @@ function dragClose(el, close){
     } else { panel.style.transform=""; panel.style.opacity=""; }
     active=false;
   };
-  panel.addEventListener("pointerup",stop);
-  panel.addEventListener("pointercancel",stop);
+
+  /* Finger. Nur so erreicht uns die Bewegung auf Handy und Tablet:
+     Solange das Blatt oben steht und nach unten gezogen wird, uebernehmen wir
+     die Geste, sonst bleibt das gewohnte Scrollen erhalten. */
+  panel.addEventListener("touchstart", e=>{
+    if(e.touches.length!==1){ y0=null; return; }
+    begin(e.touches[0].clientY, e.target);
+  }, {passive:true});
+  panel.addEventListener("touchmove", e=>{
+    if(y0===null || e.touches.length!==1) return;
+    if(move(e.touches[0].clientY) && e.cancelable) e.preventDefault();
+  }, {passive:false});
+  panel.addEventListener("touchend", stop, {passive:true});
+  panel.addEventListener("touchcancel", stop, {passive:true});
+
+  /* Maus */
+  panel.addEventListener("pointerdown", e=>{
+    if(e.pointerType && e.pointerType!=="mouse") return;
+    if(begin(e.clientY, e.target)) panel.setPointerCapture?.(e.pointerId);
+  });
+  panel.addEventListener("pointermove", e=>{
+    if(e.pointerType && e.pointerType!=="mouse") return;
+    move(e.clientY);
+  });
+  panel.addEventListener("pointerup", e=>{
+    if(e.pointerType && e.pointerType!=="mouse") return; stop();
+  });
+  panel.addEventListener("pointercancel", e=>{
+    if(e.pointerType && e.pointerType!=="mouse") return; stop();
+  });
 }
 
 
@@ -1965,7 +2010,8 @@ function viewSheet(){
   if(!p){ S.detail=null; return; }
   if(!p._d){ p._d = dist(S.origin,p); p._o = p.start ? {s:"soon",t:evLabel(p.start)} : openState(p.oh); }
   const rows = [];
-  rows.push(["Entfernung", `${fmtDist(p._d)} · etwa ${walkTxt(p._d)} zu Fuß`]);
+  rows.push(["Entfernung", p.approx ? "noch nicht bekannt"
+    : `${fmtDist(p._d)} · etwa ${walkTxt(p._d)} zu Fuß`]);
   if(p.start) rows.push(["Termin", evLabel(p.start)]);
   if(p.approx) rows.push(["Hinweis",
     "Die genaue Lage dieses Veranstaltungsortes liegt Radiux noch nicht vor. "
