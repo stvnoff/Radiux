@@ -93,6 +93,8 @@
 
   .controls{padding:2px 22px 18px;border-bottom:1px solid var(--line)}
   .rng{display:flex;align-items:center;gap:14px;width:100%;margin:8px 0 16px;min-width:0}
+  .rng.aus input[type=range]{opacity:.3}
+  .rng.aus label,.rng.aus .radval{color:var(--text-mute)}
   .rng label{flex:0 0 auto;font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
     font-weight:600;color:var(--text-mute)}
   .geobtn{flex:0 0 auto;width:38px;height:38px;display:grid;place-items:center;cursor:pointer;
@@ -381,6 +383,7 @@
   .phase p{margin:0 0 10px}
   .phase p:last-child{margin-bottom:0}
   .sheet .why{margin-top:20px}
+  .about{margin:16px 0 0;font-size:.97rem;line-height:1.62;color:var(--text-dim)}
   body.locked{overflow:hidden}
   .hidden{display:none !important}
   @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
@@ -509,26 +512,30 @@
    Live-Abfrage bei OpenStreetMap erfolgt ist.
    Quelle: OpenStreetMap-Mitwirkende, ODbL. Angaben ungeprüft. */
 const FALLBACK_PLACES = [
-  {n:"Magdeburger Dom",c:"sehenswuerdigkeit",lat:52.12472,lon:11.63472,t:"Gotische Kathedrale, Wahrzeichen der Stadt",oh:"Mo-Sa 10:00-17:00"},
-  {n:"Grüne Zitadelle von Magdeburg",c:"sehenswuerdigkeit",lat:52.12683,lon:11.63797,t:"Letzter Entwurf von Friedensreich Hundertwasser"},
-  {n:"Kloster Unser Lieben Frauen",c:"museum",lat:52.12583,lon:11.63700,t:"Kunstmuseum und Konzerthalle",oh:"Tu-Su 10:00-17:00"},
-  {n:"Kulturhistorisches Museum",c:"museum",lat:52.12900,lon:11.63200,t:"Stadtgeschichte und Magdeburger Halbkugeln",oh:"Tu-Su 10:00-17:00"},
-  {n:"Technikmuseum Magdeburg",c:"museum",lat:52.13600,lon:11.63900,t:"Technikgeschichte zum Anfassen",oh:"Tu-Su 10:00-17:00"},
-  {n:"Elbauenpark",c:"park",lat:52.13550,lon:11.67200,t:"Großer Landschaftspark mit Seebühne"},
-  {n:"Jahrtausendturm",c:"sehenswuerdigkeit",lat:52.13500,lon:11.67100,t:"Aussichts- und Ausstellungsturm im Elbauenpark"},
-  {n:"Zoo Magdeburg",c:"erleben",lat:52.15600,lon:11.61000,t:"Zoologischer Garten",oh:"Mo-Su 09:00-18:00"},
-  {n:"Rotehornpark",c:"park",lat:52.12000,lon:11.64500,t:"Stadtpark auf dem Werder"},
-  {n:"Herrenkrugpark",c:"park",lat:52.14500,lon:11.67000,t:"Landschaftspark an der Elbe"},
-  {n:"Gruson-Gewächshäuser",c:"erleben",lat:52.12100,lon:11.64300,t:"Botanische Schauhäuser",oh:"Tu-Su 10:00-16:00"},
-  {n:"Opernhaus Magdeburg",c:"theater",lat:52.13000,lon:11.63500,t:"Oper und Schauspiel"},
-  {n:"Puppentheater Magdeburg",c:"theater",lat:52.13500,lon:11.62500,t:"Figurentheater für alle Altersgruppen"},
-  {n:"Festung Mark",c:"erleben",lat:52.13300,lon:11.63300,t:"Veranstaltungsort in historischer Festungsanlage"},
-  {n:"Hasselbachplatz",c:"bar",lat:52.12200,lon:11.63200,t:"Ausgehviertel mit Bars und Kneipen"},
-  {n:"Allee-Center Magdeburg",c:"einkaufen",lat:52.12900,lon:11.63000,t:"Einkaufszentrum in der Innenstadt",oh:"Mo-Sa 09:30-20:00"},
-  {n:"Hauptbahnhof Magdeburg",c:"alltag",lat:52.13050,lon:11.62700,t:"Fern- und Regionalbahnhof",oh:"24/7"},
-  {n:"Wissenschaftshafen",c:"sehenswuerdigkeit",lat:52.14200,lon:11.64500,t:"Umgenutztes Hafenareal an der Elbe"},
-  {n:"Sternbrücke",c:"sehenswuerdigkeit",lat:52.12600,lon:11.64300,t:"Historische Bogenbrücke über die Alte Elbe"},
-  {n:"Elbuferpromenade",c:"park",lat:52.12800,lon:11.63900,t:"Uferweg mit Blick auf die Altstadt"}
+  {n:"Magdeburger Dom",c:"sehenswuerdigkeit",lat:52.12472,lon:11.63472,t:"Gotische Kathedrale, Wahrzeichen der Stadt",oh:"Mo-Sa 10:00-17:00",i:"Baubeginn 1209, fertig erst 1520 – über drei Jahrhunderte Bauzeit. Es ist die erste Kirche auf deutschem Boden, die von Anfang an gotisch geplant wurde, und die erste, die fertig wurde. Hier liegt Kaiser Otto der Große begraben, zusammen mit seiner ersten Frau Editha, deren Gebeine 2008 in einem Bleisarg wiedergefunden wurden. Der Nordturm misst rund 101 Meter; die Aussichtsplattform auf 81,5 Metern erreicht man über 433 Stufen."},
+  {n:"Grüne Zitadelle von Magdeburg",c:"sehenswuerdigkeit",lat:52.12683,lon:11.63797,t:"Letzter Entwurf von Friedensreich Hundertwasser",i:"Der letzte Entwurf von Friedensreich Hundertwasser. Er starb im Jahr 2000, fünf Jahre vor der Eröffnung 2005. Krumme Linien, keine geraden Fenster, Bäume auf und im Gebäude – gebaut als Gegenentwurf zur Rasterarchitektur ringsum. Drinnen: Läden, ein Café, ein Restaurant, ein Theater, ein Hotel und über fünfzig Wohnungen. Man darf hineingehen."},
+  {n:"Kloster Unser Lieben Frauen",c:"museum",lat:52.12583,lon:11.63700,t:"Kunstmuseum und Konzerthalle",oh:"Tu-Su 10:00-17:00",i:"Um 1015 gegründet und damit älter als fast alles andere in der Stadt – eines der bedeutendsten romanischen Bauwerke Deutschlands. Heute ist es zweierlei: Kunstmuseum mit den Sammlungen der Stadt und, in der ehemaligen Klosterkirche, die Konzerthalle Georg Philipp Telemann. Nach langer Sanierung 2022 wieder geöffnet."},
+  {n:"Kulturhistorisches Museum",c:"museum",lat:52.12900,lon:11.63200,t:"Stadtgeschichte und Magdeburger Halbkugeln",oh:"Tu-Su 10:00-17:00",i:"Eröffnet 1906, damals als Kaiser-Friedrich-Museum. Das bekannteste Stück ist der Magdeburger Reiter – die älteste freistehende Reiterstatue nördlich der Alpen, das Original steht hier im Kaiser-Otto-Saal. Die Sammlung reicht von Archäologie über Stadtgeschichte bis zu Malerei und Textilien."},
+  {n:"Technikmuseum Magdeburg",c:"museum",lat:52.13600,lon:11.63900,t:"Technikgeschichte zum Anfassen",oh:"Tu-Su 10:00-17:00",i:"Magdeburg war jahrzehntelang Schwermaschinenstadt. Das Museum zeigt, was hier gebaut wurde: Dampfmaschinen, Werkzeugmaschinen, Alltagstechnik. Vieles darf man anfassen und in Bewegung setzen – gedacht für Leute, die wissen wollen, wie etwas funktioniert."},
+  {n:"Elbauenpark",c:"park",lat:52.13550,lon:11.67200,t:"Großer Landschaftspark mit Seebühne",i:"Entstanden 1999 zur Bundesgartenschau auf einem ehemaligen Militärgelände. Rund hundert Hektar Wiesen, Gärten und Wege, dazu die Seebühne für Konzerte im Sommer und ein Schmetterlingshaus. Der große Park der Stadt für alles, was draußen stattfindet."},
+  {n:"Jahrtausendturm",c:"sehenswuerdigkeit",lat:52.13500,lon:11.67100,t:"Aussichts- und Ausstellungsturm im Elbauenpark",i:"60 Meter hoch und aus Holz – nach Angaben des Betreibers das höchste Holzgebäude seiner Art weltweit. Innen liegt auf fünf Ebenen eine Ausstellung zu 6000 Jahren Technik- und Wissenschaftsgeschichte, mit rund 200 Exponaten, davon 150 zum Ausprobieren. Eine 450 Meter lange Rampe führt spiralförmig nach oben zur Plattform auf 43 Metern."},
+  {n:"Zoo Magdeburg",c:"erleben",lat:52.15600,lon:11.61000,t:"Zoologischer Garten",oh:"Mo-Su 09:00-18:00",i:"Einer der größeren Zoos Ostdeutschlands, bekannt vor allem für die Afrika-Anlagen. Genug für einen ganzen Nachmittag, und ein verlässlicher Plan, wenn das Wetter nicht mitspielt oder Kinder dabei sind."},
+  {n:"Rotehornpark",c:"park",lat:52.12000,lon:11.64500,t:"Stadtpark auf dem Werder",i:"Der Stadtpark auf dem Werder, einer Insel zwischen Elbe und Alter Elbe. Alte Bäume, weite Wiesen, das Pferdetor und die Stadthalle. Wer nur eine Stunde Zeit hat und wirklich raus will, geht hierher."},
+  {n:"Herrenkrugpark",c:"park",lat:52.14500,lon:11.67000,t:"Landschaftspark an der Elbe",i:"Landschaftspark im englischen Stil am rechten Elbufer, angelegt im 19. Jahrhundert. Weitläufig, ruhig, mit altem Baumbestand – der Park, in dem man niemandem begegnen muss."},
+  {n:"Gruson-Gewächshäuser",c:"erleben",lat:52.12100,lon:11.64300,t:"Botanische Schauhäuser",oh:"Tu-Su 10:00-16:00",i:"1896 eröffnet, gestiftet vom Magdeburger Industriellen Hermann Gruson aus seiner eigenen Pflanzensammlung. Zehn Schauhäuser, rund 4000 Quadratmeter unter Glas, etwa 4900 Pflanzenarten von fünf Kontinenten. Im 16 Meter hohen Palmenhaus führt ein Steg durch die Baumkronen. Seit der Sanierung 2021 wieder offen."},
+  {n:"Opernhaus Magdeburg",c:"theater",lat:52.13000,lon:11.63500,t:"Oper und Schauspiel",i:"Das große Haus des Theaters Magdeburg: Oper, Ballett und Konzerte. Wer schauen will, was läuft, findet den Spielplan auf der Website des Hauses – Radiux zeigt Termine bisher nur ausschnittweise."},
+  {n:"Puppentheater Magdeburg",c:"theater",lat:52.13500,lon:11.62500,t:"Figurentheater für alle Altersgruppen",i:"Eines der bekanntesten Figurentheater Deutschlands, und ausdrücklich nicht nur für Kinder – ein guter Teil des Spielplans richtet sich an Erwachsene. Dazu gehört die Villa p., in der Figuren aus aller Welt ausgestellt sind."},
+  {n:"Festung Mark",c:"erleben",lat:52.13300,lon:11.63300,t:"Veranstaltungsort in historischer Festungsanlage",i:"Ein Stück preußischer Festungsanlage aus dem 19. Jahrhundert, heute Veranstaltungsort: Konzerte, Märkte, Feste, im Sommer der Biergarten im Innenhof. Rohe Mauern, viel Platz, wenig Schnörkel."},
+  {n:"Hasselbachplatz",c:"bar",lat:52.12200,lon:11.63200,t:"Ausgehviertel mit Bars und Kneipen",i:"Kein Ort, sondern eine Gegend: der Platz und die Straßen ringsum sind das Ausgehviertel der Stadt. Bars, Kneipen, Spätis, Imbisse. Wer abends losziehen will, ohne vorher einen Plan zu machen, fängt hier an."},
+  {n:"Allee-Center Magdeburg",c:"einkaufen",lat:52.12900,lon:11.63000,t:"Einkaufszentrum in der Innenstadt",oh:"Mo-Sa 09:30-20:00",i:"Einkaufszentrum mitten in der Innenstadt, direkt am Breiten Weg. Praktisch bei Regen, und der kürzeste Weg, wenn etwas Bestimmtes fehlt."},
+  {n:"Hauptbahnhof Magdeburg",c:"alltag",lat:52.13050,lon:11.62700,t:"Fern- und Regionalbahnhof",oh:"24/7",i:"Fern- und Regionalverkehr, Straßenbahnknoten und für viele der erste Eindruck von der Stadt. Vom Bahnhof sind es zu Fuß rund fünfzehn Minuten bis zum Dom."},
+  {n:"Wissenschaftshafen",c:"sehenswuerdigkeit",lat:52.14200,lon:11.64500,t:"Umgenutztes Hafenareal an der Elbe",i:"Ein alter Handelshafen, der zum Forschungs- und Veranstaltungsviertel umgebaut wurde. Kräne und Speicher stehen noch, dazwischen Institute, Bürobauten und Wasser. Ein ungewöhnlicher Ort zum Spazieren, besonders bei Abendlicht."},
+  {n:"Sternbrücke",c:"sehenswuerdigkeit",lat:52.12600,lon:11.64300,t:"Historische Bogenbrücke über die Alte Elbe",i:"Fußgängerbrücke über die Alte Elbe, gebaut Anfang des 20. Jahrhunderts, mit dem geschwungenen Bogen, den man von jedem Magdeburg-Foto kennt. Verbindet die Elbuferpromenade mit dem Rotehornpark."},
+  {n:"Klosterbergegarten",c:"park",lat:52.11389,lon:11.63306,t:"Der erste Volksgarten Deutschlands",i:"1825 nach Plänen von Peter Joseph Lenné angelegt – der erste Volksgarten Deutschlands, also die erste Grünanlage, die ausdrücklich für alle gedacht war und nicht für einen Hof. Das Gesellschaftshaus mittendrin stammt von Karl Friedrich Schinkel und war 1829 fertig. Vorher stand hier ein Kloster, gut 800 Jahre lang."},
+  {n:"Otto-von-Guericke-Universität",c:"alltag",lat:52.14031,lon:11.64323,t:"Campus mit rund 13.000 Studierenden",i:"Neun Fakultäten, rund 100 Studiengänge, etwa 13.000 Studierende – von Medizin über Maschinenbau bis Informatik. Der Campus ist offen: Mensa, Bibliothek, Grünflächen und im Semester ein eigener Betrieb an Veranstaltungen. Wer neu in der Stadt ist, findet hier am schnellsten Anschluss."},
+  {n:"Lukasklause",c:"museum",lat:52.13606,lon:11.65080,t:"Otto-von-Guericke-Museum im Wehrturm",i:"Ein spätgotischer Wehrturm, in Teilen mittelalterlich, direkt an der Elbe. Drinnen das Museum zu Otto von Guericke – dem Bürgermeister und Naturforscher, der mit den Magdeburger Halbkugeln bewies, dass Luftdruck existiert. Nachbauten seiner Apparate stehen hier."},
+  {n:"Schiffshebewerk Rothensee",c:"sehenswuerdigkeit",lat:52.22375,lon:11.67256,t:"Technisches Denkmal von 1938",i:"1938 eröffnet, 97 Meter lang und bis heute in Betrieb. Es hebt Schiffe 16 Meter hoch – nicht mit Pumpen, sondern mit zwei Schwimmern unter Wasser. Eine Durchfahrt kostet rund fünf Euro Energie; die Schleuse nebenan braucht dafür das Achtzigfache. 2013 nach Bürgerprotest wieder in Betrieb genommen."},
+  {n:"Elbuferpromenade",c:"park",lat:52.12800,lon:11.63900,t:"Uferweg mit Blick auf die Altstadt",i:"Der Weg am Wasser unterhalb der Altstadt, mit Blick auf Dom und Strom. Abends die naheliegendste Runde der Stadt – kostet nichts, dauert so lange man will."}
 ];
 
 /* ------------------------------------------------------------------
@@ -557,18 +564,32 @@ const CONTACT = "";
 
 const MD = { lat: 52.1274, lon: 11.6392, label: "Magdeburg, Stadtmitte" };
 
+/* Radiux kennt bisher nur Magdeburg. Wer weiter als 25 km entfernt ist, sieht mit einem
+   Umkreis von drei Kilometern nichts – und stünde vor einer leeren Seite. In dem Fall
+   rechnet Radiux ab der Stadtmitte und blendet die Umkreisgrenze aus: Magdeburg im
+   Ueberblick statt Fehlanzeige. */
+const FERN = 25000;
+function istFern(){ return dist(S.origin, MD) > FERN; }
+function bezug(){ return istFern() ? MD : S.origin; }
+
 const CATS = [
-  { k:"restaurant",       l:"Essen gehen",       m:["restaurant","biergarten"] },
+  { k:"restaurant",       l:"Essen gehen",       m:["restaurant","biergarten","food_court"] },
   { k:"cafe",             l:"Café & Bäckerei",   m:["cafe","ice_cream","bakery"] },
   { k:"bar",              l:"Bar & Kneipe",      m:["bar","pub","nightclub","dance","music_venue","events_venue"] },
   { k:"schnell",          l:"Schnell & günstig", m:["fast_food"] },
-  { k:"sehenswuerdigkeit",l:"Sehenswürdigkeit",  m:["attraction","viewpoint","artwork"] },
+  { k:"sehenswuerdigkeit",l:"Sehenswürdigkeit",  m:["attraction","viewpoint","artwork","monument",
+                                                    "castle","city_gate","ruins","tower","water_tower","lighthouse"] },
   { k:"museum",           l:"Museum & Galerie",  m:["museum","gallery"] },
   { k:"theater",          l:"Bühne & Kino",      m:["theatre","cinema","arts_centre"] },
-  { k:"park",             l:"Park & Natur",      m:["park","garden"] },
-  { k:"erleben",          l:"Freizeit & Sport",  m:["fitness_centre","sports_centre","swimming_pool","zoo","theme_park","escape_game","bowling_alley"] },
-  { k:"einkaufen",        l:"Einkaufen",         m:["supermarket","mall","books"] },
-  { k:"alltag",           l:"Alltag",            m:["fuel","library"] },
+  { k:"park",             l:"Park & Natur",      m:["park","garden","nature_reserve","beach","picnic_site"] },
+  { k:"erleben",          l:"Freizeit & Sport",  m:["fitness_centre","sports_centre","swimming_pool","zoo",
+                                                    "theme_park","escape_game","bowling_alley","water_park",
+                                                    "beach_resort","marina","sauna","miniature_golf",
+                                                    "horse_riding","sports_hall","climbing","skateboard",
+                                                    "aquarium","public_bath"] },
+  { k:"einkaufen",        l:"Einkaufen",         m:["supermarket","mall","books","marketplace",
+                                                    "music","second_hand","charity","video_games"] },
+  { k:"alltag",           l:"Alltag",            m:["fuel","library","university","college"] },
   { k:"event",            l:"Veranstaltung",     m:[] }
 ];
 const CATMAP = Object.fromEntries(CATS.map(c => [c.k, c.l]));
@@ -1016,6 +1037,7 @@ function reasons(p){
     return o;
   }
   const out=[`${fmtDist(p._d)} entfernt – etwa ${walkTxt(p._d)} zu Fuß`];
+  if(p.i) out.push("Beschreibung vorhanden – tippen für Details");
   if(p._o.s==="open") out.push("Hat aktuell geöffnet");
   else if(p._o.s==="closed") out.push("Hat gerade geschlossen – deshalb weiter unten");
   else out.push("Öffnungszeiten liegen nicht vor – neutral bewertet");
@@ -1028,7 +1050,8 @@ function reasons(p){
 
 /* ---------------- Datenaufbereitung ---------------- */
 function catOf(tags){
-  const vals=[tags.amenity,tags.tourism,tags.leisure,tags.shop].filter(Boolean);
+  const vals=[tags.amenity,tags.tourism,tags.leisure,tags.shop,
+              tags.historic,tags.man_made,tags.natural,tags.sport].filter(Boolean);
   for(const c of CATS) if(vals.some(v=>c.m.includes(v))) return c.k;
   return null;
 }
@@ -1042,15 +1065,17 @@ function allowed(tags){
 }
 function prepare(){
   const raw=S.places.concat(eventsAsPlaces()).map(p=>({...p}));
-  raw.forEach(p=>{ p._d=dist(S.origin,p);
+  const ref = bezug();
+  raw.forEach(p=>{ p._d=dist(ref,p);
     p._o = p.start ? { s:"soon", t:evLabel(p.start) } : openState(p.oh); });
   const cats = S.activeCats.length ? S.activeCats : CATS.map(c=>c.k);
   const q = S.q.trim();
   if(q && queryBlocked(q)) return [];
   /* Bei aktiver Suche gelten weder Umkreis noch Kategorie- oder Vorhaben-Filter –
      wer einen Namen eingibt, will diesen Ort finden, egal in welchem Vorhaben er steckt. */
-  let list = raw.filter(p => q
-    ? (matches(p,q) && !S.hidden.includes(p.n))
+  const fern = istFern();
+  let list = raw.filter(p => (q || fern)
+    ? ((q ? matches(p,q) : cats.includes(p.c)) && !S.hidden.includes(p.n))
     : (p._d<=S.radius && cats.includes(p.c) && !S.hidden.includes(p.n)));
   list.forEach(p=>{ p._s=score(p); });
   list.sort((a,b)=>b._s-a._s);
@@ -1074,19 +1099,22 @@ async function loadLive(){
   S.loading=true; say("Orte werden geladen …"); render();
   /* Radiux kennt bisher nur Magdeburg. Wer von außerhalb lädt, bekäme sonst ein
      leeres Ergebnis – deshalb wird in dem Fall um die Stadtmitte herum geladen. */
-  const far = dist(S.origin, MD) > 25000;
-  const c = far ? MD : S.origin;
+  const far = istFern();
+  const c = bezug();
   const r=Math.max(S.radius,4000)/111000;
   const bb=[c.lat-r, c.lon-r*1.6, c.lat+r, c.lon+r*1.6]
     .map(n=>n.toFixed(4)).join(",");
   if(far) say("Du bist weit von Magdeburg entfernt – Radiux lädt die Orte der Stadtmitte.");
-  const q=`[out:json][timeout:60];(
-    nwr(${bb})["amenity"~"^(restaurant|cafe|bar|pub|fast_food|ice_cream|biergarten|theatre|cinema|arts_centre|library|nightclub|fuel)$"]["name"];
-    nwr(${bb})["tourism"~"^(attraction|museum|artwork|viewpoint|gallery|zoo|theme_park)$"]["name"];
-    nwr(${bb})["leisure"~"^(park|fitness_centre|sports_centre|swimming_pool|garden|dance|escape_game|bowling_alley)$"]["name"];
-    nwr(${bb})["amenity"~"^(events_venue|community_centre|music_venue)$"]["name"];
-    nwr(${bb})["shop"~"^(supermarket|mall|bakery|books|clothes|greengrocer)$"]["name"];
-  );out center 1500;`;
+  const q=`[out:json][timeout:90];(
+    nwr(${bb})["amenity"~"^(restaurant|cafe|bar|pub|fast_food|ice_cream|biergarten|theatre|cinema|arts_centre|library|nightclub|fuel|events_venue|community_centre|music_venue|marketplace|food_court|university|college|public_bath)$"]["name"];
+    nwr(${bb})["tourism"~"^(attraction|museum|artwork|viewpoint|gallery|zoo|theme_park|aquarium|picnic_site)$"]["name"];
+    nwr(${bb})["leisure"~"^(park|fitness_centre|sports_centre|swimming_pool|garden|dance|escape_game|bowling_alley|water_park|beach_resort|marina|sauna|miniature_golf|horse_riding|sports_hall|nature_reserve)$"]["name"];
+    nwr(${bb})["historic"~"^(monument|castle|city_gate|ruins|tower)$"]["name"];
+    nwr(${bb})["man_made"~"^(tower|water_tower|lighthouse)$"]["name"];
+    nwr(${bb})["natural"="beach"]["name"];
+    nwr(${bb})["sport"~"^(climbing|skateboard)$"]["name"];
+    nwr(${bb})["shop"~"^(supermarket|mall|bakery|books|clothes|greengrocer|music|second_hand|charity|video_games)$"]["name"];
+  );out center 2000;`;
 
   let lastErr="unbekannter Fehler";
   for(const url of OVERPASS){
@@ -1132,8 +1160,8 @@ function useGeo(){
     pos=>{ S.origin={lat:pos.coords.latitude, lon:pos.coords.longitude, label:"Dein Standort"};
       S.idx=0;
       const w = dist(S.origin, MD);
-      say(w > 25000
-        ? `Standort übernommen – du bist ${fmtDist(w)} von Magdeburg entfernt. Radiux kennt bisher nur Magdeburg.`
+      say(w > FERN
+        ? `Standort übernommen – du bist ${fmtDist(w)} von Magdeburg entfernt. Radiux zeigt dir die Stadt im Überblick.`
         : "Standort übernommen.");
       render(); },
     ()=>say("Standort nicht verfügbar. Es bleibt bei Magdeburg, Stadtmitte."),
@@ -1307,24 +1335,20 @@ function viewStart(){
 /* ---------------- Entdecken ---------------- */
 function viewDiscover(){
   const list=prepare(), p=list[S.idx];
-  const far = dist(S.origin, MD) > 25000;
+  const far = istFern();
   let body;
   if(S.loading){
     body = `<div class="empty"><p>Orte werden von OpenStreetMap geladen …</p></div>`;
   } else if(!p){
     body = `<div class="empty">
-      ${far?`<p><strong>Du bist rund ${fmtDist(dist(S.origin,MD))} von Magdeburg entfernt.</strong></p>
-      <p>Radiux kennt zurzeit nur Magdeburg. Setze den Umkreis zurück auf die Stadtmitte,
-      dann siehst du die Vorschläge wieder.</p>`:`
       <p><strong>${S.q.trim() ? (queryBlocked(S.q) ? "Dazu zeigt Radiux keine Ergebnisse." : "Nichts gefunden.") : "Keine weiteren Orte im gewählten Umkreis."}</strong></p>
       <p>${S.q.trim()
         ? (queryBlocked(S.q)
             ? "Orte des Gesundheitswesens sind bewusst nicht Teil von Radiux – weder in der Anzeige noch in der Suche."
             : "Andere Schreibweise probieren, oder aktuelle Orte laden – der Startbestand umfasst nur wenige Orte.")
-        : "Vergrößere den Umkreis, wähle eine andere Kategorie oder lade aktuelle Daten."}</p>`}
+        : "Vergrößere den Umkreis, wähle eine andere Kategorie oder lade aktuelle Daten."}</p>
       <div class="lact" style="justify-content:center">
         ${HIST.length?`<button class="btn sm" id="bUndo2">← Zurück</button>`:""}
-        <button class="btn sm ${far?"primary":"ghost"}" id="bHome">Umkreis auf Magdeburg setzen</button>
         <button class="btn sm ghost" id="bBack">Vorhaben ändern</button>
         <button class="btn sm ghost" id="reset">Ausgeblendete zurückholen</button>
       </div></div>`;
@@ -1359,7 +1383,7 @@ function viewDiscover(){
         </div>
       </article>
     </div>
-    <p class="hint">${HIST.length?`<button type="button" class="undo" id="bUndo">← Zurück</button> · `:""}Vorschlag ${S.idx+1} von ${list.length} · ${esc(S.dataSource)} · tippen für Details</p>`;
+    <p class="hint">${HIST.length?`<button type="button" class="undo" id="bUndo">← Zurück</button> · `:""}Vorschlag ${S.idx+1} von ${list.length} · ${esc(S.dataSource)}${far?" · ab Stadtmitte":""} · tippen für Details</p>`;
   }
 
   main().innerHTML = `<div aria-live="polite" class="sr" id="live"></div>
@@ -1371,6 +1395,10 @@ function viewDiscover(){
       <button type="button" class="tinylink" id="bLive" style="margin-left:auto">${
         S.loading ? "lädt …" : S.loaded ? "Orte neu laden" : "aktuelle Orte laden"}</button>
     </div>
+    ${far ? `<div class="note" style="margin:14px 0 0">
+      <strong>Du bist rund ${fmtDist(dist(S.origin,MD))} von Magdeburg entfernt.</strong>
+      Radiux zeigt dir die Stadt im Überblick – Entfernungen ab Stadtmitte,
+      ohne Umkreisgrenze.</div>` : ""}
     ${S.q.trim() ? `<p class="counter" style="text-align:left;margin:14px 0 0">${
         queryBlocked(S.q) ? "Zu diesem Begriff zeigt Radiux bewusst keine Ergebnisse."
         : `${list.length} Treffer für „${esc(S.q.trim())}“ · sucht in allen Kategorien, ohne Umkreis`}</p>` : ""}
@@ -1384,8 +1412,6 @@ function viewDiscover(){
     say("Ausgeblendete Orte wurden zurückgeholt."); render(); });
   $("#bUndo")?.addEventListener("click",undo);
   $("#bUndo2")?.addEventListener("click",undo);
-  $("#bHome")?.addEventListener("click",()=>{ S.origin={...MD}; S.idx=0;
-    say("Umkreis liegt wieder auf der Magdeburger Stadtmitte."); render(); });
   $("#bBack")?.addEventListener("click",()=>{ S.mode=null; store.set("mode",null);
     S.q=""; S.idx=0; window.scrollTo({top:0}); render(); });
   if(p && !S.loading && $("#card")){
@@ -1436,7 +1462,7 @@ function bindList(){
 
 /* ---------------- Merkliste ---------------- */
 function viewSaved(){
-  const items=S.saved.map(p=>({...p,_d:dist(S.origin,p),_o:openState(p.oh)}));
+  const items=S.saved.map(p=>({...p,_d:dist(bezug(),p),_o:openState(p.oh)}));
   main().innerHTML=`<div aria-live="polite" class="sr" id="live"></div>
     <h1 style="margin-top:22px">Merkliste</h1>
     ${items.length ? `<p class="lead" style="color:var(--text-dim)">${items.length} ${items.length===1?"Ort":"Orte"} gemerkt.</p>
@@ -1477,6 +1503,23 @@ function viewHow(){
           <div class="wbar"><i style="width:${w}%"></i></div></td>
       <td>${esc(d)}</td></tr>`).join("")}</tbody>
   </table>
+  <h2>Welche Orte Radiux lädt</h2>
+  <p>Über „aktuelle Orte laden“ fragt Radiux OpenStreetMap nach allem ab, was im Umkreis
+  liegt und einen Namen trägt: Gaststätten, Bars und Clubs, Bühnen und Kinos, Museen und
+  Galerien, Denkmäler, Türme und Kunst im öffentlichen Raum, Parks, Naturschutzgebiete und
+  Badestellen, Sport- und Kletterhallen, Schwimmbäder, Bowling und Escape-Räume,
+  Hochschulen, Märkte, Läden.</p>
+  <p>Nicht geladen werden Orte des Gesundheitswesens und altersbeschränkte Betriebe –
+  siehe die beiden Abschnitte weiter unten. Wie viel dabei herauskommt, hängt davon ab,
+  wie gut die Stadt in OpenStreetMap erfasst ist. Fehlt etwas, kann es jeder eintragen.</p>
+
+  <h2>Beschreibungen</h2>
+  <p>Zu einigen bekannten Orten steht in der Detailansicht ein längerer Text. Diese Texte
+  sind von Hand geschrieben und anhand öffentlicher Quellen geprüft – Wikipedia, die Seiten
+  der Landeshauptstadt Magdeburg und die Websites der Häuser selbst. Sie sind weder bezahlt
+  noch von den Betrieben gestellt, und sie beeinflussen die Reihenfolge der Vorschläge nicht.</p>
+  <p>Fällt dir ein Fehler auf, sag Bescheid – siehe „Mitmachen“ unter „Über Radiux“.</p>
+
   <h2>Jugendschutz</h2>
   <p>Radiux prüft kein Alter und zeigt deshalb keine Orte, deren Besuch an ein Mindestalter
   gebunden ist: Erotikbetriebe, Bordelle, Spielhallen, Spielbanken und Wettbüros werden
@@ -1685,7 +1728,7 @@ function miniMap(p){
   const W=320, H=320, cx=W/2, cy=H/2, pad=30;
   const maxD = Math.max(p._d*1.28, 250);
   const sc = (cy-pad)/maxD;
-  const deg = bearingTo(S.origin,p), rad = deg*Math.PI/180;
+  const deg = bearingTo(bezug(),p), rad = deg*Math.PI/180;
   const tx = cx + Math.sin(rad)*p._d*sc, ty = cy - Math.cos(rad)*p._d*sc;
   const rings = [maxD/3, maxD*2/3, maxD];
   let g = "";
@@ -1708,9 +1751,9 @@ function miniMap(p){
   g += `<circle cx="${tx.toFixed(1)}" cy="${ty.toFixed(1)}" r="5.5" fill="currentColor"/>`;
   return `<div class="mmap">
     <svg viewBox="0 0 ${W} ${H}" role="img"
-      aria-label="Übersicht: ${esc(p.n)} liegt ${fmtDist(p._d)} in Richtung ${dirName(deg)}, ausgehend von ${esc(S.origin.label)}">${g}</svg>
+      aria-label="Übersicht: ${esc(p.n)} liegt ${fmtDist(p._d)} in Richtung ${dirName(deg)}, ausgehend von ${esc(bezug().label)}">${g}</svg>
     <div class="mlegend">
-      <span><i class="d you"></i>${esc(S.origin.label)}</span>
+      <span><i class="d you"></i>${esc(bezug().label)}</span>
       <span><i class="d there"></i>${esc(p.n)}</span>
       <span class="mdir">${fmtDist(p._d)} Richtung ${dirName(deg)}</span>
     </div>
@@ -2064,7 +2107,7 @@ function viewSheet(){
   const list = prepare();
   const p = list.find(x=>x.n===S.detail) || S.saved.find(x=>x.n===S.detail);
   if(!p){ S.detail=null; return; }
-  if(!p._d){ p._d = dist(S.origin,p); p._o = p.start ? {s:"soon",t:evLabel(p.start)} : openState(p.oh); }
+  if(!p._d){ p._d = dist(bezug(),p); p._o = p.start ? {s:"soon",t:evLabel(p.start)} : openState(p.oh); }
   const rows = [];
   rows.push(["Entfernung", p.approx ? "noch nicht bekannt"
     : `${fmtDist(p._d)} · etwa ${walkTxt(p._d)} zu Fuß`]);
@@ -2096,6 +2139,7 @@ function viewSheet(){
         <div class="micro" style="margin-bottom:7px">${esc(CATMAP[p.c]||"Ort")} · ${esc(badgeFor(p))}</div>
         <h2>${esc(p.n)}</h2>
         ${p.t?`<p class="desc" style="margin:0">${esc(p.t)}</p>`:""}
+        ${p.i?`<p class="about">${esc(p.i)}</p>`:""}
         ${p.approx ? "" : miniMap(p)}
         <dl class="dl">${rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${v}</dd>`).join("")}</dl>
         ${whyBlock(p)}
@@ -2189,8 +2233,11 @@ function renderControls(){
     const el = chips.querySelector('[aria-pressed="true"]');
     if(el) el.scrollIntoView({block:"nearest", inline:"center", behavior:"smooth"});
   }));
+  const fern = istFern();
   $("#rad").value=S.radius;
-  $("#radval").textContent=fmtRad(S.radius);
+  $("#rad").disabled = fern;
+  $("#rad").closest(".rng").classList.toggle("aus", fern);
+  $("#radval").textContent = fern ? "aus" : fmtRad(S.radius);
   const gb=$("#bGeo");
   if(gb){
     const an = S.origin.label !== MD.label;
