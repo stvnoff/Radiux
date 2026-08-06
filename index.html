@@ -43,8 +43,15 @@
     font-size:16px;line-height:1.55;letter-spacing:-.012em;
     -webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;
     min-height:100dvh}
-  .wmark{position:fixed;left:50%;top:47%;transform:translate(-50%,-50%);
-    width:min(112vw,660px);z-index:-1;pointer-events:none;opacity:.72}
+  /* Das Wasserzeichen wird oben verankert, nicht mittig.
+     Prozentwerte und Mittelzentrierung beziehen sich auf die sichtbare Fensterhoehe -
+     und die aendert sich am Handy, sobald die Adresszeile ein- oder ausfaehrt.
+     Genau daher kam das Zucken beim Scrollen. Mit einem festen Abstand von oben
+     und einer eigenen Ebene fuer die Grafik bleibt das R ruhig stehen. */
+  .wmark{position:fixed;left:50%;top:12vh;
+    transform:translate3d(-50%,0,0);backface-visibility:hidden;
+    width:min(112vw,660px);z-index:-1;pointer-events:none;opacity:.72;
+    contain:layout paint}
   .wmark svg{width:100%;height:auto;display:block}
   body.nowmark .wmark{display:none}
   @media (prefers-color-scheme:light){ .wmark{opacity:.4} }
@@ -85,9 +92,19 @@
   .modebtn:hover{color:var(--text);background:var(--glass-2)}
 
   .controls{padding:2px 22px 18px;border-bottom:1px solid var(--line)}
-  .rng{display:flex;align-items:center;gap:16px;width:100%;margin:8px 0 16px}
+  .rng{display:flex;align-items:center;gap:14px;width:100%;margin:8px 0 16px;min-width:0}
   .rng label{flex:0 0 auto;font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;
     font-weight:600;color:var(--text-mute)}
+  .geobtn{flex:0 0 auto;width:38px;height:38px;display:grid;place-items:center;cursor:pointer;
+    border-radius:99px;border:1px solid var(--glass-line);background:var(--glass);
+    color:var(--text-mute);transition:color .2s,background .2s,border-color .2s;margin-left:-4px}
+  .geobtn svg{width:18px;height:18px}
+  .geobtn:hover{color:var(--text)}
+  .geobtn[aria-pressed=true]{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
+  .tinylink{background:none;border:0;padding:6px 0;font:inherit;font-size:.82rem;cursor:pointer;
+    color:var(--text-dim);text-decoration:underline;text-underline-offset:4px;
+    text-transform:none;letter-spacing:0;white-space:nowrap;transition:color .2s}
+  .tinylink:hover{color:var(--text)}
   input[type=range]{flex:1;min-width:90px;height:30px;appearance:none;background:transparent;cursor:pointer}
   input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line-2)}
   input[type=range]::-moz-range-track{height:2px;background:var(--line-2)}
@@ -95,7 +112,12 @@
     border-radius:50%;background:var(--text);border:0}
   input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--text);border:0}
   .radval{font-variant-numeric:tabular-nums;font-weight:600;font-size:.95rem;
-    min-width:62px;text-align:right;flex:0 0 auto;color:var(--text)}
+    min-width:58px;text-align:right;flex:0 0 auto;color:var(--text)}
+  @media (max-width:360px){
+    .rng{gap:10px}
+    .rng label{font-size:0;letter-spacing:0}
+    .rng label::after{content:"Umkreis";font-size:var(--micro);letter-spacing:.16em}
+  }
 
   .srch{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:0 14px;
     border:1px solid var(--glass-line);border-radius:99px;background:var(--glass);}
@@ -245,7 +267,13 @@
   .list > li:nth-child(3){animation-delay:.10s} .list > li:nth-child(4){animation-delay:.14s}
   .list > li:nth-child(n+5){animation-delay:.18s}
   @keyframes rise{to{opacity:1;transform:none}}
-  .lrow{display:flex;gap:16px;align-items:flex-start}
+  .lrow{display:flex;gap:16px;align-items:flex-start;
+    width:100%;background:none;border:0;padding:0;text-align:left;font:inherit;
+    color:inherit;cursor:pointer;border-radius:var(--r-md);
+    transition:opacity .18s}
+  .lrow:active{opacity:.6}
+  .lname{display:block;margin-bottom:5px;font-size:1.08rem;font-weight:600;
+    letter-spacing:-.028em;line-height:1.25;color:var(--text)}
   .lthumb{width:96px;height:96px;flex:0 0 auto;position:relative;overflow:hidden;
     border-radius:var(--r-md);background:var(--glass);
     box-shadow:inset 0 0 0 1px var(--glass-line)}
@@ -431,10 +459,19 @@
   </div>
   <div class="controls wrap" id="controls">
     <div class="rng">
+      <button type="button" class="geobtn" id="bGeo" aria-label="Meinen Standort verwenden"
+              title="Meinen Standort verwenden">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="8"/>
+          <path d="M12 1.5v2.4M12 20.1v2.4M22.5 12h-2.4M3.9 12H1.5"/>
+        </svg>
+      </button>
       <label for="rad">Umkreis</label>
       <input type="range" id="rad" min="500" max="10000" step="500" value="3000" aria-describedby="radhelp">
       <output class="radval" id="radval" for="rad">3,0 km</output>
     </div>
+    <p id="geohelp" class="sr">Fragt einmalig den Standort dieses Geräts ab. Ohne Antwort bleibt Magdeburg, Stadtmitte der Bezugspunkt.</p>
     <p id="radhelp" class="sr">Legt fest, wie weit entfernt Orte höchstens sein dürfen. Mit den Pfeiltasten in 500-Meter-Schritten verstellbar.</p>
     <div class="srch">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
@@ -971,7 +1008,9 @@ function reasons(p){
     const days = Math.round(evDaysUntil(p.start));
     const o = [evLabel(p.start)];
     o.push(days <= 0 ? "Findet heute statt" : days === 1 ? "Findet morgen statt" : `In ${days} Tagen`);
-    o.push(`${p.t ? p.t + " · " : ""}${fmtDist(p._d)} entfernt`);
+    o.push(p.approx
+      ? `${p.t ? p.t + " · " : ""}Lage noch nicht bekannt – Entfernung fließt nicht in die Reihenfolge ein`
+      : `${p.t ? p.t + " · " : ""}${fmtDist(p._d)} entfernt`);
     if(p.src) o.push(`Angabe laut ${p.src} – bitte beim Veranstalter prüfen`);
     return o;
   }
@@ -1319,20 +1358,17 @@ function viewDiscover(){
         </div>
       </article>
     </div>
-    <p class="hint">${HIST.length?`<button type="button" class="undo" id="bUndo">← Zurück</button> · `:""}Vorschlag ${S.idx+1} von ${list.length} · ${fmtRad(S.radius)} um ${esc(S.origin.label)} · tippen für Details</p>`;
+    <p class="hint">${HIST.length?`<button type="button" class="undo" id="bUndo">← Zurück</button> · `:""}Vorschlag ${S.idx+1} von ${list.length} · ${esc(S.dataSource)} · tippen für Details</p>`;
   }
 
   main().innerHTML = `<div aria-live="polite" class="sr" id="live"></div>
-    <div class="btn-row">
-      <button class="btn sm ${S.loaded?"primary":"ghost"}" id="bGeo">Standort verwenden</button>
-      <button class="btn sm ${S.loaded?"ghost":"primary"}" id="bLive">${S.loaded?"Daten neu laden":"Aktuelle Orte laden"}</button>
-    </div>
-    <div class="row" style="display:flex;align-items:center;gap:14px;margin:16px 0 2px">
+    <div class="row" style="display:flex;align-items:center;gap:14px;margin:6px 0 2px">
       <div class="vswitch" role="group" aria-label="Ansicht wählen">
         <button type="button" data-v="karten" aria-pressed="${S.vmode==="karten"}">Karten</button>
         <button type="button" data-v="liste" aria-pressed="${S.vmode==="liste"}">Liste</button>
       </div>
-      <span class="counter" style="margin:0 0 0 auto;text-align:right">${esc(S.dataSource)}</span>
+      <button type="button" class="tinylink" id="bLive" style="margin-left:auto">${
+        S.loading ? "lädt …" : S.loaded ? "Orte neu laden" : "aktuelle Orte laden"}</button>
     </div>
     ${S.q.trim() ? `<p class="counter" style="text-align:left;margin:14px 0 0">${
         queryBlocked(S.q) ? "Zu diesem Begriff zeigt Radiux bewusst keine Ergebnisse."
@@ -1342,7 +1378,6 @@ function viewDiscover(){
   main().querySelectorAll("[data-v]").forEach(b=>b.addEventListener("click",()=>{
     S.vmode=b.dataset.v; store.set("vmode",S.vmode); render();
   }));
-  $("#bGeo")?.addEventListener("click",useGeo);
   $("#bLive")?.addEventListener("click",loadLive);
   $("#reset")?.addEventListener("click",()=>{ S.hidden=[]; store.set("hidden",[]); S.idx=0;
     say("Ausgeblendete Orte wurden zurückgeholt."); render(); });
@@ -1367,22 +1402,22 @@ function viewDiscover(){
 /* ---------------- Listenansicht (gleichwertige Alternative) ---------------- */
 function listView(list,title,total){
   if(!list.length) return "";
-  return `<div class="sechead"><h2>${esc(title)}</h2><span class="cnt">${total??list.length} Treffer</span></div>
+  return `<div class="sechead"><h2>${esc(title)}</h2><span class="cnt">${total??list.length} Treffer · ${esc(S.dataSource)}</span></div>
   <ul class="list">${list.map((p,i)=>`
     <li>
-      <div class="lrow">
-        <div class="lthumb">${media(p,320,420)}</div>
-        <div class="lmain">
-          <h3>${esc(p.n)}</h3>
-          ${p.t?`<p class="desc" style="margin-bottom:8px">${esc(p.t)}</p>`:""}
+      <button type="button" class="lrow" data-act="detail" data-n="${esc(p.n)}"
+              aria-label="${esc(p.n)} – Details öffnen">
+        <span class="lthumb">${media(p,320,420)}</span>
+        <span class="lmain">
+          <span class="lname">${esc(p.n)}</span>
+          ${p.t?`<span class="desc" style="display:block;margin-bottom:8px">${esc(p.t)}</span>`:""}
           ${pills(p)}
-        </div>
-      </div>
+        </span>
+      </button>
       ${whyShort(p)}
       <div class="lact">
         <button class="btn sm" data-act="save" data-n="${esc(p.n)}">${isSaved(p.n)?"Gemerkt ✓":"Merken"}</button>
-        <button class="btn sm" data-act="hide" data-n="${esc(p.n)}">Ausblenden</button>
-        <button class="btn sm ghost" data-act="detail" data-n="${esc(p.n)}">Details</button>
+        <button class="btn sm ghost" data-act="hide" data-n="${esc(p.n)}">Ausblenden</button>
         ${p.url?`<a class="btn sm ghost" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Zum Veranstalter</a>`:""}
       </div>
     </li>`).join("")}</ul>`;
@@ -1405,12 +1440,12 @@ function viewSaved(){
     <h1 style="margin-top:22px">Merkliste</h1>
     ${items.length ? `<p class="lead" style="color:var(--text-dim)">${items.length} ${items.length===1?"Ort":"Orte"} gemerkt.</p>
       <ul class="list">${items.map(p=>`<li>
-        <div class="lrow">
-          <div class="lthumb">${media(p,320,420)}</div>
-          <div class="lmain"><h3>${esc(p.n)}</h3>${pills(p)}</div>
-        </div>
+        <button type="button" class="lrow" data-act="detail" data-n="${esc(p.n)}"
+                aria-label="${esc(p.n)} – Details öffnen">
+          <span class="lthumb">${media(p,320,420)}</span>
+          <span class="lmain"><span class="lname">${esc(p.n)}</span>${pills(p)}</span>
+        </button>
         <div class="lact">
-          <button class="btn sm" data-act="detail" data-n="${esc(p.n)}">Details</button>
           <button class="btn sm ghost" data-act="save" data-n="${esc(p.n)}">Entfernen</button>
         </div>
       </li>`).join("")}</ul>`
@@ -2015,7 +2050,7 @@ function viewSheet(){
   if(p.start) rows.push(["Termin", evLabel(p.start)]);
   if(p.approx) rows.push(["Hinweis",
     "Die genaue Lage dieses Veranstaltungsortes liegt Radiux noch nicht vor. "
-    + "Entfernung und Karte beziehen sich auf die Stadtmitte."]);
+    + "Deshalb gibt es hier keine Entfernung und keine Karte – der Ort steht aber fest."]);
   else rows.push(["Status", p._o.t]);
   if(p.oh) rows.push(["Öffnungszeiten", p.oh]);
   if(p.adr) rows.push(["Adresse", p.adr]);
@@ -2040,7 +2075,7 @@ function viewSheet(){
         <div class="micro" style="margin-bottom:7px">${esc(CATMAP[p.c]||"Ort")} · ${esc(badgeFor(p))}</div>
         <h2>${esc(p.n)}</h2>
         ${p.t?`<p class="desc" style="margin:0">${esc(p.t)}</p>`:""}
-        ${miniMap(p)}
+        ${p.approx ? "" : miniMap(p)}
         <dl class="dl">${rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${v}</dd>`).join("")}</dl>
         ${whyBlock(p)}
         <div class="lact">
@@ -2135,6 +2170,24 @@ function renderControls(){
   }));
   $("#rad").value=S.radius;
   $("#radval").textContent=fmtRad(S.radius);
+  const gb=$("#bGeo");
+  if(gb){
+    const an = S.origin.label !== MD.label;
+    gb.setAttribute("aria-pressed", String(an));
+    gb.setAttribute("aria-label", an
+      ? "Dein Standort ist der Bezugspunkt. Antippen setzt zurück auf Magdeburg, Stadtmitte."
+      : "Meinen Standort verwenden");
+    gb.setAttribute("aria-describedby","geohelp");
+    if(gb.dataset.wired!=="1"){
+      gb.dataset.wired="1";
+      gb.addEventListener("click",()=>{
+        if(S.origin.label !== MD.label){
+          S.origin={...MD}; S.idx=0;
+          say("Bezugspunkt ist wieder die Magdeburger Stadtmitte."); render();
+        } else useGeo();
+      });
+    }
+  }
   const q=$("#q"), qc=$("#qclr");
   if(q && q.dataset.wired!=="1"){
     q.dataset.wired="1";
