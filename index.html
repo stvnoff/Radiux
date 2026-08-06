@@ -397,26 +397,27 @@
 
 <div class="wmark" aria-hidden="true">
   <svg viewBox="0 0 400 460">
-    <defs>
-      <linearGradient id="rshine" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%"    stop-color="#5aa8ff" stop-opacity="0"/>
-        <stop offset="47.5%" stop-color="#9ed8ff" stop-opacity=".45"/>
-        <stop offset="49.6%" stop-color="#ffffff" stop-opacity="1"/>
-        <stop offset="50.4%" stop-color="#ffffff" stop-opacity="1"/>
-        <stop offset="52.5%" stop-color="#9ed8ff" stop-opacity=".45"/>
-        <stop offset="100%"  stop-color="#5aa8ff" stop-opacity="0"/>
-        <animateTransform id="rshineAnim" attributeName="gradientTransform" type="translate"
-          values="0 -1.15; 0 1.15" dur="5.5s" repeatCount="indefinite"/>
-      </linearGradient>
-    </defs>
     <g transform="translate(30 22) scale(1.62)">
+      <!-- Grundform und ruhige Kontur -->
       <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="currentColor" fill-opacity=".045"/>
       <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="#5aa8ff"
-            stroke-opacity=".18" stroke-width=".55" stroke-linejoin="round"/>
-      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="url(#rshine)"
-            stroke-width="3.4" stroke-opacity=".22" stroke-linejoin="round"/>
-      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="url(#rshine)"
-            stroke-width="1.05" stroke-linejoin="round"/>
+            stroke-opacity=".16" stroke-width=".55" stroke-linejoin="round"/>
+
+      <!-- Lichtlauf: ein Stueck Licht wandert an der Aussenkante entlang.
+           pathLength=1000 rechnet die Kontur auf eine feste Laenge um, damit
+           Strichmuster und Geschwindigkeit unabhaengig von der Groesse sind. -->
+      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z" pathLength="1000" fill="none" stroke="#5aa8ff" stroke-opacity=".30"
+            stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"
+            stroke-dasharray="150 850">
+        <animate attributeName="stroke-dashoffset" values="1000;0"
+                 dur="7s" repeatCount="indefinite"/>
+      </path>
+      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z" pathLength="1000" fill="none" stroke="#dff0ff" stroke-opacity=".92"
+            stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"
+            stroke-dasharray="86 914">
+        <animate attributeName="stroke-dashoffset" values="1032;32"
+                 dur="7s" repeatCount="indefinite"/>
+      </path>
     </g>
   </svg>
 </div>
@@ -1143,7 +1144,7 @@ function useGeo(){
 /* Reduzierte Bewegung: Lichtlauf im Hintergrund anhalten */
 try{
   if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)
-    document.querySelectorAll(".wmark animateTransform").forEach(a=>a.remove());
+    document.querySelectorAll(".wmark animate, .wmark animateTransform").forEach(a=>a.remove());
 }catch(e){}
 
 /* ---------------- Rückgängig ---------------- */
@@ -1936,6 +1937,26 @@ function viewAbout(){
   </ul>
   <p>Dabei wird nichts installiert, was mitliest: Es entsteht nur eine Verknüpfung.
   Radiux läuft weiterhin im Browser und ohne Server.</p>
+
+  <h2>Ohne dich wächst hier nichts</h2>
+  <p>Radiux ist kein fertiges Produkt, das man einfach benutzt. Es ist eine Stadtkarte,
+  die genau so gut wird, wie viele Menschen etwas hineintragen. Eine Person allein kann
+  Magdeburg nicht abbilden – wer wo aufmacht, was am Wochenende läuft, welcher Laden
+  seit dem Frühjahr geschlossen ist.</p>
+  <p>Jeder Hinweis, jede Korrektur, jedes Foto macht Radiux für alle anderen brauchbarer.
+  Das ist der einzige Weg, wie so etwas wachsen kann, wenn kein Geld dahintersteht:
+  weil Leute mitmachen, die selbst etwas davon haben.</p>
+  <div class="phase">
+    <div class="pnum">Was ich zurückgeben möchte</div>
+    <p>Kommt es tatsächlich zu Phase 3 und gibt es eines Tages Komfortfunktionen gegen
+    Geld, ist es meine feste Absicht, sie allen, die früh dabei waren, für eine gewisse
+    Zeit kostenlos zu geben.</p>
+    <p>Ehrlich dazu gehört: Radiux hat heute keine Nutzerkonten und speichert nichts über
+    dich auf einem Server. Ich kann also gar nicht sehen, wer wann dabei war. Wie sich das
+    später fair lösen lässt, weiß ich noch nicht. Deshalb steht hier eine Absicht und
+    kein Versprechen – ein Versprechen, das ich technisch nicht einlösen kann, wäre
+    nichts wert.</p>
+  </div>
 
   <h2>Mitmachen</h2>
   <p>Radiux lebt davon, dass die Angaben stimmen. Eine Person allein kann nicht wissen,
