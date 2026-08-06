@@ -7,21 +7,26 @@
 <meta name="theme-color" content="#0a0b10">
 <title>Radiux – Magdeburg entdecken</title>
 <style>
+  /* ---------- Farbwelten ----------
+     Alle Farben stecken in Variablen. Ein Wechsel des Erscheinungsbildes tauscht
+     nur diese Werte aus – kein zweites Stilblatt, kein Nachladen.
+     Ohne eigene Wahl richtet sich Radiux nach der Einstellung des Geräts. */
   :root{
-    --bg:#09090a; --bg-2:#0d0d0e;
-    --surface:#121213; --surface-2:#191919; --surface-3:#232322;
-    --line:rgba(255,255,255,.085); --line-2:rgba(255,255,255,.15);
-    --glass:rgba(255,255,255,.045); --glass-2:rgba(255,255,255,.085);
-    --glass-line:rgba(255,255,255,.13); --glass-hi:rgba(255,255,255,.20);
-    --veil:rgba(9,9,10,.80); --card-veil:rgba(31,31,34,.74); --card-solid:#1b1b1d;
     --blur:blur(22px) saturate(125%);
-    --text:#f3f2ef; --text-dim:#9d9c97; --text-mute:#6b6a66;
-    --accent:#efece4; --accent-ink:#0b0b0c;
-    --pos:#8fbb96; --neg:#cf918a; --warn:#c9a86a;
     --r-sm:10px; --r-md:14px; --r-lg:18px; --r-xl:22px;
     --card-h:clamp(320px,47vh,452px);
     --ease:cubic-bezier(.2,.8,.2,1);
     --micro:.68rem;
+      --bg:#09090a; --bg-2:#0d0d0e;
+      --surface:#121213; --surface-2:#191919; --surface-3:#232322;
+      --line:rgba(255,255,255,.085); --line-2:rgba(255,255,255,.15);
+      --glass:rgba(255,255,255,.045); --glass-2:rgba(255,255,255,.085);
+      --glass-line:rgba(255,255,255,.13); --glass-hi:rgba(255,255,255,.20);
+      --veil:rgba(9,9,10,.80); --card-veil:rgba(31,31,34,.74); --card-solid:#1b1b1d;
+      --text:#f3f2ef; --text-dim:#9d9c97; --text-mute:#6b6a66;
+      --accent:#efece4; --accent-ink:#0b0b0c;
+      --pos:#8fbb96; --neg:#cf918a; --warn:#c9a86a;
+      --shine:#5aa8ff; --shine-hot:#eaf6ff;
   }
   @media (prefers-color-scheme:light){
     :root{
@@ -34,7 +39,44 @@
       --text:#121210; --text-dim:#575652; --text-mute:#7d7c77;
       --accent:#16150f; --accent-ink:#ffffff;
       --pos:#3a7a49; --neg:#a63a30; --warn:#8a6a1e;
+      --shine:#2f6fd0; --shine-hot:#0d2b52;
     }
+  }
+  html[data-thema="dunkel"]{
+      --bg:#09090a; --bg-2:#0d0d0e;
+      --surface:#121213; --surface-2:#191919; --surface-3:#232322;
+      --line:rgba(255,255,255,.085); --line-2:rgba(255,255,255,.15);
+      --glass:rgba(255,255,255,.045); --glass-2:rgba(255,255,255,.085);
+      --glass-line:rgba(255,255,255,.13); --glass-hi:rgba(255,255,255,.20);
+      --veil:rgba(9,9,10,.80); --card-veil:rgba(31,31,34,.74); --card-solid:#1b1b1d;
+      --text:#f3f2ef; --text-dim:#9d9c97; --text-mute:#6b6a66;
+      --accent:#efece4; --accent-ink:#0b0b0c;
+      --pos:#8fbb96; --neg:#cf918a; --warn:#c9a86a;
+      --shine:#5aa8ff; --shine-hot:#eaf6ff;
+  }
+  html[data-thema="hell"]{
+      --bg:#f4f3f0; --bg-2:#eceae5;
+      --surface:#ffffff; --surface-2:#f7f6f3; --surface-3:#eceae5;
+      --line:rgba(18,18,16,.10); --line-2:rgba(18,18,16,.2);
+      --glass:rgba(255,255,255,.5); --glass-2:rgba(255,255,255,.7);
+      --glass-line:rgba(18,18,16,.12); --glass-hi:rgba(255,255,255,.9);
+      --veil:rgba(244,243,240,.82); --card-veil:rgba(255,255,255,.66); --card-solid:#ffffff;
+      --text:#121210; --text-dim:#575652; --text-mute:#7d7c77;
+      --accent:#16150f; --accent-ink:#ffffff;
+      --pos:#3a7a49; --neg:#a63a30; --warn:#8a6a1e;
+      --shine:#2f6fd0; --shine-hot:#0d2b52;
+  }
+  html[data-thema="neon"]{
+      --bg:#0a0714; --bg-2:#100a20;
+      --surface:#150e28; --surface-2:#1d1436; --surface-3:#291c4a;
+      --line:rgba(196,160,255,.16); --line-2:rgba(196,160,255,.3);
+      --glass:rgba(160,110,255,.10); --glass-2:rgba(160,110,255,.18);
+      --glass-line:rgba(196,160,255,.26); --glass-hi:rgba(255,255,255,.22);
+      --veil:rgba(10,7,20,.82); --card-veil:rgba(29,20,54,.78); --card-solid:#1d1436;
+      --text:#f6f2ff; --text-dim:#b6a6d6; --text-mute:#8878ad;
+      --accent:#c8ff4d; --accent-ink:#150e28;
+      --pos:#5ce7a8; --neg:#ff7a9c; --warn:#ffd166;
+      --shine:#b06bff; --shine-hot:#e8ff9e;
   }
   *{box-sizing:border-box}
   html{margin:0;padding:0;background:var(--bg)}
@@ -385,6 +427,35 @@
   .sheet .why{margin-top:20px}
   .about{margin:16px 0 0;font-size:.97rem;line-height:1.62;color:var(--text-dim)}
   body.locked{overflow:hidden}
+  html[data-thema="neon"] body{
+    background-image:
+      radial-gradient(70vw 50vh at 12% -8%, rgba(176,107,255,.20), transparent 70%),
+      radial-gradient(60vw 45vh at 92% 4%, rgba(200,255,77,.10), transparent 70%);
+    background-attachment:fixed}
+  html[data-thema="neon"] .chip[aria-pressed=true]{box-shadow:0 0 0 3px rgba(200,255,77,.22)}
+  html[data-thema="neon"] .card{box-shadow:inset 0 1px 0 var(--glass-hi),
+    0 30px 70px -26px rgba(0,0,0,.9), 0 0 0 1px rgba(176,107,255,.12)}
+  html[data-thema="neon"] h1,html[data-thema="neon"] .wgreet{
+    background:linear-gradient(96deg,#e8ff9e 0%,#c8ff4d 30%,#b06bff 90%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* Farbe des Lichtlaufs folgt der gewählten Welt */
+  .wmark .kontur{stroke:var(--shine)}
+  .wmark .glanz{stroke:var(--shine)}
+  .wmark .kern{stroke:var(--shine-hot)}
+  .blogo .bglanz{stop-color:var(--shine)}
+  .blogo .bkern{stop-color:var(--shine-hot)}
+
+  .themen{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:6px}
+  .themen button{border:1px solid var(--glass-line);background:var(--glass);color:var(--text);
+    border-radius:var(--r-md);padding:14px 12px;cursor:pointer;font:inherit;text-align:left;
+    display:flex;align-items:center;gap:11px;min-height:56px;transition:background .2s}
+  .themen button[aria-pressed=true]{border-color:var(--accent);
+    box-shadow:inset 0 0 0 1px var(--accent)}
+  .themen .sw{width:22px;height:22px;border-radius:50%;flex:0 0 auto;
+    box-shadow:inset 0 0 0 1px rgba(127,127,127,.4)}
+  .themen .tn{font-size:.94rem;font-weight:600;letter-spacing:-.02em}
+  .themen .td{display:block;font-size:.78rem;color:var(--text-dim);font-weight:400;margin-top:1px}
   .hidden{display:none !important}
   @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 </style>
@@ -403,20 +474,20 @@
     <g transform="translate(30 22) scale(1.62)">
       <!-- Grundform und ruhige Kontur -->
       <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="currentColor" fill-opacity=".045"/>
-      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="#5aa8ff"
+      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" class="kontur"
             stroke-opacity=".16" stroke-width=".55" stroke-linejoin="round"/>
 
       <!-- Lichtlauf: ein Stueck Licht wandert an der Aussenkante entlang.
            pathLength=1000 rechnet die Kontur auf eine feste Laenge um, damit
            Strichmuster und Geschwindigkeit unabhaengig von der Groesse sind. -->
-      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z" pathLength="1000" fill="none" stroke="#5aa8ff" stroke-opacity=".30"
-            stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"
+      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z" pathLength="1000" fill="none" class="glanz" stroke-opacity=".30"
+            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
             stroke-dasharray="150 850">
         <animate attributeName="stroke-dashoffset" values="1000;0"
                  dur="7s" repeatCount="indefinite"/>
       </path>
-      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z" pathLength="1000" fill="none" stroke="#dff0ff" stroke-opacity=".92"
-            stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"
+      <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z" pathLength="1000" fill="none" class="kern" stroke-opacity="1"
+            stroke-width="0.62" stroke-linecap="round" stroke-linejoin="round"
             stroke-dasharray="86 914">
         <animate attributeName="stroke-dashoffset" values="1032;32"
                  dur="7s" repeatCount="indefinite"/>
@@ -438,11 +509,11 @@
         preserveAspectRatio="xMidYMid meet">
       <defs>
         <linearGradient id="rxshim" x1="-1" y1="0" x2="0" y2="1">
-          <stop offset="0"   stop-color="#1e5cff" stop-opacity="0"/>
-          <stop offset=".46" stop-color="#7cc0ff" stop-opacity=".5"/>
-          <stop offset=".5"  stop-color="#ffffff" stop-opacity="1"/>
-          <stop offset=".54" stop-color="#7cc0ff" stop-opacity=".5"/>
-          <stop offset="1"   stop-color="#1e5cff" stop-opacity="0"/>
+          <stop offset="0"   class="bglanz" stop-opacity="0"/>
+          <stop offset=".46" class="bglanz" stop-opacity=".5"/>
+          <stop offset=".5"  class="bkern"   stop-opacity="1"/>
+          <stop offset=".54" class="bglanz" stop-opacity=".5"/>
+          <stop offset="1"   class="bglanz" stop-opacity="0"/>
           <animate attributeName="x1" values="-1.1;1;-1.1" dur="5.6s" repeatCount="indefinite"/>
           <animate attributeName="x2" values="-0.1;2;-0.1" dur="5.6s" repeatCount="indefinite"/>
         </linearGradient>
@@ -828,15 +899,23 @@ function eventsAsPlaces(){
 /* ---------- Neutrale Fläche, falls kein Foto vorliegt ---------- */
 function hashOf(x){ let h=2166136261; for(let i=0;i<x.length;i++){ h^=x.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
 
+/* Liest eine Farbe aus der aktuellen Farbwelt, damit die Ersatzflaeche dazu passt. */
+function cssFarbe(name, ersatz){
+  try{
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || ersatz;
+  }catch(e){ return ersatz; }
+}
 function plate(name, cat, w, h){
   const label = esc(String(CATMAP[cat] || "Ort").toUpperCase());
   const id = "p" + (hashOf(name + cat) % 9999);
   const fs = Math.round(h * 0.115);
   const s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">`
     + `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">`
-    + `<stop offset="0" stop-color="#1d1d1e"/><stop offset="1" stop-color="#0d0d0e"/></linearGradient></defs>`
+    + `<stop offset="0" stop-color="${cssFarbe("--surface-3","#1d1d1e")}"/>`
+    + `<stop offset="1" stop-color="${cssFarbe("--surface","#0d0d0e")}"/></linearGradient></defs>`
     + `<rect width="${w}" height="${h}" fill="url(#${id})"/>`
-    + `<text x="${w/2}" y="${h/2}" fill="#ffffff" fill-opacity="0.11"`
+    + `<text x="${w/2}" y="${h/2}" fill="${cssFarbe("--text","#ffffff")}" fill-opacity="0.13"`
     + ` font-family="system-ui,-apple-system,sans-serif" font-size="${fs}" font-weight="600"`
     + ` letter-spacing="${Math.round(fs*0.16)}" text-anchor="middle" dominant-baseline="central">${label}</text>`
     + `</svg>`;
@@ -925,6 +1004,7 @@ store.migrate();
 
 const S = {
   view:"discover", vmode:store.get("vmode","karten"), detail:null, q:"", step:"welcome",
+  thema:store.get("thema","auto"),
   radius:store.get("radius",3000), mode:null, origin:MD,
   places:[], idx:0, saved:store.get("saved",[]), hidden:store.get("hidden",[]),
   profile:store.get("profile",{}), activeCats:[], loaded:false, loading:false,
@@ -1048,6 +1128,71 @@ function reasons(p){
   return out;
 }
 
+
+/* ---------------- Was für ein Ort ist das? ----------------
+   OpenStreetMap beschreibt jeden Ort mit Merkmalen. Bisher hat Radiux daraus nur
+   eine grobe Kategorie gemacht – auf der Karte stand dann „Sehenswürdigkeit" und
+   sonst nichts, und man musste selbst suchen, was gemeint ist.
+   Diese Tabelle übersetzt die Merkmale in eine verständliche Bezeichnung. */
+const ART = {
+  /* Kunst im öffentlichen Raum */
+  sculpture:"Skulptur", statue:"Standbild", bust:"Büste", mural:"Wandbild",
+  graffiti:"Graffito", installation:"Installation", stone:"Steinmal",
+  painting:"Gemälde", relief:"Relief", fountain:"Brunnen", mosaic:"Mosaik",
+  land_art:"Landkunst", azulejo:"Fliesenbild",
+  /* Historisches */
+  monument:"Denkmal", memorial:"Gedenkstätte", ruins:"Ruine", castle:"Burg oder Schloss",
+  city_gate:"Stadttor", tower:"Turm", water_tower:"Wasserturm", lighthouse:"Leuchtturm",
+  /* Sehen und Natur */
+  attraction:"Sehenswürdigkeit", viewpoint:"Aussichtspunkt", artwork:"Kunstwerk",
+  park:"Park", garden:"Garten", nature_reserve:"Naturschutzgebiet",
+  beach:"Badestelle", picnic_site:"Picknickplatz", marina:"Bootshafen",
+  /* Kultur */
+  theatre:"Theater", cinema:"Kino", arts_centre:"Kulturzentrum",
+  events_venue:"Veranstaltungsort", music_venue:"Musikclub",
+  community_centre:"Bürger- und Vereinshaus", museum:"Museum", gallery:"Galerie",
+  library:"Bibliothek", nightclub:"Club", dance:"Tanzlokal",
+  /* Essen und Trinken */
+  restaurant:"Restaurant", cafe:"Café", bar:"Bar", pub:"Kneipe",
+  fast_food:"Imbiss", ice_cream:"Eisdiele", biergarten:"Biergarten",
+  food_court:"Essbereich mit mehreren Ständen",
+  /* Freizeit und Sport */
+  fitness_centre:"Fitnessstudio", sports_centre:"Sportzentrum", sports_hall:"Sporthalle",
+  swimming_pool:"Schwimmbad", public_bath:"Badehaus", water_park:"Spaßbad",
+  sauna:"Sauna", bowling_alley:"Bowlingbahn", escape_game:"Escape-Raum",
+  miniature_golf:"Minigolf", horse_riding:"Reitanlage", climbing:"Kletteranlage",
+  skateboard:"Skateanlage", zoo:"Zoo", theme_park:"Freizeitpark", aquarium:"Aquarium",
+  beach_resort:"Strandbad",
+  /* Alltag und Einkauf */
+  university:"Hochschule", college:"Hochschule", marketplace:"Marktplatz",
+  supermarket:"Supermarkt", mall:"Einkaufszentrum", bakery:"Bäckerei",
+  books:"Buchladen", clothes:"Kleidung", greengrocer:"Obst und Gemüse",
+  music:"Plattenladen", second_hand:"Second-Hand-Laden", charity:"Sozialkaufhaus",
+  video_games:"Videospielladen", fuel:"Tankstelle"
+};
+
+/* Reihenfolge: das Genaueste zuerst. */
+function artOf(t){
+  const kette = [t.artwork_type, t.historic, t.man_made, t.natural, t.sport,
+                 t.tourism, t.amenity, t.leisure, t.shop];
+  for(const k of kette){ if(k && ART[k]) return ART[k]; }
+  for(const k of kette){ if(k) return String(k).replace(/_/g," "); }
+  return "";
+}
+
+/* Kurzbeschreibung aus dem, was OpenStreetMap hergibt. */
+function beschreibung(t){
+  const art = artOf(t);
+  const zus = [];
+  if(t.artist_name) zus.push("von " + t.artist_name);
+  if(t.start_date && /^\d{3,4}/.test(t.start_date)) zus.push("seit " + t.start_date.slice(0,4));
+  if(t.material && !t.artwork_type) {} else if(t.material) zus.push("aus " + t.material.replace(/_/g," "));
+  const kopf = [art, zus.join(", ")].filter(Boolean).join(" · ");
+  const frei = t["description:de"] || t.description || t.inscription || "";
+  if(frei && kopf) return kopf + " – " + frei;
+  return frei || kopf;
+}
+
 /* ---------------- Datenaufbereitung ---------------- */
 function catOf(tags){
   const vals=[tags.amenity,tags.tourism,tags.leisure,tags.shop,
@@ -1132,8 +1277,12 @@ async function loadLive(){
         if(!t.name || lat==null || lon==null || !allowed(t)) continue;
         const c=catOf(t); if(!c) continue;
         const key=t.name+"|"+c; if(seen.has(key)) continue; seen.add(key);
+        const wp = t.wikipedia || t["wikipedia:de"] || "";
         out.push({ n:t.name, c, lat, lon, oh:t.opening_hours||"",
-          t:t.cuisine ? t.cuisine.replace(/[_;]/g," ") : (t.description||""),
+          t: beschreibung(t) || (t.cuisine ? t.cuisine.replace(/[_;]/g," ") : ""),
+          art: artOf(t),
+          osm: (el.type||"node") + "/" + el.id,
+          wp: wp ? "https://de.wikipedia.org/wiki/" + encodeURIComponent(wp.replace(/^de:/,"")) : "",
           adr:[t["addr:street"],t["addr:housenumber"]].filter(Boolean).join(" "),
           web:t.website||t["contact:website"]||"",
           tel:t.phone||t["contact:phone"]||"",
@@ -1369,7 +1518,7 @@ function viewDiscover(){
           <div class="ctitle">
             ${p.start?`<div class="edate">${esc(evLabel(p.start))}</div>`:""}
             <h2 id="cardname">${esc(p.n)}</h2>
-            ${p.t?`<p class="desc">${esc(p.t)}</p>`:""}
+            ${p.t?`<p class="desc">${esc(p.t)}</p>`:p.art?`<p class="desc">${esc(p.art)}</p>`:""}
           </div>
         </div>
         <div class="cbody">
@@ -1437,7 +1586,7 @@ function listView(list,title,total){
         <span class="lthumb">${media(p,320,420)}</span>
         <span class="lmain">
           <span class="lname">${esc(p.n)}</span>
-          ${p.t?`<span class="desc" style="display:block;margin-bottom:8px">${esc(p.t)}</span>`:""}
+          ${(p.t||p.art)?`<span class="desc" style="display:block;margin-bottom:8px">${esc(p.t||p.art)}</span>`:""}
           ${pills(p)}
         </span>
       </button>
@@ -1503,6 +1652,12 @@ function viewHow(){
           <div class="wbar"><i style="width:${w}%"></i></div></td>
       <td>${esc(d)}</td></tr>`).join("")}</tbody>
   </table>
+  <h2>Aussehen</h2>
+  <p>Unter „Mehr → Aussehen“ lässt sich die Farbwelt wechseln: automatisch nach
+  Geräteeinstellung, ruhig dunkel, hell oder Neon. Die Wahl bleibt in deinem Browser
+  gespeichert und wird nicht übertragen. Sie ändert nur Farben – nicht, welche Orte
+  du siehst und in welcher Reihenfolge.</p>
+
   <h2>Welche Orte Radiux lädt</h2>
   <p>Über „aktuelle Orte laden“ fragt Radiux OpenStreetMap nach allem ab, was im Umkreis
   liegt und einen Namen trägt: Gaststätten, Bars und Clubs, Bühnen und Kinos, Museen und
@@ -1845,6 +2000,65 @@ async function openCalendar(p){
 }
 
 
+
+/* ---------------- Farbwelt wählen ----------------
+   Die Wahl liegt nur im Gerät (§ 25 Abs. 2 Nr. 2 TDDDG: unbedingt erforderlich,
+   um eine ausdrücklich gewünschte Einstellung beizubehalten). Nichts davon
+   verlässt das Gerät. */
+const THEMEN = [
+  ["auto",  "Automatisch", "Folgt der Einstellung deines Geräts", "linear-gradient(135deg,#09090a 50%,#f4f3f0 50%)"],
+  ["dunkel","Ruhig dunkel","Zurückhaltend, kontrastreich",        "#131315"],
+  ["hell",  "Hell",        "Heller Hintergrund, dunkle Schrift",  "#f4f3f0"],
+  ["neon",  "Neon",        "Violett und Limette, kräftiger",      "linear-gradient(135deg,#b06bff,#c8ff4d)"]
+];
+function setThema(k){
+  S.thema = k;
+  store.set("thema", k);
+  if(k === "auto") document.documentElement.removeAttribute("data-thema");
+  else document.documentElement.setAttribute("data-thema", k);
+  const dunkel = k==="hell" ? "#f4f3f0" : k==="neon" ? "#0a0714"
+    : k==="dunkel" ? "#09090a" : null;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta && dunkel) meta.setAttribute("content", dunkel);
+}
+function openThema(){
+  document.querySelectorAll(".sheet").forEach(n=>n.remove());
+  const el = document.createElement("div");
+  el.className = "sheet";
+  el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true");
+  el.setAttribute("aria-label","Aussehen");
+  el.innerHTML = `<div class="veil" data-close></div>
+    <div class="panel" tabindex="-1">
+      <div class="grab"></div>
+      <div class="sbody" style="padding-top:22px">
+        <div class="micro" style="margin-bottom:14px">Aussehen</div>
+        <div class="themen" role="group" aria-label="Farbwelt wählen">${THEMEN.map(([k,n,d,sw])=>
+          `<button type="button" data-t="${k}" aria-pressed="${S.thema===k}">
+            <span class="sw" style="background:${sw}"></span>
+            <span><span class="tn">${esc(n)}</span><span class="td">${esc(d)}</span></span>
+          </button>`).join("")}</div>
+        <p class="note" style="margin-top:20px">Die Auswahl bleibt in diesem Browser
+        gespeichert und wird nicht übertragen. Inhalte und Reihenfolge der Vorschläge
+        ändern sich dadurch nicht.</p>
+        <div class="lact" style="margin-top:18px">
+          <button class="btn sm ghost" data-close>Schließen</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+  document.body.classList.add("locked");
+  const shut = ()=>{ el.remove(); document.body.classList.remove("locked"); };
+  el.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",shut));
+  el.querySelectorAll("[data-t]").forEach(b=>b.addEventListener("click",()=>{
+    setThema(b.dataset.t);
+    el.querySelectorAll("[data-t]").forEach(x=>x.setAttribute("aria-pressed", String(x.dataset.t===S.thema)));
+    say("Aussehen geändert.");
+  }));
+  dragClose(el, shut);
+  el.querySelector(".panel").focus();
+  el.addEventListener("keydown",e=>{ if(e.key==="Escape"){ shut(); } });
+}
+
 /* ---------------- Blatt nach unten wegziehen ----------------
    Wird von jedem Blatt genutzt (Detailansicht wie auch „Mehr“).
    Greift nur, wenn das Blatt oben steht – sonst würde normales
@@ -2068,6 +2282,7 @@ function openMore(){
   el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true");
   el.setAttribute("aria-label","Weitere Seiten");
   const items = [
+    ["thema","Aussehen","Farbwelt der App wechseln"],
     ["about","Über Radiux","Ziel, aktueller Stand und was als Nächstes kommt"],
     ["how","Wie Radiux empfiehlt","Welche Kriterien die Reihenfolge bestimmen"],
     ["legal","Rechtliches","Impressum, Datenschutz, Barrierefreiheit"]
@@ -2090,7 +2305,9 @@ function openMore(){
   const shut = ()=>{ el.remove(); document.body.classList.remove("locked"); };
   el.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",shut));
   el.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{
-    shut(); S.view = b.dataset.go; window.scrollTo({top:0}); render(); main().focus({preventScroll:true});
+    shut();
+    if(b.dataset.go==="thema"){ openThema(); return; }
+    S.view = b.dataset.go; window.scrollTo({top:0}); render(); main().focus({preventScroll:true});
   }));
   dragClose(el, shut);
   el.querySelector(".panel").focus();
@@ -2117,6 +2334,7 @@ function viewSheet(){
     + "Deshalb gibt es hier keine Entfernung und keine Karte – der Ort steht aber fest."]);
   else rows.push(["Status", p._o.t]);
   if(p.oh) rows.push(["Öffnungszeiten", p.oh]);
+  if(p.art) rows.push(["Art", esc(p.art)]);
   if(p.adr) rows.push(["Adresse", p.adr]);
   if(p.wc && WC[p.wc]) rows.push(["Zugang", WC[p.wc]]);
   if(p.tel) rows.push(["Telefon", `<a href="tel:${esc(p.tel.replace(/\s+/g,""))}">${esc(p.tel)}</a>`]);
@@ -2140,6 +2358,11 @@ function viewSheet(){
         <h2>${esc(p.n)}</h2>
         ${p.t?`<p class="desc" style="margin:0">${esc(p.t)}</p>`:""}
         ${p.i?`<p class="about">${esc(p.i)}</p>`:""}
+        ${(!p.i && !p.t && !p.start)?`<p class="about" style="opacity:.75">Zu diesem Ort liegt in
+          OpenStreetMap keine Beschreibung vor – nur Name, Art und Lage. Wer mag, kann dort
+          eine ergänzen; sie erscheint dann auch hier.</p>`:""}
+        ${p.wp?`<p style="margin:14px 0 0"><a class="btn sm ghost" href="${esc(p.wp)}"
+          target="_blank" rel="noopener noreferrer">Wikipedia-Artikel</a></p>`:""}
         ${p.approx ? "" : miniMap(p)}
         <dl class="dl">${rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${v}</dd>`).join("")}</dl>
         ${whyBlock(p)}
@@ -2150,6 +2373,8 @@ function viewSheet(){
           ${p.start?`<a class="btn sm ghost" href="${gcalLink(p)}" target="_blank" rel="noopener noreferrer">Google Kalender</a>`:""}
           ${p.url?`<a class="btn sm" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Zum Veranstalter</a>`:""}
           <a class="btn sm ghost" href="${osm}" target="_blank" rel="noopener noreferrer">Straßenkarte öffnen</a>
+          ${p.osm?`<a class="btn sm ghost" href="https://www.openstreetmap.org/${esc(p.osm)}"
+            target="_blank" rel="noopener noreferrer">Eintrag ergänzen</a>`:""}
           <button class="btn sm ghost" data-close>Schließen</button>
         </div>
       </div>
@@ -2299,6 +2524,7 @@ function render(){
 }
 
 function init(){
+  setThema(S.thema);
   try{
     if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)
       document.querySelectorAll(".blogo animate").forEach(a=>a.remove());
