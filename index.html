@@ -30,16 +30,16 @@
   }
   @media (prefers-color-scheme:light){
     :root{
-      --bg:#f4f3f0; --bg-2:#eceae5;
-      --surface:#ffffff; --surface-2:#f7f6f3; --surface-3:#eceae5;
-      --line:rgba(18,18,16,.10); --line-2:rgba(18,18,16,.2);
-      --glass:rgba(255,255,255,.5); --glass-2:rgba(255,255,255,.7);
-      --glass-line:rgba(18,18,16,.12); --glass-hi:rgba(255,255,255,.9);
-      --veil:rgba(244,243,240,.82); --card-veil:rgba(255,255,255,.66); --card-solid:#ffffff;
-      --text:#121210; --text-dim:#575652; --text-mute:#7d7c77;
-      --accent:#16150f; --accent-ink:#ffffff;
-      --pos:#3a7a49; --neg:#a63a30; --warn:#8a6a1e;
-      --shine:#2f6fd0; --shine-hot:#0d2b52;
+      --bg:#f3f4f6; --bg-2:#efeae0;
+      --surface:#ffffff; --surface-2:#f7f4ee; --surface-3:#ece4d6;
+      --line:rgba(38,34,28,.10); --line-2:rgba(38,34,28,.20);
+      --glass:rgba(255,255,255,.55); --glass-2:rgba(255,255,255,.78);
+      --glass-line:rgba(38,34,28,.13); --glass-hi:rgba(255,255,255,.95);
+      --veil:rgba(246,246,246,.84); --card-veil:rgba(255,255,255,.7); --card-solid:#ffffff;
+      --text:#241f18; --text-dim:#5d564b; --text-mute:#8b8376;
+      --accent:#2a251d; --accent-ink:#f7f4ee;
+      --pos:#3a6f4a; --neg:#9d3a30; --warn:#8a6a1e;
+      --shine:#6f8cb0; --shine-hot:#243a55;
     }
   }
   html[data-thema="dunkel"]{
@@ -54,17 +54,17 @@
       --pos:#8fbb96; --neg:#cf918a; --warn:#c9a86a;
       --shine:#5aa8ff; --shine-hot:#eaf6ff;
   }
-  html[data-thema="hell"]{
-      --bg:#f4f3f0; --bg-2:#eceae5;
-      --surface:#ffffff; --surface-2:#f7f6f3; --surface-3:#eceae5;
-      --line:rgba(18,18,16,.10); --line-2:rgba(18,18,16,.2);
-      --glass:rgba(255,255,255,.5); --glass-2:rgba(255,255,255,.7);
-      --glass-line:rgba(18,18,16,.12); --glass-hi:rgba(255,255,255,.9);
-      --veil:rgba(244,243,240,.82); --card-veil:rgba(255,255,255,.66); --card-solid:#ffffff;
-      --text:#121210; --text-dim:#575652; --text-mute:#7d7c77;
-      --accent:#16150f; --accent-ink:#ffffff;
-      --pos:#3a7a49; --neg:#a63a30; --warn:#8a6a1e;
-      --shine:#2f6fd0; --shine-hot:#0d2b52;
+  html[data-thema="mondstein"]{
+      --bg:#f3f4f6; --bg-2:#efeae0;
+      --surface:#ffffff; --surface-2:#f7f4ee; --surface-3:#ece4d6;
+      --line:rgba(38,34,28,.10); --line-2:rgba(38,34,28,.20);
+      --glass:rgba(255,255,255,.55); --glass-2:rgba(255,255,255,.78);
+      --glass-line:rgba(38,34,28,.13); --glass-hi:rgba(255,255,255,.95);
+      --veil:rgba(246,246,246,.84); --card-veil:rgba(255,255,255,.7); --card-solid:#ffffff;
+      --text:#241f18; --text-dim:#5d564b; --text-mute:#8b8376;
+      --accent:#2a251d; --accent-ink:#f7f4ee;
+      --pos:#3a6f4a; --neg:#9d3a30; --warn:#8a6a1e;
+      --shine:#6f8cb0; --shine-hot:#243a55;
   }
   html[data-thema="neon"]{
       --bg:#0a0714; --bg-2:#100a20;
@@ -76,7 +76,7 @@
       --text:#f6f2ff; --text-dim:#b6a6d6; --text-mute:#8878ad;
       --accent:#c8ff4d; --accent-ink:#150e28;
       --pos:#5ce7a8; --neg:#ff7a9c; --warn:#ffd166;
-      --shine:#b06bff; --shine-hot:#e8ff9e;
+      --shine:#ff3ba7; --shine-hot:#7df9ff;
   }
   *{box-sizing:border-box}
   html{margin:0;padding:0;background:var(--bg)}
@@ -427,11 +427,20 @@
   .sheet .why{margin-top:20px}
   .about{margin:16px 0 0;font-size:.97rem;line-height:1.62;color:var(--text-dim)}
   body.locked{overflow:hidden}
-  html[data-thema="neon"] body{
+  html[data-thema="neon"]{
     background-image:
-      radial-gradient(70vw 50vh at 12% -8%, rgba(176,107,255,.20), transparent 70%),
-      radial-gradient(60vw 45vh at 92% 4%, rgba(200,255,77,.10), transparent 70%);
-    background-attachment:fixed}
+      radial-gradient(70vw 50vh at 12% -8%, rgba(176,107,255,.22), transparent 70%),
+      radial-gradient(60vw 45vh at 92% 4%, rgba(200,255,77,.12), transparent 70%),
+      repeating-linear-gradient(to right, rgba(176,107,255,.075) 0 1px, transparent 1px 58px),
+      repeating-linear-gradient(to bottom, rgba(176,107,255,.075) 0 1px, transparent 1px 58px);
+    background-repeat:no-repeat,no-repeat,repeat,repeat}
+
+  /* Mondsteinweiß oben links, sanftes Beige unten rechts – diagonal ineinander. */
+  html[data-thema="mondstein"]{background-image:linear-gradient(135deg, #f6f7f9 0%, #f2eee6 38%, #ece2d0 70%, #e4d6bd 100%);background-repeat:no-repeat}
+  @media (prefers-color-scheme:light){
+    html:not([data-thema]){background-image:linear-gradient(135deg, #f6f7f9 0%, #f2eee6 38%, #ece2d0 70%, #e4d6bd 100%);background-repeat:no-repeat}
+  }
+
   html[data-thema="neon"] .chip[aria-pressed=true]{box-shadow:0 0 0 3px rgba(200,255,77,.22)}
   html[data-thema="neon"] .card{box-shadow:inset 0 1px 0 var(--glass-hi),
     0 30px 70px -26px rgba(0,0,0,.9), 0 0 0 1px rgba(176,107,255,.12)}
@@ -456,6 +465,41 @@
     box-shadow:inset 0 0 0 1px rgba(127,127,127,.4)}
   .themen .tn{font-size:.94rem;font-weight:600;letter-spacing:-.02em}
   .themen .td{display:block;font-size:.78rem;color:var(--text-dim);font-weight:400;margin-top:1px}
+
+  /* ═══════════ Neon: Gitter, Glitch, Scanlines ═══════════
+     Alles eigener Code, keine fremden Bilder. Bewegt wird ausschließlich
+     über transform – das rechnet die Grafikeinheit, nicht der Hauptprozessor.
+     Bei „Bewegung reduzieren" steht alles still (Regel ganz unten). */
+  /* Kurzer Bildversatz beim Seitenwechsel */
+  html[data-thema="neon"] .glitch{animation:glitch .42s ease-out 1}
+  @keyframes glitch{
+    0%  {transform:none;filter:none}
+    12% {transform:translate3d(-3px,0,0);filter:drop-shadow(3px 0 #ff2e97) drop-shadow(-3px 0 #22e6ff)}
+    26% {transform:translate3d(3px,0,0); filter:drop-shadow(-4px 0 #ff2e97) drop-shadow(4px 0 #22e6ff)}
+    40% {transform:translate3d(-2px,0,0);filter:drop-shadow(2px 0 #ff2e97) drop-shadow(-2px 0 #22e6ff)}
+    55% {transform:translate3d(1px,0,0); filter:drop-shadow(-1px 0 #ff2e97) drop-shadow(1px 0 #22e6ff)}
+    70%,100%{transform:none;filter:none}}
+
+  /* Feine Zeilen über den Bildern */
+  html[data-thema="neon"] .cover::after,
+  html[data-thema="neon"] .shero::after{
+    content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background-image:repeating-linear-gradient(to bottom,
+      rgba(0,0,0,.26) 0 1px, transparent 1px 3px);
+    mix-blend-mode:multiply;opacity:.55}
+
+  /* Kanten leuchten beim Berühren */
+  html[data-thema="neon"] .card:active{
+    box-shadow:inset 0 1px 0 var(--glass-hi),0 0 0 1px rgba(255,59,167,.55),
+      0 0 28px -4px rgba(255,59,167,.45),0 30px 70px -26px rgba(0,0,0,.9)}
+  html[data-thema="neon"] .btn:active,
+  html[data-thema="neon"] .chip:active,
+  html[data-thema="neon"] .lrow:active{
+    box-shadow:0 0 0 1px rgba(125,249,255,.6),0 0 20px -4px rgba(125,249,255,.5)}
+  html[data-thema="neon"] .modebtn:active,
+  html[data-thema="neon"] .geobtn:active{
+    box-shadow:0 0 0 1px rgba(200,255,77,.6),0 0 18px -4px rgba(200,255,77,.5)}
+
   .hidden{display:none !important}
   @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 </style>
@@ -551,8 +595,8 @@
     <div class="srch">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
            stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
-      <input type="search" id="q" placeholder="Ort suchen, etwa Datsche" autocomplete="off"
-             enterkeyhint="search" aria-label="Orte durchsuchen">
+      <input type="search" id="q" placeholder="Location oder Attraktion suchen" autocomplete="off"
+             enterkeyhint="search" aria-label="Locations, Attraktionen und Veranstaltungen durchsuchen">
       <button type="button" id="qclr" aria-label="Suche leeren" hidden>✕</button>
     </div>
     <div class="chips" role="group" aria-label="Kategorien filtern" id="chips"></div>
@@ -1654,7 +1698,11 @@ function viewHow(){
   </table>
   <h2>Aussehen</h2>
   <p>Unter „Mehr → Aussehen“ lässt sich die Farbwelt wechseln: automatisch nach
-  Geräteeinstellung, ruhig dunkel, hell oder Neon. Die Wahl bleibt in deinem Browser
+  Geräteeinstellung, ruhig dunkel, Mondstein oder Neon. Neon bringt zusätzlich ein ruhendes
+  Raster im Hintergrund, einen kurzen Bildversatz auf Überschriften und feine Zeilen über
+  den Bildern mit; alles davon ist selbst gezeichnet, es werden keine fremden Bilder geladen.
+  Wer im Gerät „Bewegung reduzieren“ eingestellt hat, bekommt dieselbe Farbwelt ohne
+  Bewegung. Die Wahl bleibt in deinem Browser
   gespeichert und wird nicht übertragen. Sie ändert nur Farben – nicht, welche Orte
   du siehst und in welcher Reihenfolge.</p>
 
@@ -2006,20 +2054,30 @@ async function openCalendar(p){
    um eine ausdrücklich gewünschte Einstellung beizubehalten). Nichts davon
    verlässt das Gerät. */
 const THEMEN = [
-  ["auto",  "Automatisch", "Folgt der Einstellung deines Geräts", "linear-gradient(135deg,#09090a 50%,#f4f3f0 50%)"],
+  ["auto",  "Automatisch", "Folgt der Einstellung deines Geräts", "linear-gradient(135deg,#09090a 50%,#efe7d8 50%)"],
   ["dunkel","Ruhig dunkel","Zurückhaltend, kontrastreich",        "#131315"],
-  ["hell",  "Hell",        "Heller Hintergrund, dunkle Schrift",  "#f4f3f0"],
-  ["neon",  "Neon",        "Violett und Limette, kräftiger",      "linear-gradient(135deg,#b06bff,#c8ff4d)"]
+  ["mondstein","Mondstein","Mondsteinweiß und Beige, diagonal","linear-gradient(135deg,#ffffff 0%,#f0ece3 45%,#d9c39c 100%)"],
+  ["neon",  "Neon",        "Glitch, Raster, Magenta und Cyan",    "linear-gradient(135deg,#ff3ba7,#b06bff 55%,#c8ff4d)"]
 ];
+function tempo(k){
+  const svg = document.querySelector(".wmark svg");
+  if(!svg) return;
+  const d = k === "neon" ? "4s" : "7s";
+  svg.querySelectorAll("animate").forEach(a=>a.setAttribute("dur", d));
+  try{ svg.setCurrentTime(0); }catch(e){}
+}
 function setThema(k){
+  /* Frühere Fassungen kannten „hell". Wer das gewählt hatte, bekommt Mondstein. */
+  if(k === "hell") k = "mondstein";
   S.thema = k;
   store.set("thema", k);
   if(k === "auto") document.documentElement.removeAttribute("data-thema");
   else document.documentElement.setAttribute("data-thema", k);
-  const dunkel = k==="hell" ? "#f4f3f0" : k==="neon" ? "#0a0714"
+  const dunkel = k==="mondstein" ? "#f6f7f9" : k==="neon" ? "#0a0714"
     : k==="dunkel" ? "#09090a" : null;
   const meta = document.querySelector('meta[name="theme-color"]');
   if(meta && dunkel) meta.setAttribute("content", dunkel);
+  tempo(k);
 }
 function openThema(){
   document.querySelectorAll(".sheet").forEach(n=>n.remove());
@@ -2495,6 +2553,17 @@ function renderControls(){
   if(qc) qc.hidden = !S.q;
 }
 
+
+/* Kurzer Bildversatz auf der ersten Überschrift. Die Regel dazu gilt nur in
+   der Farbwelt Neon; in allen anderen passiert sichtbar nichts. */
+function glitch(){
+  const el = main().querySelector("h1, .wgreet");
+  if(!el) return;
+  el.classList.remove("glitch");
+  void el.offsetWidth;          /* erzwingt einen Neustart der Abfolge */
+  el.classList.add("glitch");
+}
+
 function render(){
   document.querySelectorAll(".sheet").forEach(n=>n.remove());
   /* Das Wasserzeichen ist eine fortlaufende Zeichnung. Auf den Listen- und
@@ -2520,6 +2589,7 @@ function render(){
   else if(S.view==="about") viewAbout();
   else viewLegal();
   renderControls();
+  glitch();
   if(S.detail) viewSheet(); else document.body.classList.remove("locked");
 }
 
