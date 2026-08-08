@@ -675,7 +675,7 @@ const PROTOTYPE = true;
    gibt, wäre schlechter als gar keine.
    Sobald das Impressum steht, hier dieselbe Adresse eintragen.
    --------------------------------------------------------------- */
-const CONTACT = "";
+const CONTACT = "Radiux.info@proton.me";
 
 const MD = { lat: 52.1274, lon: 11.6392, label: "Magdeburg, Stadtmitte" };
 
@@ -1870,31 +1870,42 @@ function viewLegal(){
   main().innerHTML=`<div aria-live="polite" class="sr" id="live"></div>
   <div class="legal">
   <h1>Rechtliche Angaben</h1>
-  <div class="todo"><strong>Vor einer Veröffentlichung auszufüllen.</strong>
-  Alle mit […] markierten Stellen müssen durch echte Angaben ersetzt werden.
-  Solange dieser Prototyp nur intern getestet und nicht öffentlich angeboten wird,
-  besteht keine Impressumspflicht – mit dem ersten öffentlichen Link schon.</div>
+  <div class="note"><strong>Diese Angaben sind vollständig und aktuell.</strong>
+  Impressum und Datenschutzerklärung gelten ab dem ersten öffentlichen Aufruf –
+  unabhängig davon, ob für die Anwendung geworben wird. Vor einer Veröffentlichung
+  mit Erlösabsicht sind sie anwaltlich zu prüfen.</div>
 
   <h2 id="impressum">Impressum</h2>
   <p>Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG):</p>
-  <p>[Vor- und Nachname beziehungsweise Firma]<br>
-     [Straße und Hausnummer]<br>
-     [Postleitzahl und Ort]<br>Deutschland</p>
-  <p><strong>Vertreten durch:</strong> [bei UG oder GmbH: Name der Geschäftsführung]<br>
-     <strong>Kontakt:</strong> [E-Mail-Adresse] · [Telefonnummer]<br>
-     <strong>Registereintrag:</strong> [Registergericht und Registernummer, sofern vorhanden]<br>
-     <strong>Umsatzsteuer-Identifikationsnummer:</strong> [sofern vorhanden, § 27a UStG]</p>
-  <p><strong>Verantwortlich für den Inhalt:</strong> [Name und Anschrift]</p>
+  <p>Steven Ebeling<br>
+     Herrenbreite 14<br>
+     06449 Aschersleben<br>Deutschland</p>
+  <p><strong>Kontakt:</strong>
+     <a href="mailto:Radiux.info@proton.me">Radiux.info@proton.me</a></p>
+  <p><strong>Rechtsform:</strong> Einzelperson, kein eingetragenes Unternehmen.
+     Es besteht kein Registereintrag und keine Umsatzsteuer-Identifikationsnummer
+     nach § 27a UStG.</p>
+  <p><strong>Verantwortlich für den Inhalt nach § 18 Abs. 2 Medienstaatsvertrag:</strong>
+     Steven Ebeling, Anschrift wie oben.</p>
   <p><strong>Verbraucherstreitbeilegung:</strong> Wir sind nicht bereit und nicht verpflichtet,
      an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
 
   <h2 id="datenschutz">Datenschutzerklärung</h2>
-  <p><strong>Verantwortlicher:</strong> [Name und Anschrift wie im Impressum].
-     [Ab Benennung eines Datenschutzbeauftragten hier dessen Kontaktdaten ergänzen.]</p>
+  <p><strong>Verantwortlicher im Sinne der DSGVO:</strong> Steven Ebeling,
+     Herrenbreite 14, 06449 Aschersleben, Deutschland,
+     <a href="mailto:Radiux.info@proton.me">Radiux.info@proton.me</a>.
+     Ein Datenschutzbeauftragter ist derzeit nicht benannt und nach § 38 BDSG
+     auch nicht erforderlich.</p>
   <h3>Was diese Anwendung verarbeitet</h3>
-  <p>Dieser Prototyp läuft vollständig in deinem Browser. Es gibt keinen Server, der deine
-     Nutzung aufzeichnet. Es werden keine Nutzerkonten angelegt, keine Analyse- oder
-     Werbedienste eingebunden und keine Daten an uns übertragen.</p>
+  <p>Diese Anwendung läuft vollständig in deinem Browser. Es gibt keinen Server des
+     Anbieters, der deine Nutzung aufzeichnet, keine Nutzerkonten, keine Analyse- oder
+     Werbedienste und keine Weitergabe an Dritte. Was du in Radiux tust, erfährt der
+     Anbieter nicht.</p>
+  <p>Zwei technisch unvermeidbare Ausnahmen sind in der Tabelle aufgeführt und sollen hier
+     nicht verschwiegen werden: Beim Aufruf der Seite sieht der Hoster deine IP-Adresse,
+     und wenn du „Aktuelle Orte laden“ auswählst, sieht sie zusätzlich der abgefragte
+     Kartendienst. Beides ist bei jeder Website so; der Anbieter hat auf diese Protokolle
+     keinen Zugriff.</p>
   <table>
     <thead><tr><th>Verarbeitung</th><th>Zweck</th><th>Rechtsgrundlage</th><th>Dauer</th></tr></thead>
     <tbody>
@@ -1915,6 +1926,15 @@ function viewLegal(){
               technisch bedingt an den Overpass-Dienst der OpenStreetMap Foundation
               übermittelt. Ohne diese Aktion findet keine Verbindung statt.</td>
           <td>Nach den Bestimmungen der OpenStreetMap Foundation</td></tr>
+      <tr><td>Aufruf der Seite (Hosting)</td>
+          <td>Auslieferung der Anwendung an deinen Browser</td>
+          <td>Die Anwendung liegt bei GitHub, Inc., 88 Colin P Kelly Jr Street,
+              San Francisco, CA 94107, USA. Beim Aufruf werden dort technisch bedingt
+              Verbindungsdaten verarbeitet, darunter deine IP-Adresse. Grundlage ist
+              Art. 6 Abs. 1 lit. f DSGVO – das berechtigte Interesse an einer sicheren
+              und funktionsfähigen Auslieferung. Die Übermittlung in die USA stützt sich
+              auf die Zertifizierung von GitHub unter dem EU-US Data Privacy Framework.</td>
+          <td>Nach den Bestimmungen von GitHub</td></tr>
       <tr><td>Bildmotive</td>
           <td>Darstellung der Entdeckungskarten</td>
           <td>Keine Verarbeitung personenbezogener Daten. Die Bilder liegen auf demselben
@@ -1936,7 +1956,10 @@ function viewLegal(){
      Widerspruch (Art. 21) zu. Da in dieser Fassung keine Daten bei uns gespeichert werden,
      kannst du sämtliche gespeicherten Angaben selbst unter „Empfehlung“ löschen.
      Zudem besteht ein Beschwerderecht bei einer Aufsichtsbehörde; zuständig wäre
-     [Landesbeauftragte für den Datenschutz des Bundeslandes des Firmensitzes].</p>
+     die Landesbeauftragte für den Datenschutz Sachsen-Anhalt,
+     Otto-von-Guericke-Straße 34a, 39104 Magdeburg,
+     <a href="https://datenschutz.sachsen-anhalt.de" target="_blank"
+        rel="noopener noreferrer">datenschutz.sachsen-anhalt.de</a>.</p>
 
   <h2 id="barrierefreiheit">Erklärung zur Barrierefreiheit</h2>
   <p>Wir wollen, dass Radiux von möglichst allen Menschen genutzt werden kann. Diese Anwendung
@@ -1964,7 +1987,8 @@ function viewLegal(){
         Sie wird von Beginn an mit einer gleichwertigen Listenalternative geplant.</li>
     <li>Die Anwendung wurde bisher nicht mit Nutzerinnen und Nutzern von Screenreadern getestet.</li>
   </ul>
-  <p>Rückmeldungen zur Barrierefreiheit: [E-Mail-Adresse].</p>
+  <p>Rückmeldungen zur Barrierefreiheit:
+     <a href="mailto:Radiux.info@proton.me?subject=Barrierefreiheit">Radiux.info@proton.me</a>.</p>
 
   <h2 id="daten">Datenquellen und Lizenz</h2>
   <p>Die Ortsdaten stammen von OpenStreetMap und stehen unter der Open Database License (ODbL).
