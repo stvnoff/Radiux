@@ -211,7 +211,7 @@
   .welcome .wgreet{font-size:1.9rem;line-height:1.2;color:var(--text);margin-bottom:20px;
     letter-spacing:-.01em}
   .wact{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px;
-    font-family:var(--font);font-size:1rem}
+    justify-content:center;font-family:var(--font);font-size:1rem}
   .welcome .soon{font-family:var(--font);font-size:var(--micro);text-transform:uppercase;
     letter-spacing:.16em;font-weight:600;color:var(--text-mute);
     margin:26px 0 8px;padding-top:16px;border-top:1px solid var(--line)}
@@ -743,7 +743,11 @@ const MODES = {
   essen:     { l:"Etwas essen",     s:"Restaurants, Cafés und Bars in der Nähe", cats:["restaurant","cafe","bar","schnell"], g:["#ff9a3d","#ff4d6d"] },
   erleben:   { l:"Etwas erleben",   s:"Kultur, Sehenswürdigkeiten und Parks",    cats:["event","sehenswuerdigkeit","museum","theater","park","erleben"], g:["#5eead4","#3b82f6"] },
   stoebern:  { l:"Einfach stöbern", s:"Alles, was in deinem Umkreis liegt",      cats:CATS.map(c=>c.k), g:["#c084fc","#ec4899"] },
-  ueberrasch:{ l:"Überrasch mich",  s:"Zufällige Auswahl aus den besten Treffern",cats:CATS.map(c=>c.k), g:["#fbbf24","#7c5cff"] }
+  /* „Überrasch mich“ ist bewusst das Gegenteil von „Einfach stöbern“: Nicht die
+     naheliegenden Treffer zuerst, sondern die selteneren Kategorien und das,
+     was bisher nicht gemerkt wurde. Das ist eine Regel, kein Assistent – die
+     App behauptet an keiner Stelle, dass hier etwas gelernt hätte. */
+  ueberrasch:{ l:"Überrasch mich",  s:"Seltene Kategorien und Orte abseits deiner Gewohnheiten",cats:CATS.map(c=>c.k), g:["#fbbf24","#7c5cff"] }
 };
 
 /* ---------------- Bildmotive im Gerät erzeugen ---------------- */
@@ -1052,6 +1056,7 @@ const S = {
   radius:store.get("radius",3000), mode:null, origin:MD,
   places:[], idx:0, saved:store.get("saved",[]), hidden:store.get("hidden",[]),
   profile:store.get("profile",{}), activeCats:[], loaded:false, loading:false,
+  geoErklaert:store.get("geoErklaert",false),
   dataSource:"Startbestand"
 };
 
@@ -1149,7 +1154,53 @@ function score(p){
   return W.dist*sd + W.interest*si + W.open*os + W.info*inf;
 }
 
+/* ---------------- „Überrasch mich“ ----------------
+   Radiux hat keinen Assistenten, der jemanden überraschen könnte. Was es aber
+   kann, ist die eigene Rangfolge bewusst umzudrehen: Was die normale Sortierung
+   nach oben schiebt – nah, geöffnet, passt zu den bisherigen Vorlieben –, wird
+   hier gerade nicht bevorzugt.
+   Die Regel lautet: seltene Kategorien vor häufigen, Unbekanntes vor Gemerktem,
+   geschlossene Orte bleiben trotzdem hinten. Innerhalb gleich bewerteter Orte
+   entscheidet der Zufall, damit zweimal Antippen nicht dieselbe Reihe ergibt. */
+function ueberraschen(list){
+  if(list.length < 2) return list;
+  /* Wie oft kommt jede Kategorie in der aktuellen Liste vor? */
+  const haeufig = {};
+  list.forEach(p => { haeufig[p.c] = (haeufig[p.c] || 0) + 1; });
+  const maxH = Math.max(1, ...Object.values(haeufig));
+  const maxProf = Math.max(1, ...Object.values(S.profile).map(Math.abs));
+
+  return list.map(p => {
+    /* selten = überraschend */
+    const selten = 1 - (haeufig[p.c] || 1) / maxH;
+    /* Kategorien, die bisher oft gemerkt wurden, sind gerade nicht überraschend */
+    const prof = S.profile[p.c] || 0;
+    const fremd = Math.max(0, Math.min(1, (1 - prof / maxProf) / 2));
+    /* Schon Gemerktes kennt man bereits */
+    const neu = isSaved(p.n) ? 0 : 1;
+    /* Ein Ort mit Beschreibung lohnt die Überraschung eher */
+    const erklaert = p.i ? 1 : p.t || p.art ? 0.5 : 0;
+    /* Geschlossenes bleibt hinten – eine Überraschung vor verschlossener Tür ist keine */
+    const offen = p._o.s === "closed" ? 0 : 1;
+    const u = offen * (0.34*selten + 0.26*fremd + 0.22*neu + 0.18*erklaert)
+            + Math.random() * 0.28;
+    return { p, u: offen ? u : u - 1 };
+  }).sort((a,b) => b.u - a.u).map(x => x.p);
+}
+
 function reasons(p){
+  if(S.mode==="ueberrasch" && !p.start){
+    const o = [`Zufallsvorschlag aus „${CATMAP[p.c]||"Ort"}“ – in diesem Vorhaben zählt nicht die Nähe`,
+               `${fmtDist(p._d)} entfernt – etwa ${walkTxt(p._d)} zu Fuß`];
+    const prof = S.profile[p.c] || 0;
+    o.push(prof > 0
+      ? `„${CATMAP[p.c]}“ hast du schon gemerkt – hier steht es trotzdem weiter hinten`
+      : `„${CATMAP[p.c]}“ hast du bisher selten gewählt – deshalb dieser Vorschlag`);
+    if(p._o.s==="closed") o.push("Hat gerade geschlossen – deshalb weiter unten");
+    if(p.i) o.push("Beschreibung vorhanden – tippen für Details");
+    o.push("Kein Assistent, keine Auswertung: Radiux dreht hier nur seine eigene Rangfolge um");
+    return o;
+  }
   if(p.start){
     const days = Math.round(evDaysUntil(p.start));
     const o = [evLabel(p.start)];
@@ -1268,11 +1319,7 @@ function prepare(){
     : (p._d<=S.radius && cats.includes(p.c) && !S.hidden.includes(p.n)));
   list.forEach(p=>{ p._s=score(p); });
   list.sort((a,b)=>b._s-a._s);
-  if(S.mode==="ueberrasch"){
-    const top=list.slice(0,Math.max(8,Math.ceil(list.length*0.4)));
-    for(let i=top.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [top[i],top[j]]=[top[j],top[i]]; }
-    list=top.concat(list.slice(top.length));
-  }
+  if(S.mode==="ueberrasch") list = ueberraschen(list);
   return list;
 }
 
@@ -1346,8 +1393,35 @@ async function loadLive(){
   S.loading=false; render();
 }
 
-function useGeo(){
+/* Der Browser fragt beim ersten Mal selbst nach – aber erst, nachdem Radiux
+   erklärt hat, was passiert. Eine Einwilligung, die erst im Systemdialog des
+   Browsers erklärt wird, ist keine informierte Einwilligung. Deshalb steht die
+   Erklärung sichtbar davor, und der Systemdialog kommt erst beim zweiten Tippen. */
+function geoErklaert(){
+  const alt = document.getElementById("geonote");
+  if(alt){ alt.remove(); return true; }
+  const leiste = document.getElementById("controls");
+  if(!leiste) return true;
+  const box = document.createElement("div");
+  box.id = "geonote"; box.className = "note"; box.style.margin = "10px 0 0";
+  box.innerHTML = `<strong>Standort verwenden.</strong> Radiux fragt gleich den Standort
+    dieses Geräts ab. Er wird nur im Gerät verwendet, um Entfernungen zu berechnen –
+    nicht gespeichert, nicht übertragen, nicht ausgewertet. Ohne Antwort bleibt die
+    Magdeburger Stadtmitte der Bezugspunkt.
+    <span style="display:block;margin-top:10px">
+      <button type="button" class="btn sm" id="bGeoOk">Standort abfragen</button>
+      <button type="button" class="btn sm ghost" id="bGeoNo">Lieber nicht</button></span>`;
+  leiste.insertAdjacentElement("afterend", box);
+  box.querySelector("#bGeoOk").addEventListener("click", ()=>{ box.remove(); useGeo(true); });
+  box.querySelector("#bGeoNo").addEventListener("click", ()=>{
+    box.remove(); say("Es bleibt bei Magdeburg, Stadtmitte."); });
+  return false;
+}
+
+function useGeo(bestaetigt){
   if(!navigator.geolocation){ say("Standortbestimmung wird nicht unterstützt."); return; }
+  if(!bestaetigt && !S.geoErklaert){ if(!geoErklaert()) return; }
+  S.geoErklaert = true; store.set("geoErklaert", true);
   say("Standort wird ermittelt …");
   navigator.geolocation.getCurrentPosition(
     pos=>{ S.origin={lat:pos.coords.latitude, lon:pos.coords.longitude, label:"Dein Standort"};
@@ -1435,6 +1509,9 @@ function whyLine(p){
          : d === 1 ? "Findet morgen statt"
          : `In ${d} Tagen · ${p.t || "in deinem Umkreis"}`;
   }
+  if(S.mode === "ueberrasch")
+    return prof > 0 ? `Zufallsvorschlag – „${CATMAP[p.c]}“ kennst du schon`
+         : `Zufallsvorschlag – „${CATMAP[p.c]}“ wählst du sonst selten`;
   if(prof > 0) return `Passt zu „${CATMAP[p.c]}“ – ${prof === 1 ? "einmal" : prof + "-mal"} gemerkt`;
   if(p._o.s === "open" && p._d < S.radius * 0.4) return "Ganz in der Nähe und jetzt geöffnet";
   if(p._o.s === "open") return "Hat jetzt geöffnet";
@@ -1503,10 +1580,18 @@ function viewWelcome(){
 /* Zweite Seite: die Auswahl des Vorhabens. */
 function viewStart(){
   if(S.step === "welcome"){ viewWelcome(); return; }
+  /* Wer weit weg ist, soll das hier erfahren und nicht erst nach der Auswahl –
+     sonst wirkt die Trefferliste wie ein Fehler. */
+  const weit = istFern();
   main().innerHTML = `<div aria-live="polite" class="sr" id="live"></div>
   <div class="hero">
     <h1>Was hast du vor?</h1>
     <p class="lead">Radiux zeigt dir passende Orte in deiner Umgebung. Du kannst jederzeit wechseln.</p>
+    ${weit ? `<div class="note" style="margin:0 0 22px">
+      <strong>Du bist rund ${fmtDist(dist(S.origin,MD))} von Magdeburg entfernt.</strong>
+      Radiux kennt bisher nur diese eine Stadt. Du kannst sie trotzdem vollständig
+      durchstöbern – alle Entfernungen werden dann ab der Stadtmitte gerechnet,
+      und die Umkreisgrenze entfällt.</div>` : ""}
     <div class="modes">${Object.entries(MODES).map(([k,m])=>`
       <button class="mode" data-mode="${k}">
         <span class="mi">
