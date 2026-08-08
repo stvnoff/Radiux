@@ -215,6 +215,26 @@
   .welcome .soon{font-family:var(--font);font-size:var(--micro);text-transform:uppercase;
     letter-spacing:.16em;font-weight:600;color:var(--text-mute);
     margin:26px 0 8px;padding-top:16px;border-top:1px solid var(--line)}
+  .evtabs{display:flex;gap:6px;margin:14px 0 0}
+  .evtabs button{flex:1 1 0;min-width:0;background:var(--card);color:var(--text-dim);
+    border:1px solid var(--line);border-radius:11px;padding:9px 6px;font:inherit;
+    font-size:.84rem;line-height:1.2;cursor:pointer;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis}
+  @media (max-width:359px){ .evtabs button{font-size:.74rem;padding:9px 3px}
+    .evtabs{gap:4px} }
+  .evtabs button .n{opacity:.6;font-variant-numeric:tabular-nums;margin-left:3px}
+  .evtabs button[aria-pressed="true"]{background:var(--text);color:var(--bg);
+    border-color:var(--text);font-weight:600}
+  .evtabs button[aria-pressed="true"] .n{opacity:.7}
+  .pill.serie{border-color:color-mix(in srgb,var(--accent) 45%,transparent);
+    color:var(--accent);font-weight:600}
+  .termine{margin:18px 0 4px;padding:14px 16px;border:1px solid var(--line);border-radius:14px}
+  .termine h3{margin:0 0 4px;font-size:1rem}
+  .termine ul{list-style:none;margin:0;padding:0}
+  .termine li{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:9px 0;border-top:1px solid var(--line)}
+  .termine li:first-child{border-top:0}
+  .termine li span{font-size:.95rem}
   .inlink{background:none;border:0;padding:0;font:inherit;cursor:pointer;color:var(--text);
     text-decoration:underline;text-underline-offset:3px}
   .hero h1{margin-bottom:.24em}
@@ -761,141 +781,587 @@ function prng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0;
    Werden aus events.json neben der index.html geladen.
    Fällt der Abruf aus, gilt der eingebaute Grundbestand. */
 const EVENTS_FALLBACK = [
-  {
-    "t": "CIRCUS KRONE – Farbenspiel, Gold Edition",
-    "v": "Messeplatz Max Wille",
-    "lat": 52.1274,
-    "lon": 11.6392,
-    "approx": true,
-    "start": "2026-08-08T19:30",
-    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
-    "src": "eventfinder.de",
-    "k": "familie"
-  },
-  {
-    "t": "Florian Künstler – Alles nur geliehen",
-    "v": "MDCC Parkbühne im Elbauenpark",
-    "lat": 52.1349,
-    "lon": 11.669,
-    "start": "2026-08-07T19:30",
-    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
-    "src": "eventfinder.de",
-    "k": "konzert"
-  },
-  {
-    "t": "MEGA MALLE 2026",
-    "v": "Elbauenpark Magdeburg",
-    "lat": 52.1349,
-    "lon": 11.669,
-    "start": "2026-08-08T10:30",
-    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
-    "src": "eventfinder.de",
-    "k": "party"
-  },
-  {
-    "t": "1. FC Magdeburg – Eintracht Braunschweig",
-    "v": "Avnet Arena",
-    "lat": 52.1274,
-    "lon": 11.6392,
-    "approx": true,
-    "start": "2026-08-08T13:00",
-    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
-    "src": "eventfinder.de",
-    "k": "sport"
-  },
-  {
-    "t": "SC Magdeburg – GWD Minden",
-    "v": "GETEC Arena",
-    "lat": 52.1283,
-    "lon": 11.6645,
-    "start": "2026-08-11T19:00",
-    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
-    "src": "eventfinder.de",
-    "k": "sport"
-  },
-  {
-    "t": "The Cage MMA 9",
-    "v": "GETEC Arena",
-    "lat": 52.1283,
-    "lon": 11.6645,
-    "start": "2026-08-22T18:00",
-    "u": "https://www.regioactive.de/location/magdeburg/getec-arena-5rjXLcjkkG",
-    "src": "regioactive.de",
-    "k": "sport"
-  },
-  {
-    "t": "7. Magdeburger Friedensfestival",
-    "v": "Salbker See, ehemaliger Badestrand",
-    "lat": 52.1274,
-    "lon": 11.6392,
-    "approx": true,
-    "start": "2026-09-03T16:00",
-    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
-    "src": "eventfinder.de",
-    "k": "festival"
-  },
-  {
-    "t": "Wincent Weiss – Sommertour 2026",
-    "v": "MDCC Parkbühne im Elbauenpark",
-    "lat": 52.1349,
-    "lon": 11.669,
-    "start": "2026-09-04T19:00",
-    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
-    "src": "eventfinder.de",
-    "k": "konzert"
-  },
-  {
-    "t": "AnnenMayKantereit – Live 2026 + Magda",
-    "v": "GETEC Arena",
-    "lat": 52.1283,
-    "lon": 11.6645,
-    "start": "2026-09-05T20:00",
-    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
-    "src": "eventfinder.de",
-    "k": "konzert"
-  },
-  {
-    "t": "NENA – Live 2026, Open Air",
-    "v": "MDCC Parkbühne im Elbauenpark",
-    "lat": 52.1349,
-    "lon": 11.669,
-    "start": "2026-09-05T20:00",
-    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
-    "src": "eventfinder.de",
-    "k": "konzert"
-  },
-  {
-    "t": "Scala & Kolacny Brothers – Scala 30",
-    "v": "Johanniskirche Magdeburg",
-    "lat": 52.1274,
-    "lon": 11.6392,
-    "approx": true,
-    "start": "2026-09-06T20:00",
-    "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
-    "src": "eventfinder.de",
-    "k": "konzert"
-  },
-  {
-    "t": "Olaf der Flipper – 80 Jahre Geburtstagstour",
-    "v": "GETEC Arena",
-    "lat": 52.1283,
-    "lon": 11.6645,
-    "start": "2026-09-11T19:30",
-    "u": "https://www.magdeburg.de/index.php?FID=557.621.1",
-    "src": "magdeburg.de",
-    "k": "konzert"
-  },
-  {
-    "t": "Simone Sommerland 2026",
-    "v": "GETEC Arena",
-    "lat": 52.1283,
-    "lon": 11.6645,
-    "start": "2026-09-12T16:00",
-    "u": "https://www.magdeburg.de/index.php?FID=557.621.1",
-    "src": "magdeburg.de",
-    "k": "familie"
-  }
-];
+    {
+      "t": "CIRCUS KRONE – Farbenspiel, Gold Edition",
+      "v": "Messeplatz Max Wille",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-09T10:30",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "familie"
+    },
+    {
+      "t": "1. FC Magdeburg U23 – SV Babelsberg 03",
+      "v": "Avnet Arena",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-11T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "sport"
+    },
+    {
+      "t": "SC Magdeburg – GWD Minden",
+      "v": "GETEC Arena Magdeburg",
+      "lat": 52.1283,
+      "lon": 11.6645,
+      "start": "2026-08-11T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "sport"
+    },
+    {
+      "t": "Schmutzige Lieder – Comedyshow",
+      "v": "Kulturzentrum Feuerwache",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-14T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "Sommerabend am Fluss: Two Voices Of",
+      "v": "Daniel’s Elbwerk",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-14T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Mono Inc. – Open Air 2026",
+      "v": "Festung Mark",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-15T18:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Pyro Games 2026 – Duell der Feuerwerker",
+      "v": "Elbauenpark Magdeburg",
+      "lat": 52.1349,
+      "lon": 11.669,
+      "start": "2026-08-15T18:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "festival"
+    },
+    {
+      "t": "Schwarze Festung – Aftershowparty",
+      "v": "Festung Mark",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-15T22:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "Freedom – A Tribute to George Michael",
+      "v": "Seebühne Elbauenpark",
+      "lat": 52.1349,
+      "lon": 11.669,
+      "start": "2026-08-21T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "The Cage MMA 9",
+      "v": "GETEC Arena Magdeburg",
+      "lat": 52.1283,
+      "lon": 11.6645,
+      "start": "2026-08-22T18:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "sport"
+    },
+    {
+      "t": "Dreams of Disney – Open Air Musical Dinner",
+      "v": "Daniel’s Elbwerk",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-22T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "familie"
+    },
+    {
+      "t": "Magdeburger Taschenlampenkonzert",
+      "v": "MDCC Parkbühne im Elbauenpark",
+      "lat": 52.1349,
+      "lon": 11.669,
+      "start": "2026-08-22T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "familie"
+    },
+    {
+      "t": "Marc Raschke – Mehr Pogo wagen",
+      "v": "Festung Mark",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-23T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "1. FC Magdeburg U23 – BSG Chemie Leipzig",
+      "v": "Avnet Arena",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-25T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "sport"
+    },
+    {
+      "t": "Helge Schneider – Ellebogen vom Tich",
+      "v": "Festung Mark",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-27T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Stick To Your Guns",
+      "v": "Factory Magdeburg",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-28T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Nino de Angelo – Un Momento",
+      "v": "MDCC Parkbühne im Elbauenpark",
+      "lat": 52.1349,
+      "lon": 11.669,
+      "start": "2026-08-28T19:30",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Faun – Hex Tour 2026",
+      "v": "Factory Magdeburg",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-29T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "MAMAGEHTTANZEN – Open-Air-Sommerspecial",
+      "v": "Montego Beachclub, Heinrich-Heine-Platz 5",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-29T19:00",
+      "u": "https://mamagehttanzen-berlin.ticket.io/z62c7UFj/",
+      "src": "ticket.io",
+      "k": "party"
+    },
+    {
+      "t": "SILLY mit Julia Neigel – elektroAKUSTIK Open Air",
+      "v": "MDCC Parkbühne im Elbauenpark",
+      "lat": 52.1349,
+      "lon": 11.669,
+      "start": "2026-08-29T19:30",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Open Air Comedy Show – Magdeburg Lacht!",
+      "v": "Festung Mark",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-29T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "XLETIX Kids Magdeburg 2026",
+      "v": "Galopprennbahn Magdeburg, Herrenkrug 4",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-30T09:00",
+      "u": "https://www.xletixkids.com/events/magdeburg-2026/",
+      "src": "xletixkids.com",
+      "k": "familie"
+    },
+    {
+      "t": "1. FC Magdeburg – Holstein Kiel",
+      "v": "Avnet Arena",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-08-30T13:30",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "sport"
+    },
+    {
+      "t": "Olaf Schubert & seine Freunde – Jetzt oder now!",
+      "v": "MDCC Parkbühne im Elbauenpark",
+      "lat": 52.1349,
+      "lon": 11.669,
+      "start": "2026-08-30T19:30",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "7. Magdeburger Friedensfestival",
+      "v": "Salbker See, ehemaliger Badestrand",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-03T16:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "festival"
+    },
+    {
+      "t": "Los Cuban Boys – Deutschlandtour 2026",
+      "v": "Allards Stadtfeld",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-04T17:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Wincent Weiss – Sommertour 2026",
+      "v": "MDCC Parkbühne im Elbauenpark",
+      "lat": 52.1349,
+      "lon": 11.669,
+      "start": "2026-09-04T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Mama macht Party",
+      "v": "Factory Magdeburg",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-05T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "AnnenMayKantereit – Live 2026 + Magda",
+      "v": "GETEC Arena Magdeburg",
+      "lat": 52.1283,
+      "lon": 11.6645,
+      "start": "2026-09-05T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "NENA – Live 2026, Open Air",
+      "v": "MDCC Parkbühne im Elbauenpark",
+      "lat": 52.1349,
+      "lon": 11.669,
+      "start": "2026-09-05T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Schwoof mit DJ WASSI",
+      "v": "Kulturzentrum Feuerwache",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-05T21:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "Scala & Kolacny Brothers – Scala 30",
+      "v": "Johanniskirche Magdeburg",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-06T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Anouk – Fantastisches Kindermusical",
+      "v": "AMO Kulturhaus",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-10T16:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "familie"
+    },
+    {
+      "t": "Rockballaden bei Kerzenschein",
+      "v": "Johanniskirche Magdeburg",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-11T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Olaf der Flipper – Geburtstagstournee 2026",
+      "v": "GETEC Arena Magdeburg",
+      "lat": 52.1283,
+      "lon": 11.6645,
+      "start": "2026-09-11T19:30",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "1. FC Magdeburg – 1. FC Kaiserslautern",
+      "v": "Avnet Arena",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-12T13:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "sport"
+    },
+    {
+      "t": "Simone Sommerland – Kinder-Mitmach-Konzert",
+      "v": "GETEC Arena Magdeburg",
+      "lat": 52.1283,
+      "lon": 11.6645,
+      "start": "2026-09-12T16:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "familie"
+    },
+    {
+      "t": "Wolfgang Flür (ex-Kraftwerk) und Zalvox",
+      "v": "Festung Mark",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-12T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Depeche Mode Jubiläumsparty – 30 Jahre",
+      "v": "Festung Mark",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-12T22:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "The Gregorian Voices",
+      "v": "Wallonerkirche",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-13T16:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Eugens Abschiedsparty",
+      "v": "Kulturzentrum Feuerwache",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-18T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "Weimar – Invictus Tour Part II",
+      "v": "GETEC Arena Magdeburg",
+      "lat": 52.1283,
+      "lon": 11.6645,
+      "start": "2026-09-18T19:30",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Depeche Reload – Tribute mit Aftershowparty",
+      "v": "Factory Magdeburg",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-19T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "Forever Young",
+      "v": "Factory Magdeburg",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-19T22:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "Philharmonisches Frühstück",
+      "v": "Café Rossini im Opernhaus",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-20T10:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Night of Musical Dreams",
+      "v": "AMO Kulturhaus",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-20T18:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Atze Schröder – Lovemachine",
+      "v": "AMO Kulturhaus",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-23T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "1. Sinfoniekonzert",
+      "v": "Opernhaus Theater Magdeburg",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-24T19:30",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Lacrimas Profundere",
+      "v": "Factory Magdeburg",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-26T19:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Magdeburg Lacht – Stand-up-Comedy-Show",
+      "v": "OLI Lichtspiele",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-26T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "party"
+    },
+    {
+      "t": "Magnus Lindgren – Jazz in Magdeburg",
+      "v": "Opernhaus Theater Magdeburg",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-26T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "We Salute You – Tribute to AC/DC",
+      "v": "Altes Theater am Jerichower Platz",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-26T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "Rami Hattab – Tour 2026",
+      "v": "Factory Magdeburg",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-27T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "konzert"
+    },
+    {
+      "t": "David Kebekus – Sensible Inhalte",
+      "v": "Theater Grüne Zitadelle",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-30T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "src": "eventfinder.de",
+      "k": "party"
+    }
+  ];
 let EVENTS = EVENTS_FALLBACK;
 
 async function loadEvents(){
@@ -927,9 +1393,30 @@ function evDaysUntil(iso){
   const d = evDate(iso); if(!d) return 999;
   return Math.max(0, (d.getTime() - Date.now()) / 86400000);
 }
+/* Manche Veranstaltungen laufen an mehreren Abenden – ein Theaterstück, eine Show,
+   ein Zirkus. Elf einzelne Karten für dieselbe Sache wären unbrauchbar. Deshalb wird
+   je Titel und Ort nur eine Karte gebaut; sie trägt den nächsten Termin und kennt
+   alle weiteren. Wer an dem einen Abend nicht kann, findet die anderen im Detail. */
+function serienBilden(liste){
+  const gruppen = new Map();
+  for(const e of liste){
+    const k = norm(e.n) + "|" + norm(e.t);
+    if(!gruppen.has(k)) gruppen.set(k, []);
+    gruppen.get(k).push(e);
+  }
+  const out = [];
+  for(const g of gruppen.values()){
+    g.sort((a,b) => String(a.start).localeCompare(String(b.start)));
+    const erste = { ...g[0] };
+    erste.alle = g.map(x => x.start);
+    out.push(erste);
+  }
+  return out;
+}
+
 function eventsAsPlaces(){
   const now = Date.now();
-  return EVENTS
+  const einzeln = EVENTS
     .filter(e => { const d = evDate(e.start); return d && d.getTime() > now - 3*3600*1000; })
     .map(e => {
       let lat=+e.lat, lon=+e.lon, approx=!!e.approx;
@@ -942,7 +1429,11 @@ function eventsAsPlaces(){
       return { n:e.t, c:"event", lat, lon, oh:"", approx,
                t:e.v || "", start:e.start, url:e.u || "", src:e.src || "", adr:"" };
     });
+  return serienBilden(einzeln);
 }
+
+/* Läuft diese Veranstaltung an mehr als einem Abend? */
+function istSerie(p){ return Array.isArray(p.alle) && p.alle.length > 1; }
 
 /* ---------- Neutrale Fläche, falls kein Foto vorliegt ---------- */
 function hashOf(x){ let h=2166136261; for(let i=0;i<x.length;i++){ h^=x.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
@@ -1056,7 +1547,7 @@ const S = {
   radius:store.get("radius",3000), mode:null, origin:MD,
   places:[], idx:0, saved:store.get("saved",[]), hidden:store.get("hidden",[]),
   profile:store.get("profile",{}), activeCats:[], loaded:false, loading:false,
-  geoErklaert:store.get("geoErklaert",false),
+  geoErklaert:store.get("geoErklaert",false), evFilter:"alle",
   dataSource:"Startbestand"
 };
 
@@ -1303,6 +1794,13 @@ function allowed(tags){
     return !!tags.tourism && tags.amenity!=="pharmacy" && tags.amenity!=="doctors";
   return true;
 }
+/* Wie prepare(), aber ohne den Reiter-Filter – damit die Zähler an den Reitern
+   nicht von der gerade gewählten Auswahl abhängen. */
+function prepareRoh(){
+  const merk = S.evFilter; S.evFilter = "alle";
+  try { return prepare(); } finally { S.evFilter = merk; }
+}
+
 function prepare(){
   const raw=S.places.concat(eventsAsPlaces()).map(p=>({...p}));
   const ref = bezug();
@@ -1320,6 +1818,11 @@ function prepare(){
   list.forEach(p=>{ p._s=score(p); });
   list.sort((a,b)=>b._s-a._s);
   if(S.mode==="ueberrasch") list = ueberraschen(list);
+  /* Reiter im Vorhaben „Was ist los?“ – wer an einem Abend nicht kann, sucht
+     gezielt nach dem, was mehrmals läuft; wer nur diesen einen Abend hat, nach
+     dem Gegenteil. Beides ist derselbe Bestand, nur anders gefiltert. */
+  if(S.mode==="event" && S.evFilter!=="alle")
+    list = list.filter(p => S.evFilter==="serie" ? istSerie(p) : !istSerie(p));
   return list;
 }
 
@@ -1532,6 +2035,7 @@ function pills(p){
     <span class="pill dist">${p.approx ? "Ort im Stadtgebiet"
       : `${fmtDist(p._d)} · ${walkMin(p._d)} Min`}</span>
     <span class="pill ${o.s==="open"?"open":o.s==="closed"?"closed":o.s==="soon"?"soon":""}">${esc(o.t)}</span>
+    ${istSerie(p)?`<span class="pill serie">läuft an ${p.alle.length} Abenden</span>`:""}
     ${p.adr?`<span class="pill">${esc(p.adr)}</span>`:""}
   </div>`;
 }
@@ -1673,6 +2177,15 @@ function viewDiscover(){
       <button type="button" class="tinylink" id="bLive" style="margin-left:auto">${
         S.loading ? "lädt …" : S.loaded ? "Orte neu laden" : "aktuelle Orte laden"}</button>
     </div>
+    ${S.mode==="event" ? (()=>{
+      const roh = prepareRoh();
+      const n = { alle: roh.length, serie: roh.filter(istSerie).length };
+      n.einzeln = n.alle - n.serie;
+      return `<div class="evtabs" role="group" aria-label="Veranstaltungen filtern">
+        ${[["alle","Alle"],["einzeln","Einmalig"],["serie","Mehrfach"]]
+          .map(([k,l])=>`<button type="button" data-ev="${k}"
+            aria-pressed="${S.evFilter===k}">${l} <span class="n">${n[k]}</span></button>`).join("")}
+      </div>` })() : ""}
     ${far ? `<div class="note" style="margin:14px 0 0">
       <strong>Du bist rund ${fmtDist(dist(S.origin,MD))} von Magdeburg entfernt.</strong>
       Radiux zeigt dir die Stadt im Überblick – Entfernungen ab Stadtmitte,
@@ -1680,10 +2193,16 @@ function viewDiscover(){
     ${S.q.trim() ? `<p class="counter" style="text-align:left;margin:14px 0 0">${
         queryBlocked(S.q) ? "Zu diesem Begriff zeigt Radiux bewusst keine Ergebnisse."
         : `${list.length} Treffer für „${esc(S.q.trim())}“ · sucht in allen Kategorien, ohne Umkreis`}</p>` : ""}
-    ${(S.vmode==="karten"||!p) ? body : listView(list.slice(0,40),"Alle Vorschläge",list.length)}`;
+    ${(S.vmode==="karten"||!p) ? body : listView(list.slice(0,40), S.mode==="event"
+        ? (S.evFilter==="serie" ? "Läuft an mehreren Abenden"
+         : S.evFilter==="einzeln" ? "Nur an einem Abend" : "Alle Termine")
+        : "Alle Vorschläge", list.length)}`;
 
   main().querySelectorAll("[data-v]").forEach(b=>b.addEventListener("click",()=>{
     S.vmode=b.dataset.v; store.set("vmode",S.vmode); render();
+  }));
+  main().querySelectorAll("[data-ev]").forEach(b=>b.addEventListener("click",()=>{
+    S.evFilter=b.dataset.ev; S.idx=0; render(); main().focus({preventScroll:true});
   }));
   $("#bLive")?.addEventListener("click",loadLive);
   $("#reset")?.addEventListener("click",()=>{ S.hidden=[]; store.set("hidden",[]); S.idx=0;
@@ -2495,7 +3014,7 @@ function viewSheet(){
   const rows = [];
   rows.push(["Entfernung", p.approx ? "noch nicht bekannt"
     : `${fmtDist(p._d)} · etwa ${walkTxt(p._d)} zu Fuß`]);
-  if(p.start) rows.push(["Termin", evLabel(p.start)]);
+  if(p.start) rows.push([istSerie(p) ? "Nächster Termin" : "Termin", evLabel(p.start)]);
   if(p.approx) rows.push(["Hinweis",
     "Die genaue Lage dieses Veranstaltungsortes liegt Radiux noch nicht vor. "
     + "Deshalb gibt es hier keine Entfernung und keine Karte – der Ort steht aber fest."]);
@@ -2530,6 +3049,14 @@ function viewSheet(){
           eine ergänzen; sie erscheint dann auch hier.</p>`:""}
         ${p.wp?`<p style="margin:14px 0 0"><a class="btn sm ghost" href="${esc(p.wp)}"
           target="_blank" rel="noopener noreferrer">Wikipedia-Artikel</a></p>`:""}
+        ${istSerie(p) ? `<div class="termine">
+          <h3>Alle Termine</h3>
+          <p class="micro" style="margin:0 0 10px">Diese Veranstaltung läuft an
+            ${p.alle.length} Abenden. Jeder Termin lässt sich einzeln übernehmen.</p>
+          <ul>${p.alle.map((st,i)=>`<li>
+            <span>${esc(evLabel(st))}</span>
+            <button type="button" class="btn sm ghost" data-termin="${i}">In den Kalender</button>
+          </li>`).join("")}</ul></div>` : ""}
         ${p.approx ? "" : miniMap(p)}
         <dl class="dl">${rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${v}</dd>`).join("")}</dl>
         ${whyBlock(p)}
@@ -2550,6 +3077,9 @@ function viewSheet(){
   document.body.classList.add("locked");
   el.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",closeDetail));
   el.querySelector("[data-ics]")?.addEventListener("click",()=>openCalendar(p));
+  el.querySelectorAll("[data-termin]").forEach(b=>b.addEventListener("click",()=>{
+    openCalendar({ ...p, start: p.alle[+b.dataset.termin] });
+  }));
   el.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>{
     const q = prepare().find(x=>x.n===b.dataset.n) || S.saved.find(x=>x.n===b.dataset.n);
     if(q) save(q);
