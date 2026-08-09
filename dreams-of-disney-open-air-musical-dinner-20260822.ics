@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Radiux//Prototyp//DE
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2245408233@radiux
+DTSTAMP:20260808T190000
+DTSTART:20260822T190000
+DTEND:20260822T220000
+SUMMARY:Dreams of Disney – Open Air Musical Dinner
+LOCATION:Daniel’s Elbwerk
+DESCRIPTION:Angabe laut eventfinder.de. Termin und Ort beim Veranstalter prüfen. https://www.eventfinder.de/magdeburg/veranstaltungen/august/
+GEO:52.1274;11.6392
+END:VEVENT
+END:VCALENDAR

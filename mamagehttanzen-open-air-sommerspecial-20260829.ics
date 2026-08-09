@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Radiux//Prototyp//DE
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2887924131@radiux
+DTSTAMP:20260808T190000
+DTSTART:20260829T190000
+DTEND:20260829T220000
+SUMMARY:MAMAGEHTTANZEN – Open-Air-Sommerspecial
+LOCATION:Montego Beachclub\, Heinrich-Heine-Platz 5
+DESCRIPTION:Angabe laut ticket.io. Termin und Ort beim Veranstalter prüfen. https://mamagehttanzen-berlin.ticket.io/z62c7UFj/
+GEO:52.1274;11.6392
+END:VEVENT
+END:VCALENDAR

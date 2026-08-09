@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Radiux//Prototyp//DE
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:1934141949@radiux
+DTSTAMP:20260808T190000
+DTSTART:20260830T193000
+DTEND:20260830T223000
+SUMMARY:Olaf Schubert & seine Freunde – Jetzt oder now!
+LOCATION:MDCC Parkbühne im Elbauenpark
+DESCRIPTION:Angabe laut eventfinder.de. Termin und Ort beim Veranstalter prüfen. https://www.eventfinder.de/magdeburg/veranstaltungen/august/
+GEO:52.1349;11.669
+END:VEVENT
+END:VCALENDAR

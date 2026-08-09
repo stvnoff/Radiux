@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Radiux//Prototyp//DE
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:3843800279@radiux
+DTSTAMP:20260808T190000
+DTSTART:20260822T180000
+DTEND:20260822T210000
+SUMMARY:The Cage MMA 9
+LOCATION:GETEC Arena Magdeburg
+DESCRIPTION:Angabe laut eventfinder.de. Termin und Ort beim Veranstalter prüfen. https://www.eventfinder.de/magdeburg/veranstaltungen/august/
+GEO:52.1283;11.6645
+END:VEVENT
+END:VCALENDAR

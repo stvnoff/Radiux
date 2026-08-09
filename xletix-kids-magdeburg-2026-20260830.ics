@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Radiux//Prototyp//DE
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:833756558@radiux
+DTSTAMP:20260808T190000
+DTSTART:20260830T090000
+DTEND:20260830T120000
+SUMMARY:XLETIX Kids Magdeburg 2026
+LOCATION:Galopprennbahn Magdeburg\, Herrenkrug 4
+DESCRIPTION:Angabe laut xletixkids.com. Termin und Ort beim Veranstalter prüfen. https://www.xletixkids.com/events/magdeburg-2026/
+GEO:52.1274;11.6392
+END:VEVENT
+END:VCALENDAR

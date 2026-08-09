@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Radiux//Prototyp//DE
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:704067679@radiux
+DTSTAMP:20260808T190000
+DTSTART:20260905T200000
+DTEND:20260905T230000
+SUMMARY:AnnenMayKantereit – Live 2026 + Magda
+LOCATION:GETEC Arena Magdeburg
+DESCRIPTION:Angabe laut eventfinder.de. Termin und Ort beim Veranstalter prüfen. https://www.eventfinder.de/magdeburg/veranstaltungen/september/
+GEO:52.1283;11.6645
+END:VEVENT
+END:VCALENDAR

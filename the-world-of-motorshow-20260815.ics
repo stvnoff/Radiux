@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Radiux//Prototyp//DE
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:3593626486@radiux
+DTSTAMP:20260808T190000
+DTSTART:20260815T180000
+DTEND:20260815T210000
+SUMMARY:The World of Motorshow
+LOCATION:The World of Motorshow
+DESCRIPTION:Angabe laut eventfinder.de. Termin und Ort beim Veranstalter prüfen. https://www.eventfinder.de/magdeburg/veranstaltungen/august/
+GEO:52.1274;11.6392
+END:VEVENT
+END:VCALENDAR

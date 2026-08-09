@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Radiux//Prototyp//DE
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:1551823612@radiux
+DTSTAMP:20260808T190000
+DTSTART:20260815T180000
+DTEND:20260815T210000
+SUMMARY:Pyro Games 2026 – Duell der Feuerwerker
+LOCATION:Elbauenpark Magdeburg
+DESCRIPTION:Angabe laut eventfinder.de. Termin und Ort beim Veranstalter prüfen. https://www.eventfinder.de/magdeburg/veranstaltungen/august/
+GEO:52.1349;11.669
+END:VEVENT
+END:VCALENDAR

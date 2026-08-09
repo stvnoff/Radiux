@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Radiux//Prototyp//DE
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:3951669028@radiux
+DTSTAMP:20260808T190000
+DTSTART:20260906T200000
+DTEND:20260906T230000
+SUMMARY:Scala & Kolacny Brothers – Scala 30
+LOCATION:Johanniskirche Magdeburg
+DESCRIPTION:Angabe laut eventfinder.de. Termin und Ort beim Veranstalter prüfen. https://www.eventfinder.de/magdeburg/veranstaltungen/september/
+GEO:52.1274;11.6392
+END:VEVENT
+END:VCALENDAR
