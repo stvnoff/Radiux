@@ -1799,6 +1799,45 @@ const ORT_BILD = {
    irreführende Angabe nach § 5 UWG. */
 const EIGENE_FOTOS = [];
 
+/* ---------- Welches Motiv passt? ----------------------------------------
+   „Sehenswürdigkeit“ ist eine weite Kategorie: Sie enthält Kirchen, Brücken,
+   Denkmäler – und den Domfelsen, ein Stück Gestein in der Elbe. Ein zufälliges
+   Bild aus dieser Kategorie kann dort gründlich danebenliegen.
+
+   Was im Namen steht, sagt darüber oft mehr aus als die Kategorie. Diese
+   Liste liest den Namen und wählt danach den Bildbestand – aber nur bei den
+   drei weiten Kategorien. Bei einem Café oder einem Museum ist die Kategorie
+   bereits die beste Auskunft, dort wird nichts umgelenkt.
+
+   Es bleibt ein Symbolbild. Diese Regel verhindert grobe Fehlgriffe; sie
+   kann nicht dafür sorgen, dass das Bild den Ort zeigt. ------------------ */
+const MOTIV_WEIT = ["sehenswuerdigkeit", "alltag", "erleben"];
+const MOTIV = [
+  /* Erst das Eindeutige: Namen, die für sich selbst sprechen. */
+  [/bahnhof|haltestelle|stra(ss|ß)enbahn|tankstelle|rathaus|bibliothek/i,        "alltag"],
+  [/universit|hochschule|campus|\bschule\b|institut|fakult/i,                    "alltag"],
+  [/stadion|arena|\bhalle\b|schwimm|sportplatz|kletter|\bbad\b|therme/i,          "erleben"],
+  [/markt(?!platz\s*der)|center\b|passage|kaufhaus|einkaufszentrum/i,            "einkaufen"],
+  /* Bauwerke */
+  [/br(ue|ü)cke|\bsteg\b|(ue|ü)berf(ue|ü)hrung|viadukt/i,                        "sehenswuerdigkeit"],
+  [/kirche|\bdom\b|kloster|kathedrale|kapelle|m(ue|ü)nster|abtei|synagoge/i,     "sehenswuerdigkeit"],
+  [/turm|\btor\b|\bfestung\b|\bburg\b|schloss|denkmal|mahnmal|gedenk|palais/i,   "sehenswuerdigkeit"],
+  [/schiffshebewerk|schleuse|werft|wasserstra(ss|ß)e|leuchtturm/i,               "sehenswuerdigkeit"],
+  /* Natur und Wasser */
+  [/fels|klippe|steinbruch|geschiebe/i,                                        "park"],
+  [/ufer|promenade|\belbe\b|strand|anleger|bootsh|hafen(?!bahn)/i,             "park"],
+  [/\bsee\b|\bseen\b|teich|weiher|\binsel|werder\b|\baue\b|\bauen\b/i,          "park"],
+  [/park\b|garten|g(ae|ä)rten|allee\b|\bwald|wiese|friedhof|gr(ue|ü)nzug/i,      "park"]
+];
+
+/* Aus welchem Bildbestand wird gewählt? */
+function bildKat(p){
+  const c = p.c || "alltag";
+  if(!MOTIV_WEIT.includes(c)) return c;
+  for(const [muster, ziel] of MOTIV) if(muster.test(p.n || "")) return ziel;
+  return c;
+}
+
 function bildSlug(x){ return norm(x).replace(/ /g,"-"); }
 
 /* Welche Bilddateien es nicht gibt, merkt sich die App für die Dauer des
@@ -1810,7 +1849,7 @@ const BILD_FEHLT = new Set();
 /* Alle Bildadressen, die für diesen Ort in Frage kommen – in der Reihenfolge,
    in der sie ausprobiert werden. */
 function bildKandidaten(p){
-  const cat = p.c || "alltag";
+  const cat = bildKat(p);
   const out = [];
   /* Ein eigenes Ortsbild kommt nur für Orte in Frage, nicht für Veranstaltungen –
      „ort-mono-inc-open-air-2026.jpg“ wird es nie geben. */
