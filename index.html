@@ -3013,12 +3013,17 @@ function icsSlug(p){
    Gibt es sie nicht (etwa beim Testen von der Festplatte), wird die Datei
    ersatzweise im Gerät erzeugt. */
 async function openCalendar(p){
-  const url = "kalender/" + icsSlug(p) + ".ics";
+  /* Die Termindateien können im Ordner „kalender“ liegen oder direkt neben der
+     index.html – beim Hochladen entscheidet sich das leicht anders, als man denkt.
+     Beide Wege werden probiert, damit an dieser Stelle nichts kaputtgeht. */
+  const datei = icsSlug(p) + ".ics";
   if(location.protocol === "http:" || location.protocol === "https:"){
-    try{
-      const r = await fetch(url, {cache:"no-store"});
-      if(r.ok){ location.href = url; return; }
-    }catch(e){}
+    for(const url of ["kalender/" + datei, datei]){
+      try{
+        const r = await fetch(url, {cache:"no-store"});
+        if(r.ok){ location.href = url; return; }
+      }catch(e){}
+    }
   }
   icsDownload(p);
 }
