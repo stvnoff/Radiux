@@ -239,6 +239,15 @@
   .pill.serie{border-color:color-mix(in srgb,var(--accent) 45%,transparent);
     color:var(--accent);font-weight:600}
   .tkhint{margin:14px 0 0;font-size:.85rem;line-height:1.5;color:var(--text-mute)}
+  .ohliste{list-style:none;margin:0;padding:0}
+  .ohliste li{display:flex;gap:12px;justify-content:space-between;align-items:baseline;
+    padding:5px 0;border-top:1px solid var(--line)}
+  .ohliste li:first-child{border-top:0;padding-top:0}
+  .ohliste .tag{color:var(--text-mute);flex:0 0 auto}
+  .ohliste .zeit{text-align:right;font-variant-numeric:tabular-nums}
+  .ohliste li.heute .tag,.ohliste li.heute .zeit{color:var(--text);font-weight:600}
+  .ohrest{margin:12px 0 4px;font-size:.85rem;color:var(--text-mute);line-height:1.5}
+  .ohroh{margin:0;font-size:.8rem;color:var(--text-mute);word-break:break-word}
   .termine{margin:18px 0 4px;padding:14px 16px;border:1px solid var(--line);border-radius:14px}
   .termine h3{margin:0 0 4px;font-size:1rem}
   .termine ul{list-style:none;margin:0;padding:0}
@@ -1988,30 +1997,136 @@ const fmtRad  = m => m<1000 ? m+" m" : (m/1000).toFixed(1).replace(".",",")+" km
 const walkMin = m => Math.max(1, Math.round(m/80));
 const walkTxt = m => { const n=walkMin(m); return n===1 ? "1 Minute" : n+" Minuten"; };
 
-function openState(oh){
-  if(!oh) return {s:"unknown", t:"Zeiten unbekannt"};
-  const v=oh.trim();
-  if(/^24\/7$/.test(v)) return {s:"open", t:"Durchgehend offen"};
-  const days=["Su","Mo","Tu","We","Th","Fr","Sa"];
-  const now=new Date(), today=days[now.getDay()], mins=now.getHours()*60+now.getMinutes();
-  let known=false, open=false;
-  for(const part of v.split(";")){
-    const m=part.trim().match(/^([A-Za-z,\-]+)\s+(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})$/);
-    if(!m) continue;
-    const spec=m[1], from=+m[2]*60+ +m[3]; let to=+m[4]*60+ +m[5];
-    if(to<=from) to+=1440;
-    let hit=false;
-    for(const tok of spec.split(",")){
-      if(tok.includes("-")){
-        const [a,b]=tok.split("-"), ia=days.indexOf(a), ib=days.indexOf(b), it=days.indexOf(today);
-        if(ia<0||ib<0) continue;
-        if(ia<=ib ? (it>=ia&&it<=ib) : (it>=ia||it<=ib)) hit=true;
-      } else if(tok===today) hit=true;
-    }
-    if(hit){ known=true; if(mins>=from && mins<to) open=true; }
+/* ---------- Öffnungszeiten ------------------------------------------------
+   OpenStreetMap speichert Öffnungszeiten in einer eigenen Schreibweise:
+   „Mo 11:00-15:30,19:00-24:00; Tu 11:00-13:00; We 06:30-22:00“. Das ist für
+   Maschinen gedacht und für Menschen mühsam – erst recht, weil die Wochentage
+   englisch abgekürzt sind.
+
+   ohParse zerlegt die Angabe einmal sauber. Davon leben beide Anzeigen: die
+   Zeile „Jetzt geöffnet“ und die ausgeschriebene Liste in der Detailansicht.
+   Was sich nicht sicher deuten lässt – Monatsangaben, Sonnenauf- und
+   -untergang, Feiertagsregeln –, wird nicht geraten, sondern unverändert
+   stehen gelassen. Eine falsche Öffnungszeit ist schlimmer als eine
+   unbequeme. ------------------------------------------------------------ */
+
+const TAG_KURZ = ["Mo","Tu","We","Th","Fr","Sa","Su"];   /* wie in OpenStreetMap */
+const TAG_LANG = ["Montag","Dienstag","Mittwoch","Donnerstag",
+                  "Freitag","Samstag","Sonntag"];
+
+function ohParse(oh){
+  const roh = String(oh || "").trim();
+  if(!roh) return null;
+  const erg = { tage: [null,null,null,null,null,null,null], durchgehend:false, ok:true };
+
+  if(/^24\/7$/i.test(roh)){
+    erg.durchgehend = true;
+    for(let i=0;i<7;i++) erg.tage[i] = [{von:0, bis:1440}];
+    return erg;
   }
-  if(!known) return {s:"unknown", t:"Zeiten unbekannt"};
-  return open ? {s:"open", t:"Jetzt geöffnet"} : {s:"closed", t:"Jetzt geschlossen"};
+
+  for(let regel of roh.split(";")){
+    regel = regel.trim();
+    if(!regel) continue;
+    /* Anmerkungen in Anführungszeichen tragen keine Zeit – aber sie zeigen an,
+       dass hier mehr steht, als die Liste wiedergeben kann. */
+    if(/"/.test(regel)){ erg.ok = false; continue; }
+
+    const m = regel.match(/^([A-Za-z]{2}(?:\s*[-,]\s*[A-Za-z]{2})*)?\s*(.*)$/);
+    if(!m){ erg.ok = false; continue; }
+    const tagTeil  = (m[1] || "").trim();
+    const zeitTeil = (m[2] || "").trim();
+
+    /* Welche Tage sind gemeint? Ohne Angabe: alle. */
+    let tage = [];
+    if(!tagTeil){
+      tage = [0,1,2,3,4,5,6];
+    } else {
+      for(const tok of tagTeil.split(",")){
+        const t = tok.trim();
+        if(t.includes("-")){
+          const [a,b] = t.split("-").map(x=>x.trim());
+          const ia = TAG_KURZ.indexOf(a), ib = TAG_KURZ.indexOf(b);
+          if(ia<0 || ib<0){ erg.ok = false; continue; }
+          if(ia<=ib) for(let i=ia;i<=ib;i++) tage.push(i);
+          else { for(let i=ia;i<7;i++) tage.push(i); for(let i=0;i<=ib;i++) tage.push(i); }
+        } else {
+          const i = TAG_KURZ.indexOf(t);
+          if(i<0){ erg.ok = false; continue; }   /* PH, SH und anderes */
+          tage.push(i);
+        }
+      }
+    }
+    if(!tage.length) continue;
+
+    if(/^(off|closed)$/i.test(zeitTeil)){
+      tage.forEach(i => { erg.tage[i] = []; });
+      continue;
+    }
+
+    const spannen = [];
+    let sauber = true;
+    for(const st of zeitTeil.split(",")){
+      const z = st.trim().match(/^(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})$/);
+      if(!z){ sauber = false; break; }
+      const von = +z[1]*60 + +z[2];
+      let  bis = +z[3]*60 + +z[4];
+      if(bis <= von) bis += 1440;              /* über Mitternacht */
+      spannen.push({von, bis});
+    }
+    if(!sauber || !spannen.length){ erg.ok = false; continue; }
+    tage.forEach(i => { erg.tage[i] = spannen; });
+  }
+
+  if(erg.tage.every(t => t === null)) return null;
+  return erg;
+}
+
+function uhr(m){
+  m = ((m % 1440) + 1440) % 1440;
+  return String(Math.floor(m/60)).padStart(2,"0") + ":" + String(m%60).padStart(2,"0");
+}
+/* Für das Ende einer Spanne: Mitternacht heißt „24:00“ und nicht „00:00“ –
+   sonst liest sich „19:00–00:00“ wie eine Zeitreise. */
+function uhrEnde(m){ return (m > 0 && m % 1440 === 0) ? "24:00" : uhr(m); }
+
+/* Ausgeschriebene Liste für die Detailansicht. */
+function ohListe(oh){
+  const p = ohParse(oh);
+  if(!p) return "";
+  if(p.durchgehend) return `<p class="ohzeile" style="margin:0">Durchgehend geöffnet, Tag und Nacht.</p>`;
+  const zeilen = p.tage.map((spannen,i)=>{
+    const heute = (new Date().getDay() + 6) % 7 === i;   /* Sonntag ist in JS die 0 */
+    let text;
+    if(spannen === null) text = "keine Angabe";
+    else if(!spannen.length) text = "geschlossen";
+    else text = spannen.map(s => uhr(s.von) + "–" + uhrEnde(s.bis)
+        + (s.bis > 1440 ? " (am Folgetag)" : "")).join(", ");
+    return `<li${heute ? ' class="heute"' : ''}>
+      <span class="tag">${TAG_LANG[i]}</span><span class="zeit">${esc(text)}</span></li>`;
+  }).join("");
+  return `<ul class="ohliste">${zeilen}</ul>${p.ok ? "" :
+    `<p class="ohrest">Zu diesen Zeiten gibt es in OpenStreetMap weitere Angaben,
+     etwa zu Feiertagen oder einzelnen Monaten. Sie stehen unverändert darunter,
+     weil eine geratene Übersetzung schlechter wäre als gar keine.</p>
+     <p class="ohroh">${esc(String(oh))}</p>`}`;
+}
+
+function openState(oh){
+  const p = ohParse(oh);
+  if(!p) return {s:"unknown", t:"Zeiten unbekannt"};
+  if(p.durchgehend) return {s:"open", t:"Durchgehend offen"};
+  const now = new Date();
+  const heute = (now.getDay() + 6) % 7;
+  const gestern = (heute + 6) % 7;
+  const min = now.getHours()*60 + now.getMinutes();
+  const auf = (spannen, m) => !!spannen && spannen.some(s => m >= s.von && m < s.bis);
+  /* Auch der Vortag zählt, solange seine Zeit über Mitternacht reicht. */
+  if(auf(p.tage[heute], min) || auf(p.tage[gestern], min + 1440))
+    return {s:"open", t:"Jetzt geöffnet"};
+  if(p.tage[heute] === null && p.tage[gestern] === null)
+    return {s:"unknown", t:"Zeiten unbekannt"};
+  return {s:"closed", t:"Jetzt geschlossen"};
 }
 
 
@@ -3442,7 +3557,7 @@ function viewSheet(){
     "Die genaue Lage dieses Veranstaltungsortes liegt Radiux noch nicht vor. "
     + "Deshalb gibt es hier keine Entfernung und keine Karte – der Ort steht aber fest."]);
   else rows.push(["Status", p._o.t]);
-  if(p.oh) rows.push(["Öffnungszeiten", p.oh]);
+  if(p.oh) rows.push(["Öffnungszeiten", ohListe(p.oh) || esc(p.oh)]);
   if(p.art) rows.push(["Art", esc(p.art)]);
   if(p.adr) rows.push(["Adresse", p.adr]);
   if(p.wc && WC[p.wc]) rows.push(["Zugang", WC[p.wc]]);
