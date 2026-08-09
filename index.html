@@ -1737,59 +1737,134 @@ function plate(name, cat, w, h){
   return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s.replace(/\s+/g," "));
 }
 
-/* ---------- Fotos: liegen neben der index.html im Repository ----------
-   Lizenz: Pexels License, freie kommerzielle Nutzung.
-   Es sind Symbolbilder, nicht die abgebildeten Orte – Ausnahme: Dom.jpg. */
-const PHOTOS = {
-  restaurant:       ["Essen gehen.jpg","Gemüse mit Sauce.jpg","restaurants.jpg",
-                     "Restaurants 2.jpg","restaurants3.jpg"],
-  schnell:          ["schnell und günstig.jpg","schnell und günstig 2.jpg","FastFood.jpg"],
-  cafe:             ["Cafe.jpg","Cafe und Kuchen.jpg","Cappuccino Getränk.jpg",
-                     "Cafe und Bäckerei.jpg","cafe und bäckerei 2.jpg"],
-  bar:              ["Bar und Kneipe.jpg","Bar und Kneipe 2.jpg"],
-  sehenswuerdigkeit:["Dom.jpg","Kirche.jpg","Brücke.jpg","Brücke 2.jpg",
-                     "gothische kathedrale magdeburg.jpg"],
-  museum:           ["Museum.jpg","Museum 2.jpg"],
-  theater:          ["Bühne und Kino.jpg","Bühne und Kino 2.jpg"],
-  park:             ["Park.jpg","Park2.jpg","Park3.jpg","parks.jpg"],
-  erleben:          ["Arena.jpg","Arena2.jpg","Elbeufer.jpg"],
-  einkaufen:        ["Einkaufen.jpg","Einkaufen 2.jpg","einkaufen 3.jpg"],
-  alltag:           ["Alltag.jpg","Straßenbahn.jpg","magdeburger straße.jpg"],
-  event:            ["Events.jpg","Events2.jpg","events3.jpg"]
-};
-/* Orte, für die ein echtes Bild des Ortes vorliegt */
-const EXACT = [
-  { re:/\bdom\b/i,             cat:"sehenswuerdigkeit", file:"Magdeburger Dom.jpg" },
-  { re:/allee[\s-]?center/i,    cat:"einkaufen",         file:"Für allee center.jpg" }
-];
+/* ---------- Bilder ----------------------------------------------------
+   Alle Bilder liegen neben der index.html. Lizenz: Pexels License, freie
+   kommerzielle Nutzung.
 
-function photoFor(name, cat){
-  for(const e of EXACT) if(e.cat===cat && e.re.test(name)) return { src:e.file, exact:true };
-  const list = PHOTOS[cat];
-  if(!list || !list.length) return null;
-  return { src:list[hashOf(name+cat) % list.length], exact:false };
+   Die Zuordnung folgt seit dieser Fassung dem Namensschema und nicht mehr
+   einer festen Liste im Quelltext. Damit lassen sich Bilder austauschen,
+   ergänzen oder weglassen, ohne dass am Code etwas geändert werden muss.
+
+     ort-<ort>.jpg        gehört zu genau einem Ort des Startbestands
+     kat-<kategorie>-N.jpg  steht für eine ganze Kategorie, N ab 1
+
+   Gefunden wird das erste Bild, das sich laden lässt: erst das Ortsbild,
+   dann die Kategoriebilder, zuletzt eine im Gerät gezeichnete Fläche.
+   Ein fehlendes Bild ist deshalb kein Fehler, sondern ein Schritt weiter
+   in derselben Kette. ------------------------------------------------ */
+
+/* Wie viele Varianten je Kategorie höchstens gesucht werden. Höher heißt
+   nur: mehr Bilder möglich, dafür beim ersten Laden ein paar vergebliche
+   Anfragen. Sechs ist ein guter Mittelwert. */
+const KAT_MAX = 5;
+
+/* Zweitschreibweisen, die trotzdem gefunden werden sollen. */
+const KAT_ALIAS = { sehenswuerdigkeit: "sehenswuerdigkeiten" };
+
+/* Die Ortsbilder des Startbestands. Der Dateiname folgt nicht überall
+   stur dem Ortsnamen – „Zoo Magdeburg“ heißt als Datei nur ort-zoo.jpg.
+   Deshalb steht die Zuordnung hier ausgeschrieben. Alles, was hier nicht
+   steht, bekommt seinen Namen automatisch. */
+const ORT_BILD = {
+  "Magdeburger Dom":               "magdeburger-dom",
+  "Grüne Zitadelle von Magdeburg": "gruene-zitadelle",
+  "Kloster Unser Lieben Frauen":   "kloster-unser-lieben-frauen",
+  "Kulturhistorisches Museum":     "kulturhistorisches-museum",
+  "Technikmuseum Magdeburg":       "technikmuseum",
+  "Lukasklause":                   "lukasklause",
+  "Elbauenpark":                   "elbauenpark",
+  "Jahrtausendturm":               "jahrtausendturm",
+  "Klosterbergegarten":            "klosterbergegarten",
+  "Rotehornpark":                  "rotehornpark",
+  "Herrenkrugpark":                "herrenkrugpark",
+  "Elbuferpromenade":              "elbuferpromenade",
+  "Zoo Magdeburg":                 "zoo",
+  "Gruson-Gewächshäuser":          "gruson-gewaechshaeuser",
+  "Opernhaus Magdeburg":           "opernhaus",
+  "Puppentheater Magdeburg":       "puppentheater",
+  "Festung Mark":                  "festung-mark",
+  "Hasselbachplatz":               "hasselbachplatz",
+  "Allee-Center Magdeburg":        "allee-center",
+  "Hauptbahnhof Magdeburg":        "hauptbahnhof",
+  "Otto-von-Guericke-Universität": "universitaet",
+  "Wissenschaftshafen":            "wissenschaftshafen",
+  "Sternbrücke":                   "sternbruecke",
+  "Schiffshebewerk Rothensee":     "schiffshebewerk"
+};
+
+/* Orte, von denen eigene Aufnahmen vorliegen. Nur diese dürfen „Foto“
+   heißen. Ein Bild aus einer Bilddatenbank bleibt ein Symbolbild, auch
+   wenn die Datei nach dem Ort benannt ist – es zeigt eben irgendeinen
+   Dom und nicht den Magdeburger. Etwas anderes zu behaupten wäre eine
+   irreführende Angabe nach § 5 UWG. */
+const EIGENE_FOTOS = [];
+
+function bildSlug(x){ return norm(x).replace(/ /g,"-"); }
+
+/* Welche Bilddateien es nicht gibt, merkt sich die App für die Dauer des
+   Besuchs. Dadurch läuft jede vergebliche Anfrage höchstens einmal – danach
+   wird die Datei gar nicht mehr angefragt. Nichts davon wird gespeichert;
+   beim nächsten Öffnen fängt die Liste wieder leer an. */
+const BILD_FEHLT = new Set();
+
+/* Alle Bildadressen, die für diesen Ort in Frage kommen – in der Reihenfolge,
+   in der sie ausprobiert werden. */
+function bildKandidaten(p){
+  const cat = p.c || "alltag";
+  const out = [];
+  /* Ein eigenes Ortsbild kommt nur für Orte in Frage, nicht für Veranstaltungen –
+     „ort-mono-inc-open-air-2026.jpg“ wird es nie geben. */
+  if(cat !== "event"){
+    const ort = ORT_BILD[p.n] || bildSlug(p.n);
+    if(ort) out.push("ort-" + ort + ".jpg");
+  }
+  /* Damit nicht alle Restaurants dasselbe Bild tragen, hängt der Startpunkt
+     am Namen. Von dort wird im Kreis weitergesucht. */
+  const start = hashOf(p.n + cat) % KAT_MAX;
+  for(let i=0;i<KAT_MAX;i++) out.push("kat-" + cat + "-" + ((start+i)%KAT_MAX + 1) + ".jpg");
+  /* Schreibweisen, die naheliegend sind, aber nicht dem Schema entsprechen –
+     etwa die Mehrzahl bei „Sehenswürdigkeiten“. Sie stehen hinten in der Kette:
+     Wer sich an das Schema hält, merkt nichts davon; wer sich vertut, bekommt
+     trotzdem sein Bild. Ein Fehlversuch je Kategorie und Besuch, mehr nicht. */
+  const auch = KAT_ALIAS[cat];
+  if(auch) for(let i=0;i<KAT_MAX;i++) out.push("kat-" + auch + "-" + ((start+i)%KAT_MAX + 1) + ".jpg");
+  const uebrig = out.filter(f => !BILD_FEHLT.has(f));
+  return uebrig.length ? uebrig : out.slice(-1);
 }
-function imgSrc(f){ return encodeURIComponent(f); }
+
+function media(p, w, h, cls){
+  const kand = bildKandidaten(p);
+  const alt = EIGENE_FOTOS.includes(p.n)
+    ? "Foto von " + p.n
+    : `Symbolbild für die Kategorie ${CATMAP[p.c]||"Ort"} – zeigt nicht den Ort selbst`;
+  return `<img src="${encodeURI(kand[0])}" alt="${esc(alt)}" loading="lazy" decoding="async"
+    data-kand="${esc(kand.join("|"))}" data-i="0"
+    data-n="${esc(p.n)}" data-c="${esc(p.c)}" data-w="${w}" data-h="${h}"
+    onerror="imgFallback(this)"${cls?` class="${cls}"`:""}>`;
+}
+
+/* Ein Bild ließ sich nicht laden – das nächste aus der Kette versuchen.
+   Ist die Kette zu Ende, wird eine Fläche im Gerät gezeichnet. */
 function imgFallback(img){
+  const kand = (img.dataset.kand||"").split("|").filter(Boolean);
+  let i = (+img.dataset.i||0);
+  if(kand[i]) BILD_FEHLT.add(kand[i]);
+  i += 1;
+  if(i < kand.length){
+    img.dataset.i = i;
+    img.src = encodeURI(kand[i]);
+    return;
+  }
   img.onerror = null;
   img.src = plate(img.dataset.n, img.dataset.c, +img.dataset.w||600, +img.dataset.h||400);
   const badge = img.parentElement && img.parentElement.querySelector(".fict");
   if(badge) badge.textContent = "Illustration";
 }
-function media(p, w, h, cls){
-  const ph = photoFor(p.n, p.c);
-  const alt = ph
-    ? (ph.exact ? `Foto von ${p.n}` : `Symbolbild für die Kategorie ${CATMAP[p.c]||"Ort"} – zeigt nicht den Ort selbst`)
-    : `Stilisierte Illustration in den Farben der Kategorie ${CATMAP[p.c]||"Ort"} – kein Foto des Ortes`;
-  const src = ph ? imgSrc(ph.src) : plate(p.n, p.c, w, h);
-  return `<img src="${src}" alt="${esc(alt)}" loading="lazy" decoding="async"
-    data-n="${esc(p.n)}" data-c="${esc(p.c)}" data-w="${w}" data-h="${h}"
-    onerror="imgFallback(this)"${cls?` class="${cls}"`:""}>`;
-}
+
 function badgeFor(p){
-  const ph = photoFor(p.n, p.c);
-  return ph ? (ph.exact ? "Foto" : "Symbolbild") : "Illustration";
+  return EIGENE_FOTOS.includes(p.n) ? "Foto" : "Symbolbild";
 }
+
 
 /* ---------------- Speicher (§ 25 Abs. 2 Nr. 2 TDDDG) ---------------- */
 const store = {
@@ -2276,10 +2351,6 @@ function hide(p){
 }
 
 /* ---------------- Bausteine ---------------- */
-function altOf(p){
-  return `Stilisierte Illustration in den Farben der Kategorie ${CATMAP[p.c]||"Ort"} – kein Foto des Ortes`;
-}
-
 function whyLine(p){
   const prof = S.profile[p.c] || 0;
   if(p.start){
