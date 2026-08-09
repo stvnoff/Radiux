@@ -217,15 +217,25 @@
     margin:26px 0 8px;padding-top:16px;border-top:1px solid var(--line)}
   .evtabs{display:flex;gap:6px;margin:14px 0 0}
   .evtabs button{flex:1 1 0;min-width:0;background:var(--card);color:var(--text-dim);
-    border:1px solid var(--line);border-radius:11px;padding:9px 6px;font:inherit;
-    font-size:.84rem;line-height:1.2;cursor:pointer;white-space:nowrap;
-    overflow:hidden;text-overflow:ellipsis}
-  @media (max-width:359px){ .evtabs button{font-size:.74rem;padding:9px 3px}
-    .evtabs{gap:4px} }
+    border:1px solid var(--line);border-radius:11px;padding:8px 5px;font:inherit;
+    font-size:.82rem;line-height:1.25;cursor:pointer;overflow:hidden}
+  .evtabs .t1{display:block;white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+  .evtabs .t2{display:block}
+  /* Die zweite Zeile darf umbrechen und trennen – „Veranstaltungen“ passt auf
+     schmalen Geräten sonst in keinen Drittel-Reiter. */
+  .evtabs .t2{font-size:.74rem;opacity:.72;margin-top:1px;white-space:normal;
+    hyphens:auto;-webkit-hyphens:auto;text-overflow:clip;overflow:visible}
+  @media (max-width:359px){ .evtabs{gap:4px}
+    .evtabs button{font-size:.72rem;padding:8px 2px}
+    .evtabs .t2{font-size:.66rem} }
   .evtabs button .n{opacity:.6;font-variant-numeric:tabular-nums;margin-left:3px}
   .evtabs button[aria-pressed="true"]{background:var(--text);color:var(--bg);
     border-color:var(--text);font-weight:600}
   .evtabs button[aria-pressed="true"] .n{opacity:.7}
+  /* Die zweite Zeile bleibt in normaler Stärke – fett würde sie breiter und
+     dann im gewählten Reiter abgeschnitten. */
+  .evtabs button[aria-pressed="true"] .t2{font-weight:400;opacity:.82}
   .pill.serie{border-color:color-mix(in srgb,var(--accent) 45%,transparent);
     color:var(--accent);font-weight:600}
   .tkhint{margin:14px 0 0;font-size:.85rem;line-height:1.5;color:var(--text-mute)}
@@ -272,7 +282,9 @@
   .cover .catbadge,.cover .fict{position:absolute;top:18px;z-index:2;
     font-size:var(--micro);text-transform:uppercase;letter-spacing:.16em;font-weight:600}
   .cover .catbadge{left:20px;color:#fff}
-  .cover .fict{right:20px;color:rgba(255,255,255,.5)}
+  .cover .fict{right:20px;color:rgba(255,255,255,.5);text-align:right;max-width:58%}
+  .fictadd{display:block;text-transform:none;letter-spacing:.02em;font-weight:400;
+    font-size:.72rem;line-height:1.25;margin-top:3px;color:rgba(255,255,255,.42)}
   .ctitle{position:absolute;left:20px;right:20px;bottom:18px;z-index:2}
   .ctitle h2{font-size:clamp(1.6rem,6.6vw,2.1rem);line-height:1.04;margin:0 0 6px;color:#fff;
     letter-spacing:-.04em;font-weight:600}
@@ -1830,6 +1842,13 @@ const MOTIV = [
   [/park\b|garten|g(ae|ä)rten|allee\b|\bwald|wiese|friedhof|gr(ue|ü)nzug/i,      "park"]
 ];
 
+/* „Veranstaltungen" passt auf schmalen Geräten nicht in einen Drittel-Reiter.
+   Ein weiches Trennzeichen gibt dem Browser eine Stelle zum Umbrechen; steht
+   genug Platz zur Verfügung, ist davon nichts zu sehen. Auf die automatische
+   Silbentrennung ist kein Verlass – nicht jeder Browser bringt ein deutsches
+   Trennwörterbuch mit. */
+function trennbar(t){ return t.replace(/^Veranstal/, "Veranstal&shy;"); }
+
 /* Aus welchem Bildbestand wird gewählt? */
 function bildKat(p){
   const c = p.c || "alltag";
@@ -1902,6 +1921,12 @@ function imgFallback(img){
 
 function badgeFor(p){
   return EIGENE_FOTOS.includes(p.n) ? "Foto" : "Symbolbild";
+}
+/* Der Zusatz, der aus der Kennzeichnung erst eine Auskunft macht. „Symbolbild“
+   allein versteht nicht jeder – der Klammerzusatz sagt es in Worten. Bei
+   eigenen Aufnahmen entfällt er, dort stimmt das Bild ja. */
+function badgeZusatz(p){
+  return EIGENE_FOTOS.includes(p.n) ? "" : "kein echtes Foto der Gegend";
 }
 
 
@@ -2533,7 +2558,8 @@ function viewDiscover(){
           ${media(p,900,620)}
           <div class="scrim"></div>
           <span class="catbadge">${esc(CATMAP[p.c]||"Ort")}</span>
-          <span class="fict">${esc(badgeFor(p))}</span>
+          <span class="fict">${esc(badgeFor(p))}${
+            badgeZusatz(p) ? `<span class="fictadd">${esc(badgeZusatz(p))}</span>` : ""}</span>
           <div class="ctitle">
             ${p.start?`<div class="edate">${esc(evLabel(p.start))}</div>`:""}
             <h2 id="cardname">${esc(p.n)}</h2>
@@ -2568,9 +2594,14 @@ function viewDiscover(){
       const n = { alle: roh.length, serie: roh.filter(istSerie).length };
       n.einzeln = n.alle - n.serie;
       return `<div class="evtabs" role="group" aria-label="Veranstaltungen filtern">
-        ${[["alle","Alle"],["einzeln","Einmalig"],["serie","Mehrfach"]]
-          .map(([k,l])=>`<button type="button" data-ev="${k}"
-            aria-pressed="${S.evFilter===k}">${l} <span class="n">${n[k]}</span></button>`).join("")}
+        ${[["alle","Alle","Veranstaltungen"],
+           ["einzeln","Einmalig","Veranstaltung"],
+           ["serie","Mehrfach","Veranstaltungen"]]
+          .map(([k,l1,l2])=>`<button type="button" data-ev="${k}"
+            aria-pressed="${S.evFilter===k}"
+            aria-label="${esc(l1 + " " + l2)}, ${n[k]}">
+            <span class="t1">${l1} <span class="n">${n[k]}</span></span>
+            <span class="t2">${trennbar(l2)}</span></button>`).join("")}
       </div>` })() : ""}
     ${far ? `<div class="note" style="margin:14px 0 0">
       <strong>Du bist rund ${fmtDist(dist(S.origin,MD))} von Magdeburg entfernt.</strong>
@@ -3432,7 +3463,8 @@ function viewSheet(){
       <div class="grab"></div>
       <div class="shero">${media(p,900,620)}<div class="scrim"></div></div>
       <div class="sbody">
-        <div class="micro" style="margin-bottom:7px">${esc(CATMAP[p.c]||"Ort")} · ${esc(badgeFor(p))}</div>
+        <div class="micro" style="margin-bottom:7px">${esc(CATMAP[p.c]||"Ort")} · ${esc(badgeFor(p))}${
+          badgeZusatz(p) ? " (" + esc(badgeZusatz(p)) + ")" : ""}</div>
         <h2>${esc(p.n)}</h2>
         ${p.t?`<p class="desc" style="margin:0">${esc(p.t)}</p>`:""}
         ${p.i?`<p class="about">${esc(p.i)}</p>`:""}
