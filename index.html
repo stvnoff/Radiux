@@ -2748,6 +2748,12 @@ function viewStart(){
    Wer „Etwas essen“ wählt und dann einen einzigen Ort sieht, hält das für einen
    Fehler oder für eine leere Stadt. Beides wäre falsch. Also wird es gesagt –
    mit dem Knopf gleich daneben, statt ihn oben in der Leiste zu suchen. */
+/* Eine Beschriftung, überall dieselbe. Vorher hieß derselbe Knopf einmal
+   „aktuelle Orte laden“ und einmal „Aktuelle Orte laden“. */
+function ladeText(){
+  return S.loading ? "Wird geladen …" : S.loaded ? "Orte neu laden" : "Aktuelle Orte laden";
+}
+
 function bestandHinweis(list){
   if(S.loaded || S.loading || S.q.trim()) return "";
   if(list.length > 5) return "";
@@ -2760,13 +2766,21 @@ function bestandHinweis(list){
     Die eigentliche Auswahl kommt aus OpenStreetMap und wird erst auf Antippen geladen –
     damit ohne dein Zutun keine Verbindung nach außen entsteht.
     <span style="display:block;margin-top:10px">
-      <button type="button" class="btn sm" id="bLive2">Aktuelle Orte laden</button></span></div>`;
+      <button type="button" class="btn sm primary" id="bLive2">${ladeText()}</button></span></div>`;
 }
 
 /* ---------------- Entdecken ---------------- */
 function viewDiscover(){
   const list=prepare(), p=list[S.idx];
   const far = istFern();
+  /* Einmal berechnen: Steht der Hinweis mit dem großen Knopf, entfällt der
+     kleine Verweis oben. Denselben Knopf zweimal auf einer Seite anzubieten
+     hilft niemandem – es sieht nur nach zwei verschiedenen Dingen aus. */
+  const hinweis = bestandHinweis(list);
+  /* Steht irgendwo weiter unten schon ein Ladeknopf, entfällt der kleine oben.
+     Es gibt auf dieser Seite immer genau einen. */
+  const gesperrt = S.q.trim() && queryBlocked(S.q);
+  const untenLaden = !!hinweis || (!S.loading && !p && !S.loaded && !gesperrt);
   let body;
   if(S.loading){
     body = `<div class="empty"><p>Orte werden von OpenStreetMap geladen …</p></div>`;
@@ -2782,7 +2796,7 @@ function viewDiscover(){
             : "Der Startbestand umfasst nur 24 Orte, überwiegend Sehenswürdigkeiten und Parks. "
               + "Gaststätten, Cafés und Bars kommen erst mit den aktuellen Daten dazu.")}</p>
       <div class="lact" style="justify-content:center">
-        ${S.loaded?"":`<button class="btn sm" id="bLive3">Aktuelle Orte laden</button>`}
+        ${(S.loaded||hinweis||gesperrt)?"":`<button class="btn sm primary" id="bLive3">${ladeText()}</button>`}
         ${HIST.length?`<button class="btn sm ghost" id="bUndo2">← Zurück</button>`:""}
         <button class="btn sm ghost" id="bBack">Vorhaben ändern</button>
         <button class="btn sm ghost" id="reset">Ausgeblendete zurückholen</button>
@@ -2828,8 +2842,8 @@ function viewDiscover(){
         <button type="button" data-v="karten" aria-pressed="${S.vmode==="karten"}">Karten</button>
         <button type="button" data-v="liste" aria-pressed="${S.vmode==="liste"}">Liste</button>
       </div>
-      <button type="button" class="tinylink" id="bLive" style="margin-left:auto">${
-        S.loading ? "lädt …" : S.loaded ? "Orte neu laden" : "aktuelle Orte laden"}</button>
+      ${untenLaden ? "" : `<button type="button" class="tinylink" id="bLive"
+        style="margin-left:auto">${ladeText()}</button>`}
     </div>
     ${S.mode==="event" ? (()=>{
       const roh = prepareRoh();
@@ -2849,7 +2863,7 @@ function viewDiscover(){
       <strong>Du bist rund ${fmtDist(dist(S.origin,MD))} von Magdeburg entfernt.</strong>
       Radiux zeigt dir die Stadt im Überblick – Entfernungen ab Stadtmitte,
       ohne Umkreisgrenze.</div>` : ""}
-    ${bestandHinweis(list)}
+    ${hinweis}
     ${S.q.trim() ? `<p class="counter" style="text-align:left;margin:14px 0 0">${
         queryBlocked(S.q) ? "Zu diesem Begriff zeigt Radiux bewusst keine Ergebnisse."
         : `${list.length} Treffer für „${esc(S.q.trim())}“ · sucht in allen Kategorien, ohne Umkreis`}</p>` : ""}
