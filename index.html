@@ -649,11 +649,11 @@
         </svg>
       </button>
       <label for="rad">Umkreis</label>
-      <input type="range" id="rad" min="500" max="10000" step="500" value="3000" aria-describedby="radhelp">
+      <input type="range" id="rad" min="0" max="12" step="1" value="6" aria-describedby="radhelp">
       <output class="radval" id="radval" for="rad">3,0 km</output>
     </div>
     <p id="geohelp" class="sr">Fragt einmalig den Standort dieses Geräts ab. Ohne Antwort bleibt Magdeburg, Stadtmitte der Bezugspunkt.</p>
-    <p id="radhelp" class="sr">Legt fest, wie weit entfernt Orte höchstens sein dürfen. Mit den Pfeiltasten in 500-Meter-Schritten verstellbar.</p>
+    <p id="radhelp" class="sr">Legt fest, wie weit entfernt Orte höchstens sein dürfen. Dreizehn Stufen von 500 Metern bis 20 Kilometern, unten in kleinen und oben in großen Schritten. Mit den Pfeiltasten verstellbar.</p>
     <div class="srch">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
            stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
@@ -2019,6 +2019,21 @@ function dist(a,b){
 }
 const fmtDist = m => m<1000 ? Math.round(m/10)*10+" m" : (m/1000).toFixed(1).replace(".",",")+" km";
 const fmtRad  = m => m<1000 ? m+" m" : (m/1000).toFixed(1).replace(".",",")+" km";
+/* Der Umkreis läuft nicht in gleichmäßigen Schritten, sondern in Stufen.
+   Zu Fuß zählt jeder halbe Kilometer, mit der Straßenbahn nicht mehr –
+   deshalb unten fein und oben grob.
+
+   Warum bis 20 km: Magdeburg misst 22,7 km von Nord nach Süd und 16,9 km von
+   West nach Ost. Von der Stadtmitte aus liegen die äußeren Stadtteile damit
+   gut zwölf Kilometer entfernt. Bei einer Obergrenze von 10 km war das
+   Schiffshebewerk Rothensee – 11,0 km von der Mitte, und einer der 24 Orte
+   des Startbestands – bei keiner Einstellung erreichbar. */
+const RADIEN = [500,750,1000,1500,2000,2500,3000,4000,5000,7500,10000,15000,20000];
+function radStufe(m){
+  let best = 0;
+  RADIEN.forEach((r,i) => { if(Math.abs(r-m) < Math.abs(RADIEN[best]-m)) best = i; });
+  return best;
+}
 const walkMin = m => Math.max(1, Math.round(m/80));
 const walkTxt = m => { const n=walkMin(m); return n===1 ? "1 Minute" : n+" Minuten"; };
 
@@ -3944,7 +3959,8 @@ function renderControls(){
     if(el) el.scrollIntoView({block:"nearest", inline:"center", behavior:"smooth"});
   }));
   const fern = istFern();
-  $("#rad").value=S.radius;
+  $("#rad").value = radStufe(S.radius);
+  $("#rad").setAttribute("aria-valuetext", fern ? "ausgeschaltet" : fmtRad(S.radius));
   $("#rad").disabled = fern;
   $("#rad").closest(".rng").classList.toggle("aus", fern);
   $("#radval").textContent = fern ? "aus" : fmtRad(S.radius);
@@ -4059,7 +4075,10 @@ function init(){
     }));
   $("#hMode")?.addEventListener("click",()=>{ S.mode=null; S.view="discover"; render(); });
   $("#rad").addEventListener("input",e=>{
-    S.radius=+e.target.value; $("#radval").textContent=fmtRad(S.radius); store.set("radius",S.radius); });
+    S.radius = RADIEN[+e.target.value] ?? 3000;
+    $("#radval").textContent = fmtRad(S.radius);
+    e.target.setAttribute("aria-valuetext", fmtRad(S.radius));
+    store.set("radius",S.radius); });
   $("#rad").addEventListener("change",()=>{ S.idx=0; render(); });
   render();
   loadEvents();
