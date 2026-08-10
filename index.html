@@ -239,6 +239,7 @@
   .pill.serie{border-color:color-mix(in srgb,var(--accent) 45%,transparent);
     color:var(--accent);font-weight:600}
   .tkhint{margin:14px 0 0;font-size:.85rem;line-height:1.5;color:var(--text-mute)}
+  .schalter{display:flex;align-items:center;gap:10px;margin:14px 0 8px;flex-wrap:wrap}
   .ohliste{list-style:none;margin:0;padding:0}
   .ohliste li{display:flex;gap:12px;justify-content:space-between;align-items:baseline;
     padding:5px 0;border-top:1px solid var(--line)}
@@ -446,6 +447,25 @@
   .dl dd{margin:0;color:var(--text)}
   .dl dd a{color:var(--text)}
   .sheet .lact{padding-top:20px}
+  .sheet .zu{position:absolute;top:14px;right:14px;z-index:4;width:38px;height:38px;
+    border-radius:99px;border:1px solid var(--glass-line);background:rgba(0,0,0,.45);
+    color:#fff;font-size:1rem;line-height:1;cursor:pointer;backdrop-filter:blur(6px)}
+  /* Drei gleich breite Knöpfe – immer eine Zeile, nie ein Flickenteppich. */
+  .pact{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:20px 0 0}
+  .pact .btn{width:100%;justify-content:center;text-align:center;padding:12px 8px;
+    font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  @media (max-width:359px){ .pact .btn{font-size:.82rem;padding:12px 4px} }
+  .mehr{margin:16px 0 0;border-top:1px solid var(--line);padding-top:12px}
+  .mehr summary{cursor:pointer;font-size:.92rem;color:var(--text-dim);padding:6px 0;
+    list-style:none}
+  .mehr summary::-webkit-details-marker{display:none}
+  .mehr summary::after{content:" ⌄";opacity:.6}
+  .mehr[open] summary::after{content:" ⌃"}
+  .sact{display:grid;gap:2px;padding:6px 0 2px}
+  .sact a,.sact button{display:block;width:100%;text-align:left;background:none;border:0;
+    padding:11px 2px;font:inherit;font-size:.92rem;color:var(--text);cursor:pointer;
+    text-decoration:none;border-bottom:1px solid var(--line)}
+  .sact a:last-child,.sact button:last-child{border-bottom:0}
   .mmap{margin:20px 0 4px;color:var(--text)}
   .mmap svg{width:100%;max-width:330px;height:auto;display:block;margin:0 auto}
   .mlegend{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;
@@ -784,7 +804,7 @@ const MODES = {
   event:     { l:"Was ist los?",    s:"Veranstaltungen in den nächsten Wochen", cats:["event"] },
   essen:     { l:"Etwas essen",     s:"Restaurants, Cafés und Bars in der Nähe", cats:["restaurant","cafe","bar","schnell"], g:["#ff9a3d","#ff4d6d"] },
   erleben:   { l:"Etwas erleben",   s:"Kultur, Sehenswürdigkeiten und Parks",    cats:["event","sehenswuerdigkeit","museum","theater","park","erleben"], g:["#5eead4","#3b82f6"] },
-  stoebern:  { l:"Einfach stöbern", s:"Alles, was in deinem Umkreis liegt",      cats:CATS.map(c=>c.k), g:["#c084fc","#ec4899"] },
+  stoebern:  { l:"Einfach stöbern", s:"Alles, was Radiux in deinem Umkreis kennt",  cats:CATS.map(c=>c.k), g:["#c084fc","#ec4899"] },
   /* „Überrasch mich“ ist bewusst das Gegenteil von „Einfach stöbern“: Nicht die
      naheliegenden Treffer zuerst, sondern die selteneren Kategorien und das,
      was bisher nicht gemerkt wurde. Das ist eine Regel, kein Assistent – die
@@ -1972,6 +1992,11 @@ const S = {
   places:[], idx:0, saved:store.get("saved",[]), hidden:store.get("hidden",[]),
   profile:store.get("profile",{}), activeCats:[], loaded:false, loading:false,
   geoErklaert:store.get("geoErklaert",false), evFilter:"alle",
+  /* Die Personalisierung ist ausgeschaltet, bis sie jemand einschaltet.
+     § 25 TDDDG erlaubt das Speichern ohne Einwilligung nur, soweit es für den
+     ausdrücklich gewünschten Dienst unbedingt erforderlich ist. Eine Merkliste
+     ist das; ein Profil, das daraus die Reihenfolge verschiebt, ist es nicht. */
+  profilAn:store.get("profilAn",false),
   dataSource:"Startbestand"
 };
 
@@ -2162,16 +2187,20 @@ function score(p){
   if(p.start){
     const days = evDaysUntil(p.start);
     const st = Math.max(0, 1 - days/28);
+    if(!S.profilAn) return 0.53*st + 0.35*sd + 0.12*(p.t?1:0);
     const prof0 = S.profile.event || 0;
     const maxP0 = Math.max(1, ...Object.values(S.profile).map(Math.abs));
     const si0 = Math.max(0, Math.min(1, (prof0/maxP0 + 1)/2));
     return 0.45*st + 0.30*sd + 0.15*si0 + 0.10*(p.t?1:0);
   }
+  const os = p._o.s==="open" ? 1 : p._o.s==="unknown" ? 0.5 : 0.05;
+  const inf = (p.oh?0.5:0) + (p.t?0.5:0);
+  /* Ist die Anpassung aus, gibt es kein Interesse zu gewichten. Die 30 Prozent
+     gehen dann an Nähe und Öffnungsstatus – die Reihenfolge bleibt erklärbar. */
+  if(!S.profilAn) return 0.55*sd + 0.32*os + 0.13*inf;
   const prof = S.profile[p.c] || 0;
   const maxProf = Math.max(1, ...Object.values(S.profile).map(Math.abs));
   const si = Math.max(0, Math.min(1, (prof/maxProf + 1)/2));
-  const os = p._o.s==="open" ? 1 : p._o.s==="unknown" ? 0.5 : 0.05;
-  const inf = (p.oh?0.5:0) + (p.t?0.5:0);
   return W.dist*sd + W.interest*si + W.open*os + W.info*inf;
 }
 
@@ -2237,6 +2266,11 @@ function reasons(p){
   if(p._o.s==="open") out.push("Hat aktuell geöffnet");
   else if(p._o.s==="closed") out.push("Hat gerade geschlossen – deshalb weiter unten");
   else out.push("Öffnungszeiten liegen nicht vor – neutral bewertet");
+  if(!S.profilAn){
+    out.push("Die Anpassung an deine Entscheidungen ist ausgeschaltet – sortiert wird "
+      + "nach Nähe und Öffnungszeit");
+    return out;
+  }
   const prof=S.profile[p.c]||0;
   if(prof>0) out.push(`Passt zu „${CATMAP[p.c]}“ – ${prof===1?"einmal":prof+"-mal"} gemerkt`);
   else if(prof<0) out.push(`„${CATMAP[p.c]}“ hast du bisher eher ausgeblendet`);
@@ -2371,8 +2405,16 @@ async function loadLive(){
   const far = istFern();
   const c = bezug();
   const r=Math.max(S.radius,4000)/111000;
-  const bb=[c.lat-r, c.lon-r*1.6, c.lat+r, c.lon+r*1.6]
-    .map(n=>n.toFixed(4)).join(",");
+  /* Das abgefragte Rechteck wird auf ein festes Raster von etwa zwei Kilometern
+     gerundet, bevor es das Gerät verlässt. Der Kartendienst erfährt dadurch das
+     Stadtviertel, nicht den Standort: Wer im selben Viertel steht, erzeugt
+     dieselbe Anfrage. Die genaue Position bleibt im Gerät und wird nur dort für
+     Entfernungen benutzt. Kostet nichts – die Antwort wird ohnehin lokal
+     gefiltert. */
+  const RASTER = 0.02;                       /* rund 2,2 km */
+  const ab = (x, auf) => (auf ? Math.ceil(x/RASTER) : Math.floor(x/RASTER)) * RASTER;
+  const bb=[ab(c.lat-r,false), ab(c.lon-r*1.6,false), ab(c.lat+r,true), ab(c.lon+r*1.6,true)]
+    .map(n=>n.toFixed(2)).join(",");
   if(far) say("Du bist weit von Magdeburg entfernt – Radiux lädt die Orte der Stadtmitte.");
   const q=`[out:json][timeout:90];(
     nwr(${bb})["amenity"~"^(restaurant|cafe|bar|pub|fast_food|ice_cream|biergarten|theatre|cinema|arts_centre|library|nightclub|fuel|events_venue|community_centre|music_venue|marketplace|food_court|university|college|public_bath)$"]["name"];
@@ -2441,6 +2483,9 @@ function geoErklaert(){
     dieses Geräts ab. Er wird nur im Gerät verwendet, um Entfernungen zu berechnen –
     nicht gespeichert, nicht übertragen, nicht ausgewertet. Ohne Antwort bleibt die
     Magdeburger Stadtmitte der Bezugspunkt.
+    Du kannst jederzeit widerrufen – in den Einstellungen deines Browsers für diese Seite.
+    Ohne Standort funktioniert Radiux weiter, Bezugspunkt bleibt die Stadtmitte.
+    Ausführlich steht das unter „Mehr → Rechtliches → Datenschutzerklärung“.
     <span style="display:block;margin-top:10px">
       <button type="button" class="btn sm" id="bGeoOk">Standort abfragen</button>
       <button type="button" class="btn sm ghost" id="bGeoNo">Lieber nicht</button></span>`;
@@ -2504,9 +2549,62 @@ function undo(){
   render();
 }
 
+/* ---------------- Teilen -------------------------------------------------
+   Radiux baut keinen eigenen Nachrichtendienst. Zum Weitergeben wird der
+   Teilen-Dialog des Geräts benutzt: Dort stehen WhatsApp, Signal, Threema,
+   E-Mail und alles andere, was der Nutzer installiert hat.
+
+   Das ist auch der datenschutzfreundlichere Weg. Ein eingebauter
+   WhatsApp-Knopf würde einen Anbieter bevorzugen und beim Antippen eine
+   Adresse bei Meta aufrufen. Beim Teilen-Dialog entscheidet das Gerät, und
+   es wird nichts geladen, solange niemand etwas auswählt.
+
+   Kann der Browser das nicht – ältere Rechner vor allem –, wird der Text in
+   die Zwischenablage gelegt. Ein WhatsApp-Verweis steht zusätzlich bereit,
+   damit der Weg auch dort einen Namen hat. -------------------------------- */
+function teilenLink(p){
+  return location.origin + location.pathname + "?ort=" + encodeURIComponent(p.n);
+}
+function teilenText(p){
+  const teile = [p.n];
+  if(p.start) teile.push(evLabel(p.start));
+  if(p.t) teile.push(p.t);
+  else if(p.art) teile.push(p.art);
+  if(istSerie(p)) teile.push("läuft an " + p.alle.length + " Abenden");
+  return teile.join(" · ") + "\n" + teilenLink(p);
+}
+async function teilen(p){
+  const text = teilenText(p);
+  if(navigator.share){
+    try{ await navigator.share({ title: p.n, text }); return; }
+    catch(e){ if(e && e.name === "AbortError") return; }
+  }
+  try{
+    await navigator.clipboard.writeText(text);
+    say("In die Zwischenablage kopiert – jetzt in eine Nachricht einfügen.");
+  }catch(e){
+    say("Teilen wird von diesem Browser nicht unterstützt.");
+  }
+}
+function waLink(p){ return "https://wa.me/?text=" + encodeURIComponent(teilenText(p)); }
+
 /* ---------------- Aktionen ---------------- */
 const isSaved = n => S.saved.some(x=>x.n===n);
-function bump(p,v){ S.profile[p.c]=(S.profile[p.c]||0)+v; store.set("profile",S.profile); }
+function bump(p,v){
+  if(!S.profilAn) return;                 /* ausgeschaltet: es wird nichts gezählt */
+  S.profile[p.c]=(S.profile[p.c]||0)+v; store.set("profile",S.profile);
+}
+/* Ein- und ausschalten. Beim Ausschalten werden die Zähler gelöscht – sonst
+   bliebe ein Profil liegen, das niemand mehr wollte. */
+function setProfil(an){
+  S.profilAn = !!an; store.set("profilAn", S.profilAn);
+  if(!S.profilAn){ S.profile = {}; store.set("profile", {}); }
+  S.idx = 0;
+  say(S.profilAn
+    ? "Vorschläge werden ab jetzt an deine Entscheidungen angepasst."
+    : "Anpassung aus. Die gezählten Vorlieben wurden gelöscht.");
+  render();
+}
 function save(p){
   if(!isSaved(p.n)){
     const item = {n:p.n,c:p.c,lat:p.lat,lon:p.lon,t:p.t||"",adr:p.adr||"",oh:p.oh||"",
@@ -2541,6 +2639,8 @@ function whyLine(p){
   if(S.mode === "ueberrasch")
     return prof > 0 ? `Zufallsvorschlag – „${CATMAP[p.c]}“ kennst du schon`
          : `Zufallsvorschlag – „${CATMAP[p.c]}“ wählst du sonst selten`;
+  if(!S.profilAn && p._o.s === "open") return "Nah und jetzt geöffnet";
+  if(!S.profilAn) return "Sortiert nach Nähe und Öffnungszeit";
   if(prof > 0) return `Passt zu „${CATMAP[p.c]}“ – ${prof === 1 ? "einmal" : prof + "-mal"} gemerkt`;
   if(p._o.s === "open" && p._d < S.radius * 0.4) return "Ganz in der Nähe und jetzt geöffnet";
   if(p._o.s === "open") return "Hat jetzt geöffnet";
@@ -2597,7 +2697,8 @@ function viewWelcome(){
     ${PROTOTYPE?`<strong>Prototyp.</strong> Diese Fassung dient dem Test des Bedienkonzepts. `:""}
     Radiux verarbeitet keine Daten auf einem Server und enthält keine Werbung,
     keine Zahlungsfunktion und keine Nutzerkonten.
-    Die Bilder sind Symbolbilder aus einer freien Bilddatenbank und zeigen nicht den jeweiligen Ort.
+    Die Bilder sind Symbolbilder aus einer freien Bilddatenbank und zeigen nicht den jeweiligen Ort;
+    eigene Aufnahmen wären als „Foto“ gekennzeichnet, davon gibt es bisher keine.
   </div>`;
   $("#bAbout")?.addEventListener("click",()=>{
     S.view="about"; window.scrollTo({top:0}); render(); main().focus({preventScroll:true});
@@ -2758,7 +2859,8 @@ function viewDiscover(){
 /* ---------------- Listenansicht (gleichwertige Alternative) ---------------- */
 function listView(list,title,total){
   if(!list.length) return "";
-  return `<div class="sechead"><h2>${esc(title)}</h2><span class="cnt">${total??list.length} Treffer · ${esc(S.dataSource)}</span></div>
+  return `<div class="sechead"><h2>${esc(title)}</h2><span class="cnt">${total??list.length} Treffer · ${esc(S.dataSource)}
+    · <button type="button" class="inlink" data-view="how">Wie sortiert wird</button></span></div>
   <ul class="list">${list.map((p,i)=>`
     <li>
       <button type="button" class="lrow" data-act="detail" data-n="${esc(p.n)}"
@@ -2780,6 +2882,10 @@ function listView(list,title,total){
     </li>`).join("")}</ul>`;
 }
 function bindList(){
+  main().querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>{
+    S.view=b.dataset.view; S.detail=null; window.scrollTo({top:0}); render();
+    main().focus({preventScroll:true});
+  }));
   main().querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>{
     if(b.dataset.act==="detail"){ openDetail(b.dataset.n); return; }
     const list=prepare();
@@ -2822,8 +2928,12 @@ function viewHow(){
   main().innerHTML=`<div aria-live="polite" class="sr" id="live"></div>
   <div class="legal">
   <h1>Wie Radiux empfiehlt</h1>
-  <p>Die Reihenfolge der Vorschläge entsteht aus vier Kriterien. Sie werden hier vollständig
-  und mit ihrer Gewichtung offengelegt.</p>
+  <p>Die Reihenfolge der Vorschläge entsteht aus einer festen Rechenregel. Sie wird hier
+  vollständig und mit ihrer Gewichtung offengelegt.</p>
+  <p><strong>Solange die Anpassung ausgeschaltet ist</strong> – und das ist sie, bis du sie
+  einschaltest – entfällt das Kriterium „deine bisherigen Entscheidungen“. Dann gilt:
+  Entfernung 55 %, Öffnungsstatus 32 %, Vollständigkeit der Angaben 13 %. Die Tabelle unten
+  beschreibt die Reihenfolge <em>mit</em> eingeschalteter Anpassung.</p>
   <table>
     <colgroup><col style="width:38%"><col style="width:20%"><col style="width:42%"></colgroup>
     <thead><tr><th>Kriterium</th><th>Gewicht</th><th>Wirkung</th></tr></thead>
@@ -2849,8 +2959,10 @@ function viewHow(){
   Galerien, Denkmäler, Türme und Kunst im öffentlichen Raum, Parks, Naturschutzgebiete und
   Badestellen, Sport- und Kletterhallen, Schwimmbäder, Bowling und Escape-Räume,
   Hochschulen, Märkte, Läden.</p>
-  <p>Nicht geladen werden Orte des Gesundheitswesens und altersbeschränkte Betriebe –
-  siehe die beiden Abschnitte weiter unten. Wie viel dabei herauskommt, hängt davon ab,
+  <p>Nicht geladen werden Orte des Gesundheitswesens, Gotteshäuser, Kindertagesstätten,
+  soziale Einrichtungen, Bestattungshallen und Krematorien, altersbeschränkte Betriebe
+  sowie Tabak-, Waffen- und E-Zigarettenläden – die Gründe stehen in den Abschnitten
+  weiter unten. Wie viel dabei herauskommt, hängt davon ab,
   wie gut die Stadt in OpenStreetMap erfasst ist. Fehlt etwas, kann es jeder eintragen.</p>
 
   <h2>Beschreibungen</h2>
@@ -2861,10 +2973,16 @@ function viewHow(){
   <p>Fällt dir ein Fehler auf, sag Bescheid – siehe „Mitmachen“ unter „Über Radiux“.</p>
 
   <h2>Jugendschutz</h2>
-  <p>Radiux prüft kein Alter und zeigt deshalb keine Orte, deren Besuch an ein Mindestalter
-  gebunden ist: Erotikbetriebe, Bordelle, Spielhallen, Spielbanken und Wettbüros werden
-  beim Laden verworfen. Das gilt auch für die Suche. Bars, Kneipen und Clubs bleiben
-  enthalten – der Ausschank an Jugendliche ist Sache des Betriebs, nicht der App.</p>
+  <p>Radiux prüft kein Alter. Deshalb zeigt Radiux keine Orte, deren Geschäftszweck selbst
+  an ein Mindestalter gebunden ist: Erotikbetriebe, Bordelle, Spielhallen, Spielbanken und
+  Wettbüros werden beim Laden, in der Anzeige und in der Suche verworfen. Bars, Kneipen und
+  Clubs bleiben enthalten – auch dort gibt es Altersgrenzen, aber sie betreffen den Einlass
+  und den Ausschank, und dafür ist der Betrieb zuständig, nicht ein Verzeichnis.</p>
+  <p>Verwiesen wird außerdem auf Veranstaltungen, die eine Altersgrenze haben können. Die
+  Angabe dazu steht beim Veranstalter, nicht hier. Rechtlich ist das kein Fall für den
+  Jugendmedienschutz: Der knüpft an den Inhalt eines Angebots an, nicht an das Mindestalter
+  für einen beschriebenen Ort. Der Ausschluss oben ist deshalb freiwillige Vorsorge und
+  keine Pflicht – er bleibt trotzdem.</p>
 
   <h2>Suche</h2>
   <p>Die Suche durchsucht Namen, Beschreibung, Adresse und Kategorie der geladenen Orte.
@@ -2878,7 +2996,8 @@ function viewHow(){
   <h2>Veranstaltungen</h2>
   <p>Veranstaltungen werden nach einer eigenen Regel sortiert, weil bei ihnen die Zeit
   wichtiger ist als die Entfernung: Termin 45 %, Entfernung 30 %, deine bisherigen
-  Entscheidungen 15 %, Vollständigkeit der Angaben 10 %. Vergangene Termine verschwinden
+  Entscheidungen 15 %, Vollständigkeit der Angaben 10 %. Ist die Anpassung ausgeschaltet:
+  Termin 53 %, Entfernung 35 %, Vollständigkeit 12 %. Vergangene Termine verschwinden
   automatisch drei Stunden nach Beginn.</p>
   <p>Bei jeder Veranstaltung steht, aus welcher Quelle die Angabe stammt. Termine ändern
   sich kurzfristig — verbindlich ist immer der Veranstalter, nicht diese Anwendung.</p>
@@ -2894,7 +3013,8 @@ function viewHow(){
   <h2>Was das Ranking nicht beeinflusst</h2>
   <ul>
     <li><strong>Bezahlung.</strong> Dieser Prototyp enthält keine bezahlten Platzierungen, keine Werbung und keine Provisionen. Sollte sich das ändern, würde jede bezahlte Platzierung am einzelnen Ergebnis gekennzeichnet.</li>
-    <li><strong>Religiöse, gesundheitsbezogene oder medizinische Merkmale.</strong> Solche Orte werden gar nicht erst geladen und fließen nie in dein Interessenprofil ein.</li>
+    <li><strong>Gesundheitsbezogene und medizinische Merkmale.</strong> Arztpraxen, Apotheken, Kliniken und alles, was in OpenStreetMap als Gesundheitseinrichtung geführt ist, wird gar nicht erst abgerufen. Gotteshäuser ebenso wenig. Historische Bauten mit religiösem Ursprung, die heute Museum oder Konzertort sind, können vorkommen – das Kloster Unser Lieben Frauen etwa. Eine Kategorie „Religion“ gibt es nicht.</li>
+    <li><strong>Weitere ausgeschlossene Orte.</strong> Kindertagesstätten, soziale Einrichtungen, Bestattungshallen und Krematorien sowie Tabak-, Waffen- und E-Zigarettenläden werden ebenfalls nicht geladen. Nicht weil ein Gesetz es verlangt, sondern weil sie nicht zu einer Freizeit-App gehören.</li>
     <li><strong>Künstliche Intelligenz.</strong> Die Empfehlungen entstehen aus der oben beschriebenen Rechenregel. Es ist kein KI-Modell beteiligt und es werden keine Texte generiert.</li>
   </ul>
   <h2>Bildmotive</h2>
@@ -2902,17 +3022,35 @@ function viewHow(){
   die die kostenlose kommerzielle Nutzung erlaubt. Sie zeigen <strong>nicht</strong> den
   jeweiligen Ort, sondern stehen stellvertretend für die Kategorie. Deshalb trägt jedes
   Bild die Kennzeichnung „Symbolbild“.</p>
-  <p>Liegt für einen Ort ein Bild des Ortes selbst vor, steht dort „Foto“. Fehlt ein Bild,
+  <p>Läge für einen Ort eine eigene Aufnahme vor, stünde dort „Foto“ – bisher gibt es keine.
+  Fehlt ein Bild,
   erscheint eine neutrale Fläche mit dem Kategorienamen — es wird nie ein Bild gezeigt,
   das einen falschen Eindruck vom Ort erwecken könnte.</p>
+  <h2 id="anpassung">Vorschläge an meine Entscheidungen anpassen</h2>
+  <p>Radiux kann sich merken, welche Kategorien du oft merkst und welche du ausblendest,
+  und die Reihenfolge danach verschieben. <strong>Das ist ausgeschaltet, bis du es
+  einschaltest.</strong> Ausgeschaltet siehst du dieselben Orte – nur nach Nähe und
+  Öffnungszeit sortiert statt nach Vorlieben.</p>
+  <p>Die Zähler bleiben in jedem Fall in deinem Gerät. Schaltest du wieder aus, werden
+  sie gelöscht.</p>
+  <div class="schalter">
+    <button type="button" class="btn ${S.profilAn?"":"primary"}" id="profAus"
+      aria-pressed="${!S.profilAn}">Aus</button>
+    <button type="button" class="btn ${S.profilAn?"primary":""}" id="profAn"
+      aria-pressed="${S.profilAn}">Anpassen</button>
+    <span class="micro">${S.profilAn?"eingeschaltet":"ausgeschaltet"}</span>
+  </div>
   <h2>Dein Profil</h2>
-  <p>Aktuell gespeicherte Vorlieben: ${Object.keys(S.profile).length
-    ? Object.entries(S.profile).map(([k,v])=>`${esc(CATMAP[k]||k)} (${v>0?"+":""}${v})`).join(", ")
-    : "keine"}.</p>
+  <p>Aktuell gespeicherte Vorlieben: ${!S.profilAn ? "keine – die Anpassung ist aus"
+    : (Object.keys(S.profile).length
+      ? Object.entries(S.profile).map(([k,v])=>`${esc(CATMAP[k]||k)} (${v>0?"+":""}${v})`).join(", ")
+      : "noch keine")}.</p>
   <button class="btn" id="wipe">Alle lokal gespeicherten Daten löschen</button>
   </div>`;
+  $("#profAn")?.addEventListener("click",()=>setProfil(true));
+  $("#profAus")?.addEventListener("click",()=>setProfil(false));
   $("#wipe").addEventListener("click",()=>{
-    store.clear(); S.saved=[]; S.hidden=[]; S.profile={}; S.mode=null;
+    store.clear(); S.saved=[]; S.hidden=[]; S.profile={}; S.profilAn=false; S.mode=null;
     say("Alle lokal gespeicherten Daten wurden gelöscht."); render();
   });
 }
@@ -2922,7 +3060,7 @@ function viewLegal(){
   main().innerHTML=`<div aria-live="polite" class="sr" id="live"></div>
   <div class="legal">
   <h1>Rechtliche Angaben</h1>
-  <div class="note"><strong>Diese Angaben sind vollständig und aktuell.</strong>
+  <div class="note"><strong>Stand dieser Angaben: laufend gepflegt.</strong>
   Impressum und Datenschutzerklärung gelten ab dem ersten öffentlichen Aufruf –
   unabhängig davon, ob für die Anwendung geworben wird. Vor einer Veröffentlichung
   mit Erlösabsicht sind sie anwaltlich zu prüfen.</div>
@@ -2953,7 +3091,7 @@ function viewLegal(){
      Anbieters, der deine Nutzung aufzeichnet, keine Nutzerkonten, keine Analyse- oder
      Werbedienste und keine Weitergabe an Dritte. Was du in Radiux tust, erfährt der
      Anbieter nicht.</p>
-  <p>Zwei technisch unvermeidbare Ausnahmen sind in der Tabelle aufgeführt und sollen hier
+  <p>Zwei Stellen, an denen jemand anderes deine IP-Adresse sieht, stehen in der Tabelle und sollen hier
      nicht verschwiegen werden: Beim Aufruf der Seite sieht der Hoster deine IP-Adresse,
      und wenn du „Aktuelle Orte laden“ auswählst, sieht sie zusätzlich der abgefragte
      Kartendienst. Beides ist bei jeder Website so; der Anbieter hat auf diese Protokolle
@@ -2961,23 +3099,43 @@ function viewLegal(){
   <table>
     <thead><tr><th>Verarbeitung</th><th>Zweck</th><th>Rechtsgrundlage</th><th>Dauer</th></tr></thead>
     <tbody>
-      <tr><td>Merkliste, ausgeblendete Orte, Kategorievorlieben, Umkreiseinstellung</td>
-          <td>Damit deine Einstellungen beim nächsten Öffnen erhalten bleiben</td>
-          <td>Speicherung im Endgerät nach § 25 Abs. 2 Nr. 2 TDDDG, da für die ausdrücklich
-              gewünschte Funktion unbedingt erforderlich. Kein Personenbezug uns gegenüber,
-              da die Daten das Gerät nicht verlassen.</td>
+      <tr><td>Merkliste, ausgeblendete Orte, gewählter Umkreis, Farbwelt,
+              Karten- oder Listenansicht, ein Merker dafür, ob dir die Standort-Erklärung
+              schon gezeigt wurde</td>
+          <td>Damit deine Einstellungen und deine Merkliste beim nächsten Öffnen noch da sind</td>
+          <td>Speicherung im Endgerät nach § 25 Abs. 2 Nr. 2 TDDDG, weil du diese Funktionen
+              ausdrücklich auslöst und sie ohne die Speicherung nicht funktionieren; für die
+              anschließende Verwendung Art. 6 Abs. 1 lit. f DSGVO. Alles bleibt in deinem
+              Browser – ich kann es weder einsehen noch löschen.</td>
           <td>Bis du sie löschst</td></tr>
+      <tr><td>Angepasste Reihenfolge (Zähler je Kategorie)</td>
+          <td>Aus deinen Merken- und Ausblenden-Entscheidungen entsteht ein Zähler je
+              Kategorie. Er verschiebt die Reihenfolge der Vorschläge – welche Orte du
+              siehst, ändert er nicht.</td>
+          <td>Nur wenn du die Anpassung unter „Wie Radiux empfiehlt“ einschaltest:
+              § 25 Abs. 1 TDDDG und Art. 6 Abs. 1 lit. a DSGVO. Ohne Einschalten wird nichts
+              gezählt. Du kannst jederzeit wieder ausschalten; die Zähler werden dann
+              gelöscht.</td>
+          <td>Bis du ausschaltest oder löschst</td></tr>
       <tr><td>Standortermittlung</td>
-          <td>Entfernungen zu Orten in deiner Nähe berechnen</td>
-          <td>Nur nach ausdrücklicher Freigabe über den Browser, Art. 6 Abs. 1 lit. a DSGVO.
-              Der Standort wird ausschließlich im Gerät verwendet.</td>
+          <td>Entfernungen und Richtungen zu Orten in deiner Nähe berechnen</td>
+          <td>Nur nach ausdrücklicher Freigabe: § 25 Abs. 1 TDDDG für den Zugriff auf dein
+              Gerät, Art. 6 Abs. 1 lit. a DSGVO für die Verwendung. Der genaue Standort wird
+              nur im Gerät verwendet und nicht gespeichert. Lädst du aktuelle Orte, geht ein
+              auf etwa zwei Kilometer gerundetes Rechteck an den Kartendienst – nicht deine
+              Position, sondern die Gegend.</td>
           <td>Nur während der Sitzung</td></tr>
-      <tr><td>Abruf von Ortsdaten bei OpenStreetMap</td>
-          <td>Aktuelle Orte für den gewählten Bereich laden</td>
-          <td>Nur wenn du „Aktuelle Orte laden“ auswählst. Dabei wird deine IP-Adresse
-              technisch bedingt an den Overpass-Dienst der OpenStreetMap Foundation
-              übermittelt. Ohne diese Aktion findet keine Verbindung statt.</td>
-          <td>Nach den Bestimmungen der OpenStreetMap Foundation</td></tr>
+      <tr><td>Abruf von Ortsdaten über die Overpass-Schnittstelle</td>
+          <td>Aktuelle Orte für die gewählte Gegend laden</td>
+          <td>Nur wenn du „aktuelle Orte laden“ antippst. Dabei sieht der angefragte Server
+              deine IP-Adresse und das gerundete Rechteck. Angefragt wird einer von drei
+              Servern: overpass-api.de, betrieben vom FOSSGIS e.V. in Deutschland, sowie
+              overpass.kumi.systems und overpass.private.coffee, beide betrieben von
+              Private.coffee in Österreich. Alle liegen in der Europäischen Union, eine
+              Übermittlung in ein Drittland findet nicht statt. Diese Betreiber verarbeiten
+              die Anfrage in eigener Verantwortung. Ohne dein Antippen findet keine
+              Verbindung statt.</td>
+          <td>Nach den Bestimmungen des jeweiligen Betreibers</td></tr>
       <tr><td>Aufruf der Seite (Hosting)</td>
           <td>Auslieferung der Anwendung an deinen Browser</td>
           <td>Die Anwendung liegt bei GitHub, Inc., 88 Colin P Kelly Jr Street,
@@ -2986,7 +3144,18 @@ function viewLegal(){
               Art. 6 Abs. 1 lit. f DSGVO – das berechtigte Interesse an einer sicheren
               und funktionsfähigen Auslieferung. Die Übermittlung in die USA stützt sich
               auf die Zertifizierung von GitHub unter dem EU-US Data Privacy Framework.</td>
-          <td>Nach den Bestimmungen von GitHub</td></tr>
+          <td>GitHub protokolliert die IP-Adresse aus Sicherheitsgründen. Auf diese
+              Protokolle habe ich keinen Zugriff und kann sie nicht löschen; die
+              Aufbewahrungsdauer richtet sich nach GitHubs Datenschutzerklärung.
+              Die Zertifizierung lässt sich unter dataprivacyframework.gov nachsehen.
+              Sollte sie enden, stützt sich die Übermittlung auf die
+              Standardvertragsklauseln der EU-Kommission.</td></tr>
+      <tr><td>E-Mail an Radiux</td>
+          <td>Deinen Hinweis lesen und beantworten</td>
+          <td>Art. 6 Abs. 1 lit. f DSGVO. Das Postfach liegt bei der Proton AG in der
+              Schweiz; für die Schweiz besteht ein Angemessenheitsbeschluss der
+              EU-Kommission.</td>
+          <td>Gelöscht, sobald die Sache erledigt ist</td></tr>
       <tr><td>Bildmotive</td>
           <td>Darstellung der Entdeckungskarten</td>
           <td>Keine Verarbeitung personenbezogener Daten. Die Bilder liegen auf demselben
@@ -3000,18 +3169,36 @@ function viewLegal(){
         Einrichtungen werden nicht abgerufen und nicht angezeigt, damit keine Rückschlüsse
         auf Gesundheitsdaten nach Art. 9 DSGVO entstehen.</li>
     <li>Keine dauerhafte Bewegungshistorie.</li>
-    <li>Keine Weitergabe an Dritte, keine Werbenetzwerke, keine Reichweitenmessung.</li>
+    <li>Keine Weitergabe an Werbenetzwerke, Analysedienste oder Datenhändler, keine
+        Reichweitenmessung, kein Verkauf von Daten. Wer im technischen Betrieb deine
+        IP-Adresse sieht, steht vollständig in der Tabelle darüber.</li>
   </ul>
   <h3>Deine Rechte</h3>
   <p>Dir stehen nach der DSGVO die Rechte auf Auskunft (Art. 15), Berichtigung (Art. 16),
      Löschung (Art. 17), Einschränkung (Art. 18), Datenübertragbarkeit (Art. 20) und
-     Widerspruch (Art. 21) zu. Da in dieser Fassung keine Daten bei uns gespeichert werden,
-     kannst du sämtliche gespeicherten Angaben selbst unter „Empfehlung“ löschen.
+     Widerspruch (Art. 21) zu. Da in dieser Fassung nichts bei mir gespeichert wird,
+     kannst du alles selbst löschen: unter „Mehr → Wie Radiux empfiehlt → Dein Profil“,
+     Knopf „Alle lokal gespeicherten Daten löschen“.
      Zudem besteht ein Beschwerderecht bei einer Aufsichtsbehörde; zuständig wäre
      die Landesbeauftragte für den Datenschutz Sachsen-Anhalt,
      Otto-von-Guericke-Straße 34a, 39104 Magdeburg,
      <a href="https://datenschutz.sachsen-anhalt.de" target="_blank"
-        rel="noopener noreferrer">datenschutz.sachsen-anhalt.de</a>.</p>
+        rel="noopener noreferrer">datenschutz.sachsen-anhalt.de</a>.
+     Du kannst dich auch an die Aufsichtsbehörde deines Wohn- oder Arbeitsorts wenden.</p>
+  <p><strong>Einwilligung widerrufen.</strong> Hast du den Standort freigegeben oder die
+     angepasste Reihenfolge eingeschaltet, kannst du das jederzeit zurücknehmen – den
+     Standort in den Einstellungen deines Browsers für diese Seite, die Anpassung mit dem
+     Schalter unter „Wie Radiux empfiehlt“. Was bis dahin geschehen ist, bleibt rechtmäßig;
+     ab dem Widerruf unterbleibt die Verarbeitung.</p>
+  <div class="note"><strong>Widerspruch.</strong> Wo Radiux sich auf ein berechtigtes
+     Interesse stützt – das betrifft die Auslieferung über GitHub und die lokale Speicherung
+     deiner Einstellungen –, kannst du der Verarbeitung jederzeit widersprechen, aus Gründen,
+     die sich aus deiner besonderen Situation ergeben. Eine Nachricht an
+     Radiux.info@proton.me genügt.</div>
+  <p><strong>Du musst nichts angeben.</strong> Weder der Standort noch sonst eine Angabe ist
+     vorgeschrieben oder für einen Vertrag nötig. Ohne Standort funktioniert Radiux weiter –
+     der Bezugspunkt bleibt dann die Magdeburger Stadtmitte. Es findet keine automatisierte
+     Entscheidung statt, die rechtliche Wirkung für dich hätte.</p>
 
   <h2 id="barrierefreiheit">Erklärung zur Barrierefreiheit</h2>
   <p>Wir wollen, dass Radiux von möglichst allen Menschen genutzt werden kann. Diese Anwendung
@@ -3576,6 +3763,7 @@ function viewSheet(){
   el.innerHTML = `<div class="veil" data-close></div>
     <div class="panel" tabindex="-1">
       <div class="grab"></div>
+      <button type="button" class="zu" data-close aria-label="Schließen">✕</button>
       <div class="shero">${media(p,900,620)}<div class="scrim"></div></div>
       <div class="sbody">
         <div class="micro" style="margin-bottom:7px">${esc(CATMAP[p.c]||"Ort")} · ${esc(badgeFor(p))}${
@@ -3599,19 +3787,31 @@ function viewSheet(){
         ${p.approx ? "" : miniMap(p)}
         <dl class="dl">${rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${v}</dd>`).join("")}</dl>
         ${whyBlock(p)}
-        <div class="lact">
-          <button class="btn sm" data-act="save" data-n="${esc(p.n)}">${isSaved(p.n)?"Gemerkt ✓":"Merken"}</button>
-          ${p.approx?"":`<a class="btn sm" href="${route}" target="_blank" rel="noopener noreferrer">Route</a>`}
-          ${p.start?`<button class="btn sm" type="button" data-ics="1">In den Kalender</button>`:""}
-          ${p.start?`<a class="btn sm ghost" href="${gcalLink(p)}" target="_blank" rel="noopener noreferrer">Google Kalender</a>`:""}
-          ${p.tk?`<a class="btn sm" href="${esc(p.tk)}" target="_blank"
-            rel="noopener noreferrer">Tickets beim Anbieter ↗</a>`:""}
-          ${p.url?`<a class="btn sm ghost" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Zur Ankündigung ↗</a>`:""}
-          ${p.approx?"":`<a class="btn sm ghost" href="${osm}" target="_blank" rel="noopener noreferrer">Straßenkarte öffnen</a>`}
-          ${p.osm?`<a class="btn sm ghost" href="https://www.openstreetmap.org/${esc(p.osm)}"
-            target="_blank" rel="noopener noreferrer">Eintrag ergänzen</a>`:""}
-          <button class="btn sm ghost" data-close>Schließen</button>
+        <!-- Drei Knöpfe, die fast jeder braucht. Alles Weitere liegt darunter
+             zusammengefasst, damit die Ansicht nicht zur Schaltzentrale wird. -->
+        <div class="pact">
+          <button class="btn" data-act="save" data-n="${esc(p.n)}">${isSaved(p.n)?"Gemerkt ✓":"Merken"}</button>
+          ${p.start
+            ? `<button class="btn" type="button" data-ics="1">Kalender</button>`
+            : (p.approx?"":`<a class="btn" href="${route}" target="_blank" rel="noopener noreferrer">Route</a>`)}
+          <button type="button" class="btn" data-teilen="1">Teilen</button>
         </div>
+        <details class="mehr">
+          <summary>Weitere Möglichkeiten</summary>
+          <div class="sact">
+            ${p.tk?`<a href="${esc(p.tk)}" target="_blank" rel="noopener noreferrer">Tickets beim Anbieter ↗</a>`:""}
+            ${p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Zur Ankündigung ↗</a>`:""}
+            ${(p.start && !p.approx)?`<a href="${route}" target="_blank" rel="noopener noreferrer">Route dorthin</a>`:""}
+            ${p.start?`<a href="${gcalLink(p)}" target="_blank" rel="noopener noreferrer">Google Kalender ↗</a>`:""}
+            <a href="${esc(waLink(p))}" target="_blank" rel="noopener noreferrer">Über WhatsApp senden ↗</a>
+            ${p.approx?"":`<a href="${osm}" target="_blank" rel="noopener noreferrer">Straßenkarte öffnen ↗</a>`}
+            ${p.osm?`<a href="https://www.openstreetmap.org/${esc(p.osm)}"
+              target="_blank" rel="noopener noreferrer">Eintrag bei OpenStreetMap ergänzen ↗</a>`:""}
+            <button type="button" data-act="hide" data-n="${esc(p.n)}">Diesen Ort ausblenden</button>
+          </div>
+        </details>
+        <p class="tkhint">Geteilt wird ein gewöhnlicher Link auf diesen Ort in Radiux.
+          Es wird nichts an einen Nachrichtendienst übertragen, solange du keinen auswählst.</p>
         ${p.tk?`<p class="tkhint">Der Ticketverkauf
           läuft über ${esc(ziel(p.tk))} – ein fremdes Angebot. Radiux verkauft keine
           Tickets, vermittelt nichts und verdient an diesem Verweis nichts.</p>`:""}
@@ -3621,12 +3821,13 @@ function viewSheet(){
   document.body.classList.add("locked");
   el.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",closeDetail));
   el.querySelector("[data-ics]")?.addEventListener("click",()=>openCalendar(p));
+  el.querySelector("[data-teilen]")?.addEventListener("click",()=>teilen(p));
   el.querySelectorAll("[data-termin]").forEach(b=>b.addEventListener("click",()=>{
     openCalendar({ ...p, start: p.alle[+b.dataset.termin] });
   }));
   el.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>{
     const q = prepare().find(x=>x.n===b.dataset.n) || S.saved.find(x=>x.n===b.dataset.n);
-    if(q) save(q);
+    if(q){ if(b.dataset.act === "hide") hide(q); else save(q); }
     closeDetail();
   }));
 
@@ -3784,6 +3985,19 @@ function init(){
   }catch(e){}
 
   if(!S.places.length) S.places=FALLBACK_PLACES.map(p=>({...p,oh:p.oh||""}));
+  /* Wurde ein Ort geteilt, führt die Adresse direkt dorthin. Gibt es ihn nicht
+     (mehr), passiert nichts Schlimmes – dann startet Radiux wie sonst auch. */
+  try{
+    const gewuenscht = new URLSearchParams(location.search).get("ort");
+    if(gewuenscht){
+      S.step="modes"; S.mode="stoebern"; S.activeCats=[...MODES.stoebern.cats];
+      const alle = S.places.concat(eventsAsPlaces());
+      const treffer = alle.find(x => x.n === gewuenscht)
+                   || alle.find(x => norm(x.n) === norm(gewuenscht));
+      if(treffer) S.detail = treffer.n;
+      history.replaceState(null,"",location.pathname);
+    }
+  }catch(e){}
   S.mode=store.get("mode",null);
   if(S.mode && MODES[S.mode]){ S.activeCats=[...MODES[S.mode].cats]; S.step="modes"; }
   else S.mode=null;
