@@ -242,9 +242,10 @@
   "lon": 11.6392,
   "approx": true,
   "start": "2026-08-29T19:00",
-  "u": "https://mamagehttanzen-berlin.ticket.io/z62c7UFj/",
+  "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/august/",
   "src": "ticket.io",
-  "k": "party"
+  "k": "party",
+  "tk": "https://mamagehttanzen-berlin.ticket.io/z62c7UFj/"
  },
  {
   "t": "SILLY mit Julia Neigel – elektroAKUSTIK Open Air",
@@ -276,7 +277,8 @@
   "start": "2026-08-30T09:00",
   "u": "https://www.xletixkids.com/events/magdeburg-2026/",
   "src": "xletixkids.com",
-  "k": "familie"
+  "k": "familie",
+  "tk": "https://shop.ticketpay.de/CE7X4JHR"
  },
  {
   "t": "1. FC Magdeburg – Holstein Kiel",
@@ -610,6 +612,18 @@
   "start": "2026-09-19T19:30",
   "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
   "src": "eventfinder.de",
+  "k": "konzert"
+ },
+ {
+  "t": "Paul Kalkbrenner – Open Air am Dom",
+  "v": "Domplatz Magdeburg",
+  "lat": 52.1274,
+  "lon": 11.6392,
+  "approx": true,
+  "start": "2026-09-19T20:00",
+  "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+  "tk": "https://paulkalkbrenner.ticket.io/dZxXTPgH/",
+  "src": "ticket.io",
   "k": "konzert"
  },
  {
