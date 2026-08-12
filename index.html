@@ -121,7 +121,8 @@
   header.app{position:sticky;top:0;z-index:30;background:var(--veil);
     backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
     border-bottom:1px solid var(--line)}
-  .bar{display:flex;align-items:center;gap:12px;padding:18px 0 15px;min-width:0}
+  .bar{display:flex;align-items:center;gap:12px;padding:18px 0 15px;min-width:0;
+    transition:padding .24s ease}
   .blogo{width:24px;height:30px;flex:0 0 auto;display:block;color:var(--text)}
   .blogo svg{width:100%;height:100%;display:block}
   .brand{font-weight:600;font-size:1.06rem;letter-spacing:.24em;text-transform:uppercase;
@@ -133,7 +134,18 @@
     transition:color .2s,background .2s}
   .modebtn:hover{color:var(--text);background:var(--glass-2)}
 
-  .controls{padding:2px 22px 18px;border-bottom:1px solid var(--line)}
+  .controls{padding:2px 22px 18px;border-bottom:1px solid var(--line);
+    max-height:400px;overflow:visible;
+    transition:max-height .24s ease,opacity .18s ease,padding .24s ease}
+  /* Beim Herunterscrollen klappt der untere Teil der Kopfzeile weg. Sonst
+     belegt sie fast ein Drittel des Bildschirms und der Inhalt schiebt sich
+     darunter – das sieht aus, als würde sich die Seite verschieben. */
+  header.app.kompakt .controls{max-height:0;padding-top:0;padding-bottom:0;
+    opacity:0;overflow:hidden;border-bottom-color:transparent;pointer-events:none}
+  header.app.kompakt .bar{padding:11px 0 10px}
+  @media (prefers-reduced-motion:reduce){
+    .controls,.bar{transition:none}
+  }
   .rng{display:flex;align-items:center;gap:14px;width:100%;margin:8px 0 16px;min-width:0}
   .rng.aus input[type=range]{opacity:.3}
   .rng.aus label,.rng.aus .radval{color:var(--text-mute)}
@@ -4104,6 +4116,42 @@ function render(){
   if(S.detail) viewSheet(); else document.body.classList.remove("locked");
 }
 
+/* ---------------- Kopfzeile beim Scrollen ----------------
+   Die Kopfzeile bleibt oben stehen, damit Umkreis und Suche immer erreichbar
+   sind. Mit Umkreisregler, Suchfeld und Kategorien belegt sie aber fast ein
+   Drittel des Bildschirms – der Inhalt schiebt sich darunter und wird
+   angeschnitten. Deshalb klappt der untere Teil beim Herunterscrollen weg und
+   ist beim Hochscrollen sofort wieder da. Name und Umschalter bleiben stehen. */
+function kopfBeobachten(){
+  const kopf = document.querySelector("header.app");
+  if(!kopf) return;
+  const leiste = document.getElementById("controls");
+  let letzte = 0, wartet = false;
+  function pruefen(){
+    wartet = false;
+    const y = Math.max(0, window.scrollY || window.pageYOffset || 0);
+    const d = y - letzte;
+    if(Math.abs(d) < 6) return;            /* kleine Wackler nicht beachten */
+    if(y < 80 || d < 0){ kopf.classList.remove("kompakt"); letzte = y; return; }
+    /* Einklappen macht die Seite kürzer. Ist ohnehin kaum etwas zu scrollen,
+       würde der Browser dabei nach oben springen, das Aufklappen auslösen und
+       alles wieder von vorn – die Seite würde zittern. Also nur einklappen,
+       wenn danach genug Scrollweg übrig bleibt. */
+    const raum = document.documentElement.scrollHeight - window.innerHeight;
+    const spart = leiste ? leiste.scrollHeight : 0;
+    if(y > 140 && raum > spart + 300 && !kopf.contains(document.activeElement))
+      kopf.classList.add("kompakt");
+    letzte = y;
+  }
+  window.addEventListener("scroll", ()=>{
+    if(!wartet){ wartet = true; requestAnimationFrame(pruefen); }
+  }, {passive:true});
+  /* Wer per Tabulator in die Kopfzeile springt, soll sie auch sehen. */
+  window.addEventListener("focusin", e=>{
+    if(kopf.contains(e.target)) kopf.classList.remove("kompakt");
+  });
+}
+
 function init(){
   setThema(S.thema);
   try{
@@ -4148,6 +4196,7 @@ function init(){
     e.target.setAttribute("aria-valuetext", fmtRad(S.radius));
     store.set("radius",S.radius); });
   $("#rad").addEventListener("change",()=>{ S.idx=0; render(); });
+  kopfBeobachten();
   render();
   loadEvents();
 }
