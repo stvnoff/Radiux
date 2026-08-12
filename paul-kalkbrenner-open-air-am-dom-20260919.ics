@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Radiux//Prototyp//DE
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:1575857456@radiux
+DTSTAMP:20260812T142400
+DTSTART:20260919T200000
+DTEND:20260919T230000
+SUMMARY:Paul Kalkbrenner – Open Air am Dom
+LOCATION:Domplatz Magdeburg
+DESCRIPTION:Angabe laut ticket.io. Termin und Ort beim Veranstalter prüfen. https://www.eventfinder.de/magdeburg/veranstaltungen/september/
+GEO:52.1274;11.6392
+END:VEVENT
+END:VCALENDAR
