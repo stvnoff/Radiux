@@ -12,7 +12,11 @@
      nur diese Werte aus – kein zweites Stilblatt, kein Nachladen.
      Ohne eigene Wahl richtet sich Radiux nach der Einstellung des Geräts. */
   :root{
-    --blur:blur(22px) saturate(125%);
+    /* Milchglas. Bewusst zurückhaltend: Je größer der Radius und je mehr
+       Zusatzfilter, desto öfter muss das Handy die Fläche neu berechnen –
+       und desto eher fängt das Bild beim Scrollen an zu flimmern.
+       „saturate" ist deshalb raus, der Radius kleiner. */
+    --blur:blur(14px);
     --r-sm:10px; --r-md:14px; --r-lg:18px; --r-xl:22px;
     --card-h:clamp(320px,47vh,452px);
     --ease:cubic-bezier(.2,.8,.2,1);
@@ -507,10 +511,20 @@
   html[data-thema="neon"]{
     background-image:
       radial-gradient(70vw 50vh at 12% -8%, rgba(176,107,255,.22), transparent 70%),
-      radial-gradient(60vw 45vh at 92% 4%, rgba(200,255,77,.12), transparent 70%),
-      repeating-linear-gradient(to right, rgba(176,107,255,.075) 0 1px, transparent 1px 58px),
-      repeating-linear-gradient(to bottom, rgba(176,107,255,.075) 0 1px, transparent 1px 58px);
-    background-repeat:no-repeat,no-repeat,repeat,repeat}
+      radial-gradient(60vw 45vh at 92% 4%, rgba(200,255,77,.12), transparent 70%);
+    background-repeat:no-repeat}
+  /* Das Raster liegt auf einer festen Ebene und scrollt nicht mit. Wanderte es
+     mit dem Inhalt, träfen die haarfeinen Linien bei jedem Bild auf andere
+     Gerätepunkte – sie würden abwechselnd scharf und blass gezeichnet. Genau
+     das sieht am Handy aus wie ein Krieseln. Zusätzlich laufen die Linien jetzt
+     weich aus statt hart bei einem Pixel abzubrechen. */
+  html[data-thema="neon"] body::before{
+    content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background-image:
+      repeating-linear-gradient(to right,
+        rgba(176,107,255,.10) 0, rgba(176,107,255,0) 2px, rgba(176,107,255,0) 58px),
+      repeating-linear-gradient(to bottom,
+        rgba(176,107,255,.10) 0, rgba(176,107,255,0) 2px, rgba(176,107,255,0) 58px)}
 
   /* Mondsteinweiß oben links, sanftes Beige unten rechts – diagonal ineinander. */
   html[data-thema="mondstein"]{background-image:linear-gradient(135deg, #f6f7f9 0%, #f2eee6 38%, #ece2d0 70%, #e4d6bd 100%);background-repeat:no-repeat}
@@ -557,13 +571,17 @@
     55% {transform:translate3d(1px,0,0); filter:drop-shadow(-1px 0 #ff2e97) drop-shadow(1px 0 #22e6ff)}
     70%,100%{transform:none;filter:none}}
 
-  /* Feine Zeilen über den Bildern */
+  /* Feine Zeilen über den Bildern.
+     Früher: harte Kante alle drei Pixel, dazu „multiply". Beides zusammen zwang
+     das Handy, beim Scrollen die ganze Fläche neu zu mischen – und die Zeilen
+     wanderten sichtbar über das Bild. Jetzt: weicher Verlauf, größerer Abstand,
+     kein Mischmodus. Sieht fast gleich aus, kostet einen Bruchteil. */
   html[data-thema="neon"] .cover::after,
   html[data-thema="neon"] .shero::after{
     content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
     background-image:repeating-linear-gradient(to bottom,
-      rgba(0,0,0,.26) 0 1px, transparent 1px 3px);
-    mix-blend-mode:multiply;opacity:.55}
+      rgba(0,0,0,.30) 0, rgba(0,0,0,0) 2px, rgba(0,0,0,0) 4px);
+    opacity:.5}
 
   /* Kanten leuchten beim Berühren */
   html[data-thema="neon"] .card:active{
@@ -576,6 +594,36 @@
   html[data-thema="neon"] .modebtn:active,
   html[data-thema="neon"] .geobtn:active{
     box-shadow:0 0 0 1px rgba(200,255,77,.6),0 0 18px -4px rgba(200,255,77,.5)}
+
+  /* ═══════════ Ruhiges Bild ═══════════
+     Milchglas ist teuer: Der Browser muss den Hintergrund hinter der Fläche bei
+     jedem einzelnen Bild neu weichzeichnen. Auf manchen Handys reicht die Zeit
+     dafür nicht ganz – dann flimmert die Fläche beim Scrollen. Wer das hat,
+     schaltet hier auf blickdicht um. Alles bleibt lesbar, nur die Milchglas-
+     Optik entfällt. */
+  html[data-ruhig] header.app,
+  html[data-ruhig] nav.tabs,
+  html[data-ruhig] .empty,
+  html[data-ruhig] .sheet .veil,
+  html[data-ruhig] .sheet .panel,
+  html[data-ruhig] .sheet .zu{backdrop-filter:none;-webkit-backdrop-filter:none}
+  html[data-ruhig] header.app,
+  html[data-ruhig] nav.tabs{background:var(--bg)}
+  html[data-ruhig] .sheet .veil{background:rgba(4,4,6,.9)}
+  html[data-ruhig] .sheet .panel{background:var(--card-solid)}
+  html[data-ruhig][data-thema="neon"] body::before,
+  html[data-ruhig][data-thema="neon"] .cover::after,
+  html[data-ruhig][data-thema="neon"] .shero::after{display:none}
+  html[data-ruhig][data-thema="neon"] .glitch{animation:none}
+  /* Wer im Gerät „Transparenz reduzieren" eingestellt hat, bekommt das ohne
+     eigenes Zutun – das ist genau die Einstellung, die dafür gedacht ist. */
+  @media (prefers-reduced-transparency: reduce){
+    header.app,nav.tabs,.empty,.sheet .veil,.sheet .panel,.sheet .zu{
+      backdrop-filter:none;-webkit-backdrop-filter:none}
+    header.app,nav.tabs{background:var(--bg)}
+    .sheet .veil{background:rgba(4,4,6,.9)}
+    .sheet .panel{background:var(--card-solid)}
+  }
 
   .hidden{display:none !important}
   @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
@@ -646,8 +694,11 @@
       <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="currentColor"/>
       <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="#3f7dff"
             stroke-opacity=".35" stroke-width="4" stroke-linejoin="round"/>
+      <!-- Ohne Weichzeichner: Ein laufender SVG-Filter im feststehenden Kopf
+           zwingt das Handy, den Kopf samt Milchglas 60-mal je Sekunde neu zu
+           zeichnen. Bei 24 Pixel Breite sieht man das Leuchten ohnehin kaum. -->
       <path d="M34 18 L112 18 C152 18 176 44 176 76 C176 105 157 125 131 131 L181 242 L136 242 L95 138 L74 138 L74 242 L34 242 Z M74 52 L74 104 L110 104 C128 104 137 93 137 78 C137 62 128 52 110 52 Z" fill-rule="evenodd" fill="none" stroke="url(#rxshim)"
-            stroke-width="5" stroke-linejoin="round" filter="url(#rxglow)"/>
+            stroke-width="5" stroke-linejoin="round"/>
     </svg></span>
     <div class="brand">Radiux</div>
       <button type="button" class="modebtn" id="hMode" hidden></button>
@@ -2014,7 +2065,7 @@ store.migrate();
 
 const S = {
   view:"discover", vmode:store.get("vmode","karten"), detail:null, q:"", step:"welcome",
-  thema:store.get("thema","auto"),
+  thema:store.get("thema","auto"), ruhig:store.get("ruhig",false),
   radius:store.get("radius",3000), mode:null, origin:MD,
   places:[], idx:0, saved:store.get("saved",[]), hidden:store.get("hidden",[]),
   profile:store.get("profile",{}), activeCats:[], loaded:false, loading:false,
@@ -3072,7 +3123,11 @@ function viewHow(){
   Raster im Hintergrund, einen kurzen Bildversatz auf Überschriften und feine Zeilen über
   den Bildern mit; alles davon ist selbst gezeichnet, es werden keine fremden Bilder geladen.
   Wer im Gerät „Bewegung reduzieren“ eingestellt hat, bekommt dieselbe Farbwelt ohne
-  Bewegung. Die Wahl bleibt in deinem Browser
+  Bewegung. Darunter steht die Darstellung: Kopfzeile und Navigationsleiste sind
+  normalerweise aus Milchglas, der Hintergrund schimmert also durch. Das muss der Browser
+  bei jedem Bildaufbau neu berechnen – auf manchen Geräten wirkt das Bild dadurch beim
+  Scrollen unruhig. „Ruhiges Bild“ schaltet auf blickdicht um; Inhalte und Farben bleiben
+  gleich. Die Wahl bleibt in deinem Browser
   gespeichert und wird nicht übertragen. Sie ändert nur Farben – nicht, welche Orte
   du siehst und in welcher Reihenfolge.</p>
 
@@ -3222,7 +3277,7 @@ function viewLegal(){
   <table>
     <thead><tr><th>Verarbeitung</th><th>Zweck</th><th>Rechtsgrundlage</th><th>Dauer</th></tr></thead>
     <tbody>
-      <tr><td>Merkliste, ausgeblendete Orte, gewählter Umkreis, Farbwelt,
+      <tr><td>Merkliste, ausgeblendete Orte, gewählter Umkreis, Farbwelt und Darstellung,
               Karten- oder Listenansicht, ein Merker dafür, ob dir die Standort-Erklärung
               schon gezeigt wurde</td>
           <td>Damit deine Einstellungen und deine Merkliste beim nächsten Öffnen noch da sind</td>
@@ -3555,6 +3610,18 @@ function setThema(k){
   if(meta && dunkel) meta.setAttribute("content", dunkel);
   tempo(k);
 }
+
+/* Blickdicht statt Milchglas – und die laufenden Zeichnungen stehen still.
+   Für Geräte, auf denen das Bild beim Scrollen unruhig wirkt. */
+function setRuhig(an){
+  S.ruhig = !!an;
+  store.set("ruhig", S.ruhig);
+  if(S.ruhig) document.documentElement.setAttribute("data-ruhig","1");
+  else document.documentElement.removeAttribute("data-ruhig");
+  document.querySelectorAll(".blogo svg, .wmark svg").forEach(svg=>{
+    try{ S.ruhig ? svg.pauseAnimations() : svg.unpauseAnimations(); }catch(e){}
+  });
+}
 function openThema(){
   document.querySelectorAll(".sheet").forEach(n=>n.remove());
   const el = document.createElement("div");
@@ -3571,6 +3638,19 @@ function openThema(){
             <span class="sw" style="background:${sw}"></span>
             <span><span class="tn">${esc(n)}</span><span class="td">${esc(d)}</span></span>
           </button>`).join("")}</div>
+        <div class="micro" style="margin:26px 0 10px">Darstellung</div>
+        <div class="themen" role="group" aria-label="Darstellung">
+          <button type="button" data-r="0" aria-pressed="${!S.ruhig}">
+            <span class="sw" style="background:linear-gradient(135deg,#8f8f9a,#e8e8ee)"></span>
+            <span><span class="tn">Milchglas</span>
+            <span class="td">Kopf und Leiste schimmern durch</span></span>
+          </button>
+          <button type="button" data-r="1" aria-pressed="${S.ruhig}">
+            <span class="sw" style="background:#3a3a40"></span>
+            <span><span class="tn">Ruhiges Bild</span>
+            <span class="td">Blickdicht – gegen Flimmern beim Scrollen</span></span>
+          </button>
+        </div>
         <p class="note" style="margin-top:20px">Die Auswahl bleibt in diesem Browser
         gespeichert und wird nicht übertragen. Inhalte und Reihenfolge der Vorschläge
         ändern sich dadurch nicht.</p>
@@ -3587,6 +3667,12 @@ function openThema(){
     setThema(b.dataset.t);
     el.querySelectorAll("[data-t]").forEach(x=>x.setAttribute("aria-pressed", String(x.dataset.t===S.thema)));
     say("Aussehen geändert.");
+  }));
+  el.querySelectorAll("[data-r]").forEach(b=>b.addEventListener("click",()=>{
+    setRuhig(b.dataset.r === "1");
+    el.querySelectorAll("[data-r]").forEach(x=>x.setAttribute("aria-pressed",
+      String((x.dataset.r === "1") === S.ruhig)));
+    say(S.ruhig ? "Ruhiges Bild eingeschaltet." : "Milchglas eingeschaltet.");
   }));
   dragClose(el, shut);
   el.querySelector(".panel").focus();
@@ -4154,6 +4240,7 @@ function kopfBeobachten(){
 
 function init(){
   setThema(S.thema);
+  setRuhig(S.ruhig);
   try{
     if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)
       document.querySelectorAll(".blogo animate").forEach(a=>a.remove());
