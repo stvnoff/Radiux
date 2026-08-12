@@ -239,6 +239,9 @@
   .pill.serie{border-color:color-mix(in srgb,var(--accent) 45%,transparent);
     color:var(--accent);font-weight:600}
   .tkhint{margin:14px 0 0;font-size:.85rem;line-height:1.5;color:var(--text-mute)}
+  .melden{margin:16px 0 0;padding:12px 14px;border:1px dashed var(--line);border-radius:14px;
+    font-size:.88rem;color:var(--text-dim);line-height:1.55}
+  .melden a{color:var(--text);text-underline-offset:3px}
   .schalter{display:flex;align-items:center;gap:10px;margin:14px 0 8px;flex-wrap:wrap}
   .ohliste{list-style:none;margin:0;padding:0}
   .ohliste li{display:flex;gap:12px;justify-content:space-between;align-items:baseline;
@@ -1439,6 +1442,18 @@ const EVENTS_FALLBACK = [
       "k": "konzert"
     },
     {
+      "t": "Paul Kalkbrenner – Open Air am Dom",
+      "v": "Domplatz Magdeburg",
+      "lat": 52.1274,
+      "lon": 11.6392,
+      "approx": true,
+      "start": "2026-09-19T20:00",
+      "u": "https://www.eventfinder.de/magdeburg/veranstaltungen/september/",
+      "tk": "https://paulkalkbrenner.ticket.io/dZxXTPgH/",
+      "src": "ticket.io",
+      "k": "konzert"
+    },
+    {
       "t": "Forever Young",
       "v": "Factory Magdeburg",
       "lat": 52.1274,
@@ -2603,6 +2618,40 @@ async function teilen(p){
 }
 function waLink(p){ return "https://wa.me/?text=" + encodeURIComponent(teilenText(p)); }
 
+/* ---------------- Veranstaltung melden ----------------------------------
+   Kein Formular, kein Server, keine Datenbank: ein vorbereiteter Brief im
+   Mailprogramm des Nutzers. Radiux nimmt nichts entgegen und speichert nichts –
+   es kommt eine Mail an, die von Hand geprüft und eingetragen wird.
+
+   Das ist nicht nur der einfachste Weg, sondern auch der rechtlich ruhigste.
+   Wer fremde Beiträge automatisch veröffentlicht, wird zum Hostinganbieter mit
+   allem, was der Digital Services Act daran knüpft. Wer prüft und selbst
+   einträgt, veröffentlicht eigene Inhalte.
+
+   Die Vorlage fragt genau das ab, was ein Eintrag braucht. Eine Mail mit
+   „nächsten Samstag bei uns“ hilft niemandem. */
+function meldenLink(){
+  const betreff = "Veranstaltung für Radiux";
+  const text = [
+    "Hallo,",
+    "",
+    "ich möchte eine Veranstaltung in Magdeburg melden.",
+    "",
+    "Titel:",
+    "Datum und Uhrzeit:",
+    "Veranstaltungsort mit Adresse:",
+    "Link zur Ankündigung oder zu den Tickets:",
+    "Altersgrenze (falls es eine gibt):",
+    "Kurz in einem Satz, worum es geht:",
+    "",
+    "Ich bin: (Veranstalter / Gast / weiß es nur zufällig)",
+    "",
+    "Viele Grüße"
+  ].join("\n");
+  return "mailto:" + CONTACT + "?subject=" + encodeURIComponent(betreff)
+       + "&body=" + encodeURIComponent(text);
+}
+
 /* ---------------- Aktionen ---------------- */
 const isSaved = n => S.saved.some(x=>x.n===n);
 function bump(p,v){
@@ -2882,6 +2931,10 @@ function viewDiscover(){
     ${S.q.trim() ? `<p class="counter" style="text-align:left;margin:14px 0 0">${
         queryBlocked(S.q) ? "Zu diesem Begriff zeigt Radiux bewusst keine Ergebnisse."
         : `${list.length} Treffer für „${esc(S.q.trim())}“ · sucht in allen Kategorien, ohne Umkreis`}</p>` : ""}
+    ${(S.mode==="event" && CONTACT && !S.q.trim()) ? `<p class="melden">
+      Eine Veranstaltung fehlt?
+      <a href="${esc(meldenLink())}">Melde sie mir</a> – ich prüfe sie und trage sie ein.
+      Nichts wird automatisch veröffentlicht.</p>` : ""}
     ${(S.vmode==="karten"||!p) ? body : listView(list.slice(0,40), S.mode==="event"
         ? (S.evFilter==="serie" ? "Läuft an mehreren Abenden"
          : S.evFilter==="einzeln" ? "Nur an einem Abend" : "Alle Termine")
@@ -3706,6 +3759,21 @@ function viewAbout(){
   der die Eingaben entgegennimmt – und damit einen Auftragsverarbeitungsvertrag,
   ein Verzeichnis der Verarbeitungstätigkeiten und ein Meldeverfahren nach dem
   Digitale-Dienste-Gesetz der EU. Das kommt in Phase 2, sauber gemacht statt schnell.</p>`}
+
+  <h3>Veranstaltungen melden</h3>
+  ${CONTACT ? `<p>Das ist im Moment der wichtigste Beitrag. Radiux trägt die Termine von Hand
+  ein; was niemand meldet und in keinem Kalender steht, fehlt einfach. Besonders willkommen
+  sind kleine Sachen – Hofkonzerte, Lesungen, Flohmärkte, Vereinsfeste –, denn die großen
+  Hallen findet man ohnehin.</p>
+  <p>Der Verweis öffnet dein Mailprogramm mit einer vorbereiteten Nachricht. Fülle aus, was du
+  weißt; unvollständig ist besser als gar nicht. <strong>Radiux nimmt nichts automatisch
+  entgegen</strong> – deine Mail landet in einem Postfach, ich prüfe die Angaben und trage sie
+  ein. Deshalb dauert es manchmal ein paar Tage, und deshalb steht hier auch nichts, was
+  vorher niemand gelesen hat.</p>
+  <p><a class="btn sm" href="${esc(meldenLink())}">Veranstaltung melden</a></p>
+  <p class="micro">Was mit deiner Mail passiert, steht unter „Rechtliches“ in der
+  Datenschutzerklärung. Kurz: Sie liegt in einem Postfach, bis die Sache erledigt ist,
+  und wird dann gelöscht.</p>` : ""}
 
   <h3>Fotos</h3>
   <p>Eigene Fotos sind willkommen und würden die Symbolbilder ersetzen. Bevor du eines
