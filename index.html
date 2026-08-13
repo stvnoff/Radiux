@@ -1823,7 +1823,7 @@ function eventsAsPlaces(){
         if(hit){ lat=hit.lat; lon=hit.lon; approx=false; }
       }
       return { n:e.t, c:"event", lat, lon, oh:"", approx,
-               t:e.v || "", start:e.start, url:e.u || "", tk:e.tk || "",
+               t:e.v || "", start:e.start, url:e.u || "", uliste:!!e.ul, tk:e.tk || "",
                src:e.src || "", adr:"" };
     });
   return serienBilden(einzeln);
@@ -2721,6 +2721,14 @@ function quelle(){
     Bilder: Symbolbilder von Pexels – kein echtes Foto der Gegend.</p>`;
 }
 
+/* Ein Verweis muss halten, was seine Beschriftung verspricht. Für die meisten
+   Termine führt er auf die Seite genau dieser Veranstaltung. Für die wenigen,
+   für die es beim Anbieter keine eigene Seite (mehr) gibt, führt er auf die
+   Terminübersicht – dann sagt die Beschriftung auch das. */
+function ankTitel(p){
+  return p.uliste ? "Zur Terminübersicht ↗" : "Zur Ankündigung ↗";
+}
+
 function meldenLink(){
   const betreff = "Veranstaltung für Radiux";
   const text = [
@@ -3080,7 +3088,7 @@ function listView(list,title,total){
         <button class="btn sm" data-act="save" data-n="${esc(p.n)}">${isSaved(p.n)?"Gemerkt ✓":"Merken"}</button>
         <button class="btn sm ghost" data-act="hide" data-n="${esc(p.n)}">Ausblenden</button>
         ${p.tk?`<a class="btn sm" href="${esc(p.tk)}" target="_blank" rel="noopener noreferrer">Tickets beim Anbieter ↗</a>`
-          :p.url?`<a class="btn sm ghost" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Zur Ankündigung ↗</a>`:""}
+          :p.url?`<a class="btn sm ghost" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${ankTitel(p)}</a>`:""}
       </div>
     </li>`).join("")}</ul>`;
 }
@@ -4095,7 +4103,7 @@ function viewSheet(){
           <summary>Weitere Möglichkeiten</summary>
           <div class="sact">
             ${p.tk?`<a href="${esc(p.tk)}" target="_blank" rel="noopener noreferrer">Tickets beim Anbieter ↗</a>`:""}
-            ${p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Zur Ankündigung ↗</a>`:""}
+            ${p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">${ankTitel(p)}</a>`:""}
             ${(p.start && !p.approx)?`<a href="${route}" target="_blank" rel="noopener noreferrer">Route dorthin</a>`:""}
             ${p.start?`<a href="${gcalLink(p)}" target="_blank" rel="noopener noreferrer">Google Kalender ↗</a>`:""}
             <a href="${esc(waLink(p))}" target="_blank" rel="noopener noreferrer">Über WhatsApp senden ↗</a>
