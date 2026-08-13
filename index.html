@@ -426,6 +426,13 @@
   .wbar i{display:block;height:100%;background:var(--text)}
   footer.attrib{border-top:1px solid var(--line);margin-top:34px;padding:22px 0 34px;
     font-size:.78rem;color:var(--text-mute)}
+  .quelle{margin:30px 0 0;padding-top:14px;border-top:1px solid var(--line);
+    font-size:.74rem;line-height:1.6;color:var(--text-mute);text-align:center}
+  .quelle a{color:inherit;text-underline-offset:3px}
+  .lthumb .tbadge{position:absolute;left:0;right:0;bottom:0;z-index:2;
+    font-size:.52rem;text-transform:uppercase;letter-spacing:.07em;font-weight:600;
+    text-align:center;padding:2px 1px;line-height:1.3;
+    background:rgba(0,0,0,.58);color:#fff}
 
   .toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(8px);
     z-index:60;max-width:min(92vw,520px);text-align:center;
@@ -865,6 +872,9 @@ const BLOCKED_AMENITY = ["doctors","pharmacy","hospital","clinic","dentist","vet
      Orte außen vor – Erotik, Glücksspiel, Spielhallen. */
   "stripclub","brothel","swingerclub","love_hotel","casino","gambling","adult_gaming_centre"];
 const BLOCKED_SHOP = ["erotic","sex","adult","bookmaker","tobacco","weapons","e-cigarette"];
+/* Diese drei dürfen erscheinen, wenn OpenStreetMap sie zugleich als
+   Sehenswürdigkeit führt – dann geht es um das Bauwerk, nicht um die Nutzung. */
+const NUR_ALS_BAUWERK = ["place_of_worship","funeral_hall","crematorium"];
 
 const MODES = {
   event:     { l:"Was ist los?",    s:"Veranstaltungen in den nächsten Wochen", cats:["event"] },
@@ -2447,8 +2457,13 @@ function allowed(tags){
   if(tags.healthcare) return false;
   if(BLOCKED_SHOP.includes(tags.shop)) return false;
   if(tags.adult === "yes" || tags["min_age"]) return false;
+  /* Die Rückausnahme gilt nur für Bauwerke, die heute als Sehenswürdigkeit
+     geführt werden – Klosterkirchen, Trauerhallen von historischem Rang.
+     Früher galt sie für jeden gesperrten Ort mit irgendeinem Tourismus-Merkmal;
+     damit wäre eine Spielbank oder eine Klinik in einem denkmalgeschützten
+     Gebäude durchgerutscht. */
   if(BLOCKED_AMENITY.includes(tags.amenity))
-    return !!tags.tourism && tags.amenity!=="pharmacy" && tags.amenity!=="doctors";
+    return !!tags.tourism && NUR_ALS_BAUWERK.includes(tags.amenity);
   return true;
 }
 /* Wie prepare(), aber ohne den Reiter-Filter – damit die Zähler an den Reitern
@@ -2574,9 +2589,13 @@ function geoErklaert(){
   box.id = "geonote"; box.className = "note"; box.style.margin = "10px 0 0";
   box.innerHTML = `<strong>Standort verwenden.</strong> Radiux fragt gleich den Standort
     dieses Geräts ab. Er wird nur im Gerät verwendet, um Entfernungen zu berechnen –
-    nicht gespeichert, nicht übertragen, nicht ausgewertet. Ohne Antwort bleibt die
-    Magdeburger Stadtmitte der Bezugspunkt.
-    Du kannst jederzeit widerrufen – in den Einstellungen deines Browsers für diese Seite.
+    nicht gespeichert und nicht ausgewertet. Der Punkt selbst verlässt das Gerät nicht.
+    Tippst du später „Aktuelle Orte laden“, geht daraus ein auf rund zwei Kilometer
+    gerundetes Rechteck an den Kartendienst – die Gegend, nicht deine Position.
+    Ohne Antwort bleibt die Magdeburger Stadtmitte der Bezugspunkt.
+    Widerrufen kannst du jederzeit: Ein erneutes Antippen dieses Knopfes setzt den
+    Bezugspunkt sofort auf die Stadtmitte zurück; die Berechtigung selbst nimmst du in
+    den Einstellungen deines Browsers für diese Seite zurück.
     Ohne Standort funktioniert Radiux weiter, Bezugspunkt bleibt die Stadtmitte.
     Ausführlich steht das unter „Mehr → Rechtliches → Datenschutzerklärung“.
     <span style="display:block;margin-top:10px">
@@ -2623,14 +2642,12 @@ function undo(){
   if(h.type === "hide"){
     S.hidden = S.hidden.filter(n => n !== h.name);
     store.set("hidden", S.hidden);
-    S.profile[h.cat] = (S.profile[h.cat] || 0) + 0.5;
-    store.set("profile", S.profile);
+    bump({c:h.cat}, 0.5);            /* zählt nur bei eingeschalteter Anpassung */
     say(`„${h.name}“ ist wieder da.`);
   } else if(h.type === "save"){
     S.saved = S.saved.filter(x => x.n !== h.name);
     store.set("saved", S.saved);
-    S.profile[h.cat] = (S.profile[h.cat] || 0) - 1;
-    store.set("profile", S.profile);
+    bump({c:h.cat}, -1);             /* dito – sonst entstünde ein Zähler ohne Einwilligung */
     say(`„${h.name}“ nicht mehr gemerkt.`);
   } else if(h.type === "unsave"){
     S.saved.push(h.item); store.set("saved", S.saved);
@@ -2693,6 +2710,17 @@ function waLink(p){ return "https://wa.me/?text=" + encodeURIComponent(teilenTex
 
    Die Vorlage fragt genau das ab, was ein Eintrag braucht. Eine Mail mit
    „nächsten Samstag bei uns“ hilft niemandem. */
+/* Die Open Database License verlangt die Namensnennung dort, wo die Daten
+   gezeigt werden (Ziffer 4.3), und einen Verweis auf den Lizenztext (Ziffer 4.2).
+   Beides nur am Ende einer Unterseite zu verstecken, reicht dafür nicht. */
+function quelle(){
+  return `<p class="quelle">Ortsdaten © <a href="https://www.openstreetmap.org/copyright"
+    target="_blank" rel="noopener noreferrer">OpenStreetMap-Mitwirkende</a>,
+    <a href="https://opendatacommons.org/licenses/odbl/1-0/"
+    target="_blank" rel="noopener noreferrer">Open Database License</a>.
+    Bilder: Symbolbilder von Pexels – kein echtes Foto der Gegend.</p>`;
+}
+
 function meldenLink(){
   const betreff = "Veranstaltung für Radiux";
   const text = [
@@ -3001,7 +3029,8 @@ function viewDiscover(){
     ${(S.vmode==="karten"||!p) ? body : listView(list.slice(0,40), S.mode==="event"
         ? (S.evFilter==="serie" ? "Läuft an mehreren Abenden"
          : S.evFilter==="einzeln" ? "Nur an einem Abend" : "Alle Termine")
-        : "Alle Vorschläge", list.length)}`;
+        : "Alle Vorschläge", list.length)}
+    ${quelle()}`;
 
   main().querySelectorAll("[data-v]").forEach(b=>b.addEventListener("click",()=>{
     S.vmode=b.dataset.v; store.set("vmode",S.vmode); render();
@@ -3039,7 +3068,7 @@ function listView(list,title,total){
     <li>
       <button type="button" class="lrow" data-act="detail" data-n="${esc(p.n)}"
               aria-label="${esc(p.n)} – Details öffnen">
-        <span class="lthumb">${media(p,320,420)}</span>
+        <span class="lthumb">${media(p,320,420)}<span class="tbadge">${esc(badgeFor(p))}</span></span>
         <span class="lmain">
           <span class="lname">${esc(p.n)}</span>
           ${(p.t||p.art)?`<span class="desc" style="display:block;margin-bottom:8px">${esc(p.t||p.art)}</span>`:""}
@@ -3050,7 +3079,7 @@ function listView(list,title,total){
       <div class="lact">
         <button class="btn sm" data-act="save" data-n="${esc(p.n)}">${isSaved(p.n)?"Gemerkt ✓":"Merken"}</button>
         <button class="btn sm ghost" data-act="hide" data-n="${esc(p.n)}">Ausblenden</button>
-        ${p.tk?`<a class="btn sm" href="${esc(p.tk)}" target="_blank" rel="noopener noreferrer">Tickets ↗</a>`
+        ${p.tk?`<a class="btn sm" href="${esc(p.tk)}" target="_blank" rel="noopener noreferrer">Tickets beim Anbieter ↗</a>`
           :p.url?`<a class="btn sm ghost" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Zur Ankündigung ↗</a>`:""}
       </div>
     </li>`).join("")}</ul>`;
@@ -3079,7 +3108,7 @@ function viewSaved(){
       <ul class="list">${items.map(p=>`<li>
         <button type="button" class="lrow" data-act="detail" data-n="${esc(p.n)}"
                 aria-label="${esc(p.n)} – Details öffnen">
-          <span class="lthumb">${media(p,320,420)}</span>
+          <span class="lthumb">${media(p,320,420)}<span class="tbadge">${esc(badgeFor(p))}</span></span>
           <span class="lmain"><span class="lname">${esc(p.n)}</span>${pills(p)}</span>
         </button>
         <div class="lact">
@@ -3087,7 +3116,8 @@ function viewSaved(){
         </div>
       </li>`).join("")}</ul>`
     : `<div class="empty"><p>Noch nichts gemerkt.</p>
-       <p style="font-size:.88rem">Wische auf der Entdecken-Seite nach rechts oder nutze „Merken“.</p></div>`}`;
+       <p style="font-size:.88rem">Wische auf der Entdecken-Seite nach rechts oder nutze „Merken“.</p></div>`}
+    ${items.length ? quelle() : ""}`;
   bindList();
 }
 
@@ -3104,6 +3134,12 @@ function viewHow(){
   <h1>Wie Radiux empfiehlt</h1>
   <p>Die Reihenfolge der Vorschläge entsteht aus einer festen Rechenregel. Sie wird hier
   vollständig und mit ihrer Gewichtung offengelegt.</p>
+  <p><strong>Eine Ausnahme gibt es</strong>, und sie steht hier, damit die Offenlegung
+  stimmt: Das Vorhaben „Überrasch mich“ rechnet bewusst anders. Es bevorzugt seltene
+  Kategorien, Orte abseits deiner bisherigen Entscheidungen, Einträge, die du noch nicht
+  gesehen hast, und solche mit einer nachvollziehbaren Begründung – und mischt zusätzlich
+  einen Zufallsanteil bei, weil sonst jedes Mal dasselbe oben stünde. Dieselbe Liste,
+  andere Reihenfolge. Alles Weitere auf dieser Seite gilt für die übrigen vier Vorhaben.</p>
   <p><strong>Solange die Anpassung ausgeschaltet ist</strong> – und das ist sie, bis du sie
   einschaltest – entfällt das Kriterium „deine bisherigen Entscheidungen“. Dann gilt:
   Entfernung 55 %, Öffnungsstatus 32 %, Vollständigkeit der Angaben 13 %. Die Tabelle unten
@@ -3137,7 +3173,8 @@ function viewHow(){
   Galerien, Denkmäler, Türme und Kunst im öffentlichen Raum, Parks, Naturschutzgebiete und
   Badestellen, Sport- und Kletterhallen, Schwimmbäder, Bowling und Escape-Räume,
   Hochschulen, Märkte, Läden.</p>
-  <p>Nicht geladen werden Orte des Gesundheitswesens, Gotteshäuser, Kindertagesstätten,
+  <p>Nicht geladen werden Orte des Gesundheitswesens, Orte der Religionsausübung,
+     Kindertagesstätten,
   soziale Einrichtungen, Bestattungshallen und Krematorien, altersbeschränkte Betriebe
   sowie Tabak-, Waffen- und E-Zigarettenläden – die Gründe stehen in den Abschnitten
   weiter unten. Wie viel dabei herauskommt, hängt davon ab,
@@ -3153,7 +3190,7 @@ function viewHow(){
   <h2>Jugendschutz</h2>
   <p>Radiux prüft kein Alter. Deshalb zeigt Radiux keine Orte, deren Geschäftszweck selbst
   an ein Mindestalter gebunden ist: Erotikbetriebe, Bordelle, Spielhallen, Spielbanken und
-  Wettbüros werden beim Laden, in der Anzeige und in der Suche verworfen. Bars, Kneipen und
+  Wettbüros werden beim Abruf von OpenStreetMap verworfen und kommen im mitgelieferten Bestand nicht vor; gesundheitsbezogene Suchbegriffe sind zusätzlich gesperrt. Bars, Kneipen und
   Clubs bleiben enthalten – auch dort gibt es Altersgrenzen, aber sie betreffen den Einlass
   und den Ausschank, und dafür ist der Betrieb zuständig, nicht ein Verzeichnis.</p>
   <p>Verwiesen wird außerdem auf Veranstaltungen, die eine Altersgrenze haben können. Die
@@ -3191,7 +3228,7 @@ function viewHow(){
   <h2>Was das Ranking nicht beeinflusst</h2>
   <ul>
     <li><strong>Bezahlung.</strong> Dieser Prototyp enthält keine bezahlten Platzierungen, keine Werbung und keine Provisionen. Sollte sich das ändern, würde jede bezahlte Platzierung am einzelnen Ergebnis gekennzeichnet.</li>
-    <li><strong>Gesundheitsbezogene und medizinische Merkmale.</strong> Arztpraxen, Apotheken, Kliniken und alles, was in OpenStreetMap als Gesundheitseinrichtung geführt ist, wird gar nicht erst abgerufen. Gotteshäuser ebenso wenig. Historische Bauten mit religiösem Ursprung, die heute Museum oder Konzertort sind, können vorkommen – das Kloster Unser Lieben Frauen etwa. Eine Kategorie „Religion“ gibt es nicht.</li>
+    <li><strong>Gesundheitsbezogene und medizinische Merkmale.</strong> Arztpraxen, Apotheken, Kliniken und alles, was in OpenStreetMap als Gesundheitseinrichtung geführt ist, wird gar nicht erst abgerufen. Orte der Religionsausübung werden nicht als solche geführt: Eine Kategorie „Religion“ gibt es nicht, und über die Suche sind sie nicht erreichbar. Kirchen, Klöster und vergleichbare Bauten erscheinen ausschließlich dann, wenn OpenStreetMap sie zugleich als Sehenswürdigkeit führt – dann geht es um das Bauwerk, so wie beim Magdeburger Dom oder beim Kloster Unser Lieben Frauen. Aus dem Anzeigen eines Bauwerks lässt sich keine Glaubensrichtung ablesen; die Kategorie wird zudem nur gezählt, wenn du die Anpassung eingeschaltet hast.</li>
     <li><strong>Weitere ausgeschlossene Orte.</strong> Kindertagesstätten, soziale Einrichtungen, Bestattungshallen und Krematorien sowie Tabak-, Waffen- und E-Zigarettenläden werden ebenfalls nicht geladen. Nicht weil ein Gesetz es verlangt, sondern weil sie nicht zu einer Freizeit-App gehören.</li>
     <li><strong>Künstliche Intelligenz.</strong> Die Empfehlungen entstehen aus der oben beschriebenen Rechenregel. Es ist kein KI-Modell beteiligt und es werden keine Texte generiert.</li>
   </ul>
@@ -3269,22 +3306,25 @@ function viewLegal(){
      Anbieters, der deine Nutzung aufzeichnet, keine Nutzerkonten, keine Analyse- oder
      Werbedienste und keine Weitergabe an Dritte. Was du in Radiux tust, erfährt der
      Anbieter nicht.</p>
-  <p>Zwei Stellen, an denen jemand anderes deine IP-Adresse sieht, stehen in der Tabelle und sollen hier
-     nicht verschwiegen werden: Beim Aufruf der Seite sieht der Hoster deine IP-Adresse,
-     und wenn du „Aktuelle Orte laden“ auswählst, sieht sie zusätzlich der abgefragte
-     Kartendienst. Beides ist bei jeder Website so; der Anbieter hat auf diese Protokolle
-     keinen Zugriff.</p>
+  <p>Ohne dein Zutun sieht genau eine fremde Stelle deine IP-Adresse: der Hoster beim Aufruf
+     der Seite. Das ist bei jeder Website so; der Anbieter hat auf diese Protokolle keinen
+     Zugriff. Alles Weitere passiert nur, wenn du es antippst – „Aktuelle Orte laden“ beim
+     Kartendienst, ein Link zu einem fremden Angebot bei dessen Betreiber. Beides steht mit
+     allen Empfängern in der Tabelle.</p>
   <table>
     <thead><tr><th>Verarbeitung</th><th>Zweck</th><th>Rechtsgrundlage</th><th>Dauer</th></tr></thead>
     <tbody>
       <tr><td>Merkliste, ausgeblendete Orte, gewählter Umkreis, Farbwelt und Darstellung,
-              Karten- oder Listenansicht, ein Merker dafür, ob dir die Standort-Erklärung
-              schon gezeigt wurde</td>
+              Karten- oder Listenansicht, zuletzt gewähltes Vorhaben, ein Merker dafür,
+              ob dir die Standort-Erklärung schon gezeigt wurde</td>
           <td>Damit deine Einstellungen und deine Merkliste beim nächsten Öffnen noch da sind</td>
           <td>Speicherung im Endgerät nach § 25 Abs. 2 Nr. 2 TDDDG, weil du diese Funktionen
               ausdrücklich auslöst und sie ohne die Speicherung nicht funktionieren; für die
-              anschließende Verwendung Art. 6 Abs. 1 lit. f DSGVO. Alles bleibt in deinem
-              Browser – ich kann es weder einsehen noch löschen.</td>
+              anschließende Verwendung Art. 6 Abs. 1 lit. f DSGVO – berechtigtes Interesse
+              daran, dir deine eigenen Einstellungen nicht bei jedem Öffnen abzuverlangen.
+              Gespeichert wird jeweils erst, wenn du etwas auswählst; ein bloßer Aufruf der
+              Seite legt nichts ab. Alles bleibt in deinem Browser – ich kann es weder
+              einsehen noch löschen.</td>
           <td>Bis du sie löschst</td></tr>
       <tr><td>Angepasste Reihenfolge (Zähler je Kategorie)</td>
           <td>Aus deinen Merken- und Ausblenden-Entscheidungen entsteht ein Zähler je
@@ -3305,14 +3345,18 @@ function viewLegal(){
           <td>Nur während der Sitzung</td></tr>
       <tr><td>Abruf von Ortsdaten über die Overpass-Schnittstelle</td>
           <td>Aktuelle Orte für die gewählte Gegend laden</td>
-          <td>Nur wenn du „aktuelle Orte laden“ antippst. Dabei sieht der angefragte Server
-              deine IP-Adresse und das gerundete Rechteck. Angefragt wird einer von drei
-              Servern: overpass-api.de, betrieben vom FOSSGIS e.V. in Deutschland, sowie
-              overpass.kumi.systems und overpass.private.coffee, beide betrieben von
-              Private.coffee in Österreich. Alle liegen in der Europäischen Union, eine
-              Übermittlung in ein Drittland findet nicht statt. Diese Betreiber verarbeiten
-              die Anfrage in eigener Verantwortung. Ohne dein Antippen findet keine
-              Verbindung statt.</td>
+          <td>Nur wenn du „aktuelle Orte laden“ antippst. Für die dadurch ausgelöste
+              Offenlegung ist Art. 6 Abs. 1 lit. f DSGVO die Grundlage – das berechtigte
+              Interesse daran, dir auf deine ausdrückliche Anforderung hin aktuelle
+              Ortsdaten zu zeigen. Dabei sieht der angefragte Server deine IP-Adresse,
+              das gerundete Rechteck und die üblichen Verbindungsangaben deines Browsers
+              (Browserkennung und die Herkunftsadresse dieser Anwendung). Angefragt wird
+              einer von drei Servern: overpass-api.de, betrieben vom FOSSGIS e.V. in
+              Deutschland, sowie overpass.kumi.systems und overpass.private.coffee, beide
+              betrieben von Private.coffee in Österreich. Alle liegen in der Europäischen
+              Union, eine Übermittlung in ein Drittland findet nicht statt. Für ihre eigene
+              Verarbeitung sind diese Betreiber selbst verantwortlich. Ohne dein Antippen
+              findet keine Verbindung statt.</td>
           <td>Nach den Bestimmungen des jeweiligen Betreibers</td></tr>
       <tr><td>Aufruf der Seite (Hosting)</td>
           <td>Auslieferung der Anwendung an deinen Browser</td>
@@ -3330,14 +3374,32 @@ function viewLegal(){
               Standardvertragsklauseln der EU-Kommission.</td></tr>
       <tr><td>E-Mail an Radiux</td>
           <td>Deinen Hinweis lesen und beantworten</td>
-          <td>Art. 6 Abs. 1 lit. f DSGVO. Das Postfach liegt bei der Proton AG in der
-              Schweiz; für die Schweiz besteht ein Angemessenheitsbeschluss der
-              EU-Kommission.</td>
+          <td>Art. 6 Abs. 1 lit. f DSGVO – das berechtigte Interesse daran, auf deine
+              Zuschrift antworten und die gemeldeten Angaben prüfen zu können. Das Postfach
+              liegt bei der Proton AG in der Schweiz; für die Schweiz besteht ein
+              Angemessenheitsbeschluss der EU-Kommission.</td>
           <td>Gelöscht, sobald die Sache erledigt ist</td></tr>
+      <tr><td>Verweise auf fremde Angebote</td>
+          <td>Tickets, Ankündigung, Straßenkarte, Kalendereintrag, Teilen</td>
+          <td>Nur wenn du den jeweiligen Verweis antippst. Erst dann baut dein Browser eine
+              Verbindung zum Ziel auf, und erst dann sieht dessen Betreiber deine
+              IP-Adresse – bei „Google Kalender“ und „Über WhatsApp senden“ zusätzlich Name
+              und Termin des Eintrags, weil sie in der Adresse stehen. Ziele sind
+              openstreetmap.org, de.wikipedia.org, calendar.google.com (Google Ireland),
+              wa.me (WhatsApp Ireland/Meta) sowie die beim jeweiligen Termin genannten
+              Ticket- und Veranstalterseiten. Grundlage ist deine Auswahl im Einzelfall,
+              Art. 6 Abs. 1 lit. a DSGVO; für die eigene Verarbeitung ist der jeweilige
+              Betreiber verantwortlich, es gelten dessen Datenschutzbestimmungen. Radiux
+              lädt von diesen Seiten nichts nach und erhält keine Rückmeldung darüber, ob
+              du dort etwas tust.</td>
+          <td>Nach den Bestimmungen des jeweiligen Betreibers</td></tr>
       <tr><td>Bildmotive</td>
           <td>Darstellung der Entdeckungskarten</td>
-          <td>Keine Verarbeitung personenbezogener Daten. Die Bilder liegen auf demselben
-              Server wie die Anwendung; es werden keine Inhalte von Dritten nachgeladen.</td>
+          <td>Die Bilder liegen auf demselben Server wie die Anwendung; es werden keine
+              Inhalte von Dritten nachgeladen und keine Daten über dich erhoben. Es werden
+              ausschließlich Symbolbilder ohne erkennbare Personen verwendet; sollte auf
+              einem Bild dennoch jemand erkennbar sein, melde es bitte – ich tausche es aus.
+              Grundlage für die Auslieferung ist Art. 6 Abs. 1 lit. f DSGVO.</td>
           <td>—</td></tr>
     </tbody>
   </table>
@@ -3349,7 +3411,7 @@ function viewLegal(){
     <li>Keine dauerhafte Bewegungshistorie.</li>
     <li>Keine Weitergabe an Werbenetzwerke, Analysedienste oder Datenhändler, keine
         Reichweitenmessung, kein Verkauf von Daten. Wer im technischen Betrieb deine
-        IP-Adresse sieht, steht vollständig in der Tabelle darüber.</li>
+        IP-Adresse sieht, steht in der Tabelle darüber – ohne dein Zutun ist das allein der Hoster; alles andere löst du selbst durch Antippen aus.</li>
   </ul>
   <h3>Deine Rechte</h3>
   <p>Dir stehen nach der DSGVO die Rechte auf Auskunft (Art. 15), Berichtigung (Art. 16),
@@ -3408,28 +3470,33 @@ function viewLegal(){
      <a href="mailto:Radiux.info@proton.me?subject=Barrierefreiheit">Radiux.info@proton.me</a>.</p>
 
   <h2 id="daten">Datenquellen und Lizenz</h2>
-  <p>Die Ortsdaten stammen von OpenStreetMap und stehen unter der Open Database License (ODbL).
-     Die Angaben werden von Freiwilligen gepflegt; Vollständigkeit und Aktualität sind nicht
-     gewährleistet. Öffnungszeiten und Beschreibungen können veraltet sein.</p>
+  <p>Die Ortsdaten stammen von OpenStreetMap, © <a href="https://www.openstreetmap.org/copyright"
+     target="_blank" rel="noopener noreferrer">OpenStreetMap-Mitwirkende</a>, und stehen unter der
+     <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank"
+     rel="noopener noreferrer">Open Database License 1.0</a>. Das gilt auch für den
+     Startbestand, der mit der Anwendung ausgeliefert wird – er ist ein kleiner Auszug
+     aus OpenStreetMap. Die Angaben werden von Freiwilligen gepflegt; Vollständigkeit und
+     Aktualität sind nicht gewährleistet. Öffnungszeiten und Beschreibungen können veraltet
+     sein.</p>
   <p>Die Fotos stammen aus einer freien Bilddatenbank und werden unter deren Lizenz
-     verwendet, die die kostenlose kommerzielle Nutzung ohne Namensnennung erlaubt.
+     von Pexels verwendet; die Pexels-Lizenz erlaubt die kostenlose Nutzung und verlangt
+     keine Namensnennung. Verwendet werden ausschließlich Motive ohne erkennbare Personen.
      Sie sind als Symbolbilder gekennzeichnet, weil sie nicht den jeweiligen Ort zeigen.</p>
   <p>Diese Anwendung erhebt keine Nutzungsentgelte und verfolgt in dieser Fassung keine
      kommerziellen Zwecke.</p>
 
   <h2>Was vor einer Veröffentlichung noch fehlt</h2>
   <ul>
-    <li>Vollständiges Impressum mit ladungsfähiger Anschrift.</li>
-    <li>Entscheidung über die Rechtsform, damit die Angaben stimmen.</li>
-    <li>Bei Nutzerkonten oder Serverbetrieb: vollständige Datenschutzerklärung,
-        Auftragsverarbeitungsverträge, Löschkonzept, Datenschutz-Folgenabschätzung.</li>
+    <li>Anwaltliche Durchsicht der Rechtstexte vor einer Veröffentlichung mit Erlösabsicht.</li>
+    <li>Bei Nutzerkonten oder Serverbetrieb: Auftragsverarbeitungsverträge, Löschkonzept
+        und eine Prüfung, ob dann eine Datenschutz-Folgenabschätzung nötig wird.</li>
     <li>Bei Premium: AGB, Widerrufsbelehrung, Kündigungs- und Widerrufsschaltfläche.</li>
     <li>Bei bezahlten Platzierungen: Kennzeichnung am einzelnen Ergebnis.</li>
   </ul>
   </div>
   <footer class="attrib">
     Ortsdaten © OpenStreetMap-Mitwirkende, Open Database License.
-    Symbolbilder aus freier Bilddatenbank. ${PROTOTYPE?"Radiux-Prototyp, ":"Radiux, "}Stand August 2026.
+    Symbolbilder von Pexels (Pexels-Lizenz). ${PROTOTYPE?"Radiux-Prototyp, ":"Radiux, "}Stand August 2026.
     Keine Rechtsberatung – die Rechtstexte sind Entwürfe und vor einer Veröffentlichung
     anwaltlich zu prüfen.
   </footer>`;
@@ -3597,11 +3664,15 @@ function tempo(k){
   svg.querySelectorAll("animate").forEach(a=>a.setAttribute("dur", d));
   try{ svg.setCurrentTime(0); }catch(e){}
 }
-function setThema(k){
+/* „speichern" ist beim Start ausdrücklich falsch: Gespeichert wird nur, was
+   jemand gewählt hat. Sonst läge nach dem ersten Aufruf ein Wert im Gerät, den
+   niemand gewünscht hat – und § 25 Abs. 2 Nr. 2 TDDDG trägt nur die Beibehaltung
+   einer ausdrücklich gewünschten Einstellung. */
+function setThema(k, speichern){
   /* Frühere Fassungen kannten „hell". Wer das gewählt hatte, bekommt Mondstein. */
   if(k === "hell") k = "mondstein";
   S.thema = k;
-  store.set("thema", k);
+  if(speichern) store.set("thema", k);
   if(k === "auto") document.documentElement.removeAttribute("data-thema");
   else document.documentElement.setAttribute("data-thema", k);
   const dunkel = k==="mondstein" ? "#f6f7f9" : k==="neon" ? "#0a0714"
@@ -3613,9 +3684,9 @@ function setThema(k){
 
 /* Blickdicht statt Milchglas – und die laufenden Zeichnungen stehen still.
    Für Geräte, auf denen das Bild beim Scrollen unruhig wirkt. */
-function setRuhig(an){
+function setRuhig(an, speichern){
   S.ruhig = !!an;
-  store.set("ruhig", S.ruhig);
+  if(speichern) store.set("ruhig", S.ruhig);
   if(S.ruhig) document.documentElement.setAttribute("data-ruhig","1");
   else document.documentElement.removeAttribute("data-ruhig");
   document.querySelectorAll(".blogo svg, .wmark svg").forEach(svg=>{
@@ -3664,12 +3735,12 @@ function openThema(){
   const shut = ()=>{ el.remove(); document.body.classList.remove("locked"); };
   el.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",shut));
   el.querySelectorAll("[data-t]").forEach(b=>b.addEventListener("click",()=>{
-    setThema(b.dataset.t);
+    setThema(b.dataset.t, true);
     el.querySelectorAll("[data-t]").forEach(x=>x.setAttribute("aria-pressed", String(x.dataset.t===S.thema)));
     say("Aussehen geändert.");
   }));
   el.querySelectorAll("[data-r]").forEach(b=>b.addEventListener("click",()=>{
-    setRuhig(b.dataset.r === "1");
+    setRuhig(b.dataset.r === "1", true);
     el.querySelectorAll("[data-r]").forEach(x=>x.setAttribute("aria-pressed",
       String((x.dataset.r === "1") === S.ruhig)));
     say(S.ruhig ? "Ruhiges Bild eingeschaltet." : "Milchglas eingeschaltet.");
@@ -3777,7 +3848,7 @@ function viewAbout(){
   <div class="phase">
     <div class="pnum">Phase 2 · als Nächstes</div>
     <p>Magdeburg vollständig. Veranstaltungen aus einer laufenden Quelle statt von Hand,
-    Öffnungszeiten verlässlich, Impressum und Datenschutzerklärung mit echten Angaben,
+    Öffnungszeiten verlässlich, die Rechtstexte
     anwaltlich geprüft. <strong>Erst dann verschwindet der Prototyp-Hinweis.</strong>
     Bis dahin bleibt er stehen, auch wenn die App längst gut aussieht.</p>
   </div>
@@ -3905,7 +3976,7 @@ function viewAbout(){
 
   <footer class="attrib">
     Ortsdaten © OpenStreetMap-Mitwirkende, Open Database License.
-    Symbolbilder aus freier Bilddatenbank.
+    Symbolbilder von Pexels (Pexels-Lizenz).
   </footer>`;
 }
 
@@ -4034,11 +4105,16 @@ function viewSheet(){
             <button type="button" data-act="hide" data-n="${esc(p.n)}">Diesen Ort ausblenden</button>
           </div>
         </details>
-        <p class="tkhint">Geteilt wird ein gewöhnlicher Link auf diesen Ort in Radiux.
-          Es wird nichts an einen Nachrichtendienst übertragen, solange du keinen auswählst.</p>
+        <p class="tkhint">„Teilen“ öffnet den Dialog deines Geräts; dorthin geht ein
+          gewöhnlicher Link auf diesen Ort, und es wird nichts übertragen, solange du
+          keinen Dienst auswählst. „Über WhatsApp senden“ ist der Notweg für Browser
+          ohne diesen Dialog: Dabei ruft dein Browser eine Adresse bei WhatsApp (Meta,
+          Irland/USA) auf, und schon vor deinem ersten Wort gehen dorthin deine
+          IP-Adresse sowie Name, Termin und Beschreibung dieses Eintrags.</p>
         ${p.tk?`<p class="tkhint">Der Ticketverkauf
           läuft über ${esc(ziel(p.tk))} – ein fremdes Angebot. Radiux verkauft keine
           Tickets, vermittelt nichts und verdient an diesem Verweis nichts.</p>`:""}
+        ${quelle()}
       </div>
     </div>`;
   document.body.appendChild(el);
@@ -4239,8 +4315,8 @@ function kopfBeobachten(){
 }
 
 function init(){
-  setThema(S.thema);
-  setRuhig(S.ruhig);
+  setThema(S.thema, false);
+  setRuhig(S.ruhig, false);
   try{
     if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)
       document.querySelectorAll(".blogo animate").forEach(a=>a.remove());
